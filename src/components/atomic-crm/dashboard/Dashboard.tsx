@@ -6,18 +6,9 @@ import {
   useNotify,
   useRedirect,
 } from "ra-core";
-import {
-  Sparkles,
-  Zap,
-  Inbox,
-  Plus,
-  ArrowRight,
-  LayoutGrid,
-  CircleDot,
-} from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { ArrowUpRight, Check, ChevronRight, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { PushReminders } from "../push/PushReminders";
 import { TodayView } from "./TodayView";
 import type { Deal } from "../types";
@@ -73,6 +64,11 @@ export const Dashboard = () => {
 
   const firstName = (identity?.fullName || "").split(" ")[0] || "there";
   const prompt = PROMPTS[new Date().getDay() % PROMPTS.length];
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
   const submitCapture = () => {
     const name = capture.trim();
@@ -95,53 +91,49 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 flex flex-col gap-6">
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 text-white p-7 shadow-lg">
-        <div className="absolute -top-10 -right-10 size-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="absolute -bottom-12 -left-6 size-40 rounded-full bg-white/10 blur-2xl" />
-        <div className="relative">
-          <p className="text-white/80 text-sm">
-            {new Date().toLocaleDateString(undefined, {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-          <h1 className="text-3xl font-bold mt-1">
-            {greeting()}, {firstName}{" "}
-            <Sparkles className="inline size-6 -mt-1" />
+    <div className="mx-auto flex max-w-5xl flex-col gap-7 py-2">
+      {/* Operations header: greeting left, capture right */}
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold tracking-tight">
+            {greeting()}, {firstName}
           </h1>
-          <p className="text-white/85 mt-1">{prompt}</p>
-
-          {/* Quick capture */}
-          <div className="mt-5 flex gap-2">
-            <Input
-              value={capture}
-              onChange={(e) => setCapture(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submitCapture()}
-              placeholder="Brain-dump anything… (Enter to save)"
-              className="bg-white/95 text-foreground border-0 h-11 rounded-xl placeholder:text-muted-foreground"
-            />
-            <Button
-              onClick={submitCapture}
-              className="h-11 rounded-xl bg-white text-indigo-700 hover:bg-white/90 font-semibold gap-1"
-            >
-              <Plus className="size-4" /> Capture
-            </Button>
-          </div>
-          <div className="flex gap-4 mt-4 text-sm text-white/85">
-            <span className="flex items-center gap-1">
-              <Zap className="size-4" /> {active.length} in motion
-            </span>
-            <span className="flex items-center gap-1">
-              <Inbox className="size-4" /> {someday.length} someday
-            </span>
-            <span className="flex items-center gap-1">
-              <CircleDot className="size-4" /> {soon.length} soon
-            </span>
-          </div>
+          <p className="mt-0.5 text-[13px] text-muted-foreground">
+            {today} · {prompt}
+          </p>
         </div>
+        <div className="relative w-full sm:w-80">
+          <Plus className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={capture}
+            onChange={(e) => setCapture(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && submitCapture()}
+            placeholder="Capture anything…"
+            className="h-9 pr-10 pl-8 text-[13px]"
+            aria-label="Quick capture — saves to Someday"
+          />
+          <kbd className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 rounded border bg-muted px-1 font-sans text-[0.65rem] text-muted-foreground">
+            ⏎
+          </kbd>
+        </div>
+      </div>
+
+      {/* KPI strip */}
+      <div className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card sm:grid-cols-4">
+        <Kpi value={active.length} label="In motion" dotClass="bg-warning" />
+        <Kpi value={soon.length} label="Soon" dotClass="bg-primary" className="border-l" />
+        <Kpi
+          value={someday.length}
+          label="Someday"
+          dotClass="bg-muted-foreground/50"
+          className="max-sm:border-t sm:border-l"
+        />
+        <Kpi
+          value={all.length}
+          label="Projects total"
+          dotClass="bg-success"
+          className="border-l max-sm:border-t"
+        />
       </div>
 
       <PushReminders />
@@ -157,21 +149,30 @@ export const Dashboard = () => {
 
       {/* In motion */}
       <Section
-        icon={<Zap className="size-4 text-amber-500" />}
         title="In motion"
+        count={active.length}
         action={() => redirect("/deals")}
         actionLabel="All projects"
       >
         {active.length === 0 ? (
           <EmptyHint text="Nothing active yet. Pull something from Someday when you're ready — no pressure." />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {active.slice(0, 6).map((p) => (
-              <ProjectCard
+          <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
+            {active.slice(0, 8).map((p) => (
+              <button
                 key={p.id}
-                p={p}
                 onClick={() => redirect(`/deals/${p.id}/show`)}
-              />
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-accent/50"
+              >
+                <span className="size-1.5 shrink-0 rounded-full bg-warning" />
+                <span className="shrink-0 text-[13px] font-medium">{p.name}</span>
+                {p.description && (
+                  <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+                    {p.description}
+                  </span>
+                )}
+                <ChevronRight className="ml-auto size-3.5 shrink-0 text-muted-foreground/50" />
+              </button>
             ))}
           </div>
         )}
@@ -180,23 +181,25 @@ export const Dashboard = () => {
       {/* Quick launch */}
       {hub && hub.length > 0 && (
         <Section
-          icon={<LayoutGrid className="size-4 text-indigo-500" />}
           title="Jump back in"
           action={() => redirect("/hub")}
           actionLabel="Command Center"
         >
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
             {hub.slice(0, 8).map((t) => (
               <a
                 key={t.id}
                 href={t.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center gap-2 rounded-xl border bg-card p-3 hover:shadow-md transition-shadow border-l-4"
-                style={{ borderLeftColor: t.color ?? "var(--primary)" }}
+                className="group flex h-9 items-center gap-2 rounded-md border bg-card px-2.5 transition-colors hover:bg-accent/50"
               >
-                <span className="text-sm font-medium truncate">{t.title}</span>
-                <ArrowRight className="size-3.5 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span
+                  className="size-1.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: t.color ?? "var(--primary)" }}
+                />
+                <span className="truncate text-[13px] font-medium">{t.title}</span>
+                <ArrowUpRight className="ml-auto size-3.5 shrink-0 text-muted-foreground/50 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             ))}
           </div>
@@ -205,26 +208,26 @@ export const Dashboard = () => {
 
       {/* Someday bucket */}
       <Section
-        icon={<Inbox className="size-4 text-violet-500" />}
         title="Someday / Maybe"
+        count={someday.length}
         action={() => redirect("/deals")}
         actionLabel="Open bucket"
       >
         {someday.length === 0 ? (
           <EmptyHint text="Your idea bucket is empty. Toss anything up there with the capture bar — future-you will sort it out." />
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {someday.slice(0, 12).map((p) => (
               <button
                 key={p.id}
                 onClick={() => redirect(`/deals/${p.id}/show`)}
-                className="rounded-full border bg-card px-3 py-1.5 text-sm hover:bg-accent transition-colors"
+                className="rounded-md border bg-card px-2.5 py-1 text-xs transition-colors hover:bg-accent/50"
               >
                 {p.name}
               </button>
             ))}
             {someday.length > 12 && (
-              <span className="rounded-full px-3 py-1.5 text-sm text-muted-foreground">
+              <span className="px-2 py-1 text-xs text-muted-foreground">
                 +{someday.length - 12} more
               </span>
             )}
@@ -235,31 +238,55 @@ export const Dashboard = () => {
   );
 };
 
+const Kpi = ({
+  value,
+  label,
+  dotClass,
+  className,
+}: {
+  value: number | string;
+  label: string;
+  dotClass: string;
+  className?: string;
+}) => (
+  <div className={cn("flex flex-col gap-1.5 px-4 py-3", className)}>
+    <span className="text-lg leading-none font-semibold">{value}</span>
+    <span className="u-label flex items-center gap-1.5 text-muted-foreground/80">
+      <span className={cn("size-1.5 rounded-full", dotClass)} />
+      {label}
+    </span>
+  </div>
+);
+
 const Section = ({
-  icon,
   title,
+  count,
   action,
   actionLabel,
   children,
 }: {
-  icon: React.ReactNode;
   title: string;
+  count?: number;
   action?: () => void;
   actionLabel?: string;
   children: React.ReactNode;
 }) => (
   <section>
-    <div className="flex items-center justify-between mb-3">
-      <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-        {icon}
+    <div className="mb-2 flex items-baseline justify-between">
+      <h2 className="u-label text-muted-foreground">
         {title}
+        {typeof count === "number" && count > 0 && (
+          <span className="ml-1.5 font-medium text-muted-foreground/60">
+            {count}
+          </span>
+        )}
       </h2>
       {action && actionLabel && (
         <button
           onClick={action}
-          className="text-xs text-primary hover:underline flex items-center gap-1"
+          className="text-xs font-medium text-primary hover:underline"
         >
-          {actionLabel} <ArrowRight className="size-3" />
+          {actionLabel}
         </button>
       )}
     </div>
@@ -267,24 +294,10 @@ const Section = ({
   </section>
 );
 
-const ProjectCard = ({ p, onClick }: { p: Deal; onClick: () => void }) => (
-  <Card
-    onClick={onClick}
-    className="cursor-pointer p-4 hover:shadow-md transition-shadow border-l-4 border-l-amber-400"
-  >
-    <p className="text-sm font-medium truncate">{p.name}</p>
-    {p.description && (
-      <p className="text-xs text-muted-foreground line-clamp-2 mt-1">
-        {p.description}
-      </p>
-    )}
-  </Card>
-);
-
 const EmptyHint = ({ text }: { text: string }) => (
-  <Card className="p-5 text-sm text-muted-foreground bg-muted/40 border-dashed">
+  <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
     {text}
-  </Card>
+  </div>
 );
 
 /** One-tap logging for the first few trackers — no page visit needed. */
@@ -321,7 +334,7 @@ const QuickLogStrip = () => {
   const isToday = (iso: string) => new Date(iso).toDateString() === new Date().toDateString();
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-1.5">
       {shown.map((t) => {
         const todayEntries = (entries ?? []).filter((e) => e.tracker_id === t.id && isToday(e.logged_at));
         const sum = todayEntries.reduce((s, e) => s + Number(e.value ?? 0), 0);
@@ -339,21 +352,22 @@ const QuickLogStrip = () => {
                 data: { tracker_id: t.id, value: 1, logged_at: new Date().toISOString(), sales_id: salesId },
               });
             }}
-            className={`rounded-full border px-3.5 py-2 text-sm flex items-center gap-1.5 transition-all active:scale-95 ${
+            className={cn(
+              "flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-[13px] transition-colors active:scale-[0.98]",
               done || hitTarget
-                ? "bg-green-500/15 text-green-500 border-green-500/30"
-                : "bg-card hover:bg-accent"
-            }`}
+                ? "border-success/40 bg-success/10 text-success"
+                : "bg-card hover:bg-accent/50",
+            )}
           >
             <span>{t.emoji}</span>
-            <span>{t.name}</span>
+            <span className="font-medium">{t.name}</span>
             {t.kind === "count" && (
-              <span className="text-xs text-muted-foreground tabular-nums">
+              <span className="text-xs text-muted-foreground">
                 {sum}
                 {t.target ? `/${t.target}` : ""}
               </span>
             )}
-            {done && <span>✓</span>}
+            {done && <Check className="size-3" />}
           </button>
         );
       })}
@@ -377,12 +391,12 @@ const CompassStrip = () => {
 
   return (
     <Section
-      icon={<Sparkles className="size-4 text-primary" />}
       title="Compass"
+      count={active.length}
       action={() => redirect("/goals")}
       actionLabel="All goals"
     >
-      <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {active.slice(0, 6).map((g) => {
           const ms = (milestones ?? []).filter((m) => m.goal_id === g.id);
           const done = ms.filter((m) => m.done).length;
@@ -391,13 +405,23 @@ const CompassStrip = () => {
             <button
               key={g.id}
               onClick={() => redirect("/goals")}
-              className="flex items-center gap-2 rounded-full border bg-card px-3 py-1.5 text-sm hover:bg-accent transition-colors"
+              className="flex flex-col gap-2 rounded-lg border bg-card px-3 py-2.5 text-left transition-colors hover:bg-accent/50"
             >
-              <span>{g.emoji || "🎯"}</span>
-              <span className="max-w-40 truncate">{g.title}</span>
+              <span className="flex w-full items-center gap-2">
+                <span className="text-sm leading-none">{g.emoji || "🎯"}</span>
+                <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+                  {g.title}
+                </span>
+                {ms.length > 0 && (
+                  <span className="text-xs text-muted-foreground">{pct}%</span>
+                )}
+              </span>
               {ms.length > 0 && (
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  {pct}%
+                <span className="block h-1 w-full overflow-hidden rounded-full bg-muted">
+                  <span
+                    className="block h-full rounded-full bg-primary"
+                    style={{ width: `${pct}%` }}
+                  />
                 </span>
               )}
             </button>

@@ -1,18 +1,4 @@
-import {
-  ChevronDown,
-  Download,
-  FileText,
-  Import,
-  LayoutGrid,
-  Plus,
-  Search,
-  Settings,
-  SlidersHorizontal,
-  Upload,
-  User,
-  Users,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Download, FileText, Import, Settings, Upload, User, Users } from "lucide-react";
 import {
   CanAccess,
   useGetIdentity,
@@ -20,216 +6,76 @@ import {
   useTranslate,
   useUserMenu,
 } from "ra-core";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useRef, useState } from "react";
 import { Link, matchPath, useLocation } from "react-router";
 import { RefreshButton } from "@/components/admin/refresh-button";
 import { ThemeModeToggle } from "@/components/admin/theme-mode-toggle";
 import { UserMenu } from "@/components/admin/user-menu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
-import { useConfigurationContext } from "../root/ConfigurationContext";
 import { exportAllData } from "../misc/exportData";
 import { importBackup } from "../misc/importBackup";
 import { NAV_ITEMS } from "./navConfig";
-import { applyNavPrefs, isPrimaryNav, navPrefsStore } from "./navPrefsStore";
-import { NavCustomizer } from "./NavCustomizer";
-import { QuickCaptureSheet } from "./QuickCaptureSheet";
 
-const Header = () => {
-  const { darkModeLogo, lightModeLogo, title } = useConfigurationContext();
+/** Titles for routes that don't appear in the nav config. */
+const EXTRA_TITLES: Record<string, string> = {
+  profile: "Profile",
+  import: "Import",
+  changelog: "Changelog",
+  sales: "Users",
+  capture: "Capture",
+};
+
+const usePageTitle = (): string => {
   const location = useLocation();
-  const { identity } = useGetIdentity();
-  const [customizeOpen, setCustomizeOpen] = useState(false);
-  const [captureOpen, setCaptureOpen] = useState(false);
-  const prefs = useSyncExternalStore(navPrefsStore.subscribe, navPrefsStore.get);
-  const salesId = identity?.id ? Number(identity.id) : null;
-  useEffect(() => {
-    if (salesId) void navPrefsStore.load(salesId);
-  }, [salesId]);
-
-  // Single source of truth: layout/navConfig.ts, user-ordered/hidden via prefs.
-  const activePath = NAV_ITEMS.find((n) =>
+  const navMatch = NAV_ITEMS.find((n) =>
     n.to === "/"
       ? !!matchPath("/", location.pathname)
       : !!matchPath(`${n.to}/*`, location.pathname),
-  )?.to;
-
-  const visible = applyNavPrefs(prefs).filter((n) => n.inHeader);
-  const primaryItems = visible.filter((n) => isPrimaryNav(prefs, n));
-  const moreItems = visible.filter((n) => !isPrimaryNav(prefs, n));
-  const moreActive = moreItems.some((n) => n.to === activePath);
-  // Grouped for the "More" menu, preserving the user's order inside groups.
-  const moreGroups = [...new Set(moreItems.map((n) => n.group ?? "Other"))].map(
-    (g) => ({ group: g, items: moreItems.filter((n) => (n.group ?? "Other") === g) }),
   );
-
-  return (
-    <>
-      <nav className="grow">
-        <header className="sticky top-0 z-40 bg-secondary/70 backdrop-blur-xl border-b border-border/40">
-          <div className="px-4">
-            <div className="flex items-center gap-3 h-14">
-              <Link
-                to="/"
-                className="flex items-center gap-2 text-secondary-foreground no-underline shrink-0"
-              >
-                <img
-                  className="[.light_&]:hidden h-6"
-                  src={darkModeLogo}
-                  alt={title}
-                />
-                <img
-                  className="[.dark_&]:hidden h-6"
-                  src={lightModeLogo}
-                  alt={title}
-                />
-                <h1 className="text-lg font-semibold hidden sm:block">
-                  {title}
-                </h1>
-              </Link>
-              <nav className="flex gap-1 overflow-x-auto no-scrollbar flex-1 justify-center px-2 items-center">
-                {primaryItems.map((n) => (
-                  <NavigationTab
-                    key={n.to}
-                    label={n.label}
-                    to={n.to}
-                    icon={n.icon}
-                    active={activePath === n.to}
-                  />
-                ))}
-                {moreItems.length > 0 && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        className={cn(
-                          "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all",
-                          moreActive
-                            ? "bg-primary/15 text-primary shadow-sm"
-                            : "text-secondary-foreground/60 hover:text-secondary-foreground hover:bg-foreground/5",
-                        )}
-                      >
-                        <LayoutGrid className="size-4 shrink-0" />
-                        <span className="hidden lg:inline">More</span>
-                        <ChevronDown className="size-3" />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="center" className="w-56 max-h-[70vh] overflow-y-auto">
-                      {moreGroups.map((g, gi) => (
-                        <div key={g.group}>
-                          {gi > 0 && <DropdownMenuSeparator />}
-                          <DropdownMenuLabel className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                            {g.group}
-                          </DropdownMenuLabel>
-                          {g.items.map((n) => (
-                            <DropdownMenuItem key={n.to} asChild>
-                              <Link
-                                to={n.to}
-                                className={cn(
-                                  "flex items-center gap-2.5",
-                                  activePath === n.to && "text-primary",
-                                )}
-                              >
-                                <n.icon className="size-4" />
-                                {n.label}
-                              </Link>
-                            </DropdownMenuItem>
-                          ))}
-                        </div>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
-              </nav>
-              <div className="flex items-center shrink-0">
-                <button
-                  onClick={() => setCaptureOpen(true)}
-                  className="hidden sm:flex items-center gap-1 rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium hover:opacity-90 transition-opacity mr-2"
-                  aria-label="Quick capture"
-                  title="Quick capture — jot anything"
-                >
-                  <Plus className="size-3.5" />
-                  <span className="hidden md:inline">New</span>
-                </button>
-                <button
-                  onClick={() => setCustomizeOpen(true)}
-                  className="hidden sm:flex items-center rounded-full border border-border/60 p-1.5 text-muted-foreground hover:bg-foreground/5 transition-colors mr-1"
-                  aria-label="Customize navigation"
-                  title="Customize navigation"
-                >
-                  <SlidersHorizontal className="size-3.5" />
-                </button>
-                <button
-                  onClick={() =>
-                    window.dispatchEvent(new Event("open-command-palette"))
-                  }
-                  className="hidden sm:flex items-center gap-1.5 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground hover:bg-foreground/5 transition-colors mr-1"
-                  aria-label="Search (Ctrl or Cmd + K)"
-                >
-                  <Search className="size-3.5" />
-                  <span className="hidden md:inline">Search</span>
-                  <kbd className="hidden md:inline text-[0.65rem] bg-muted rounded px-1 py-0.5 font-sans">
-                    ⌘K
-                  </kbd>
-                </button>
-                <ThemeModeToggle />
-                <RefreshButton />
-                <UserMenu>
-                  <ProfileMenu />
-                  <CanAccess resource="sales" action="list">
-                    <UsersMenu />
-                  </CanAccess>
-                  <CanAccess resource="configuration" action="edit">
-                    <SettingsMenu />
-                  </CanAccess>
-                  <ImportFromJsonMenuItem />
-                  <ExportDataMenuItem />
-                  <RestoreBackupMenuItem />
-                  <ChangelogMenuItem />
-                </UserMenu>
-              </div>
-            </div>
-          </div>
-        </header>
-      </nav>
-      <NavCustomizer open={customizeOpen} onOpenChange={setCustomizeOpen} />
-      <QuickCaptureSheet open={captureOpen} onOpenChange={setCaptureOpen} />
-    </>
-  );
+  if (navMatch) return navMatch.to === "/" ? "Dashboard" : navMatch.label;
+  const segment = location.pathname.split("/").filter(Boolean)[0] ?? "";
+  return EXTRA_TITLES[segment] ?? segment.charAt(0).toUpperCase() + segment.slice(1);
 };
 
-const NavigationTab = ({
-  label,
-  to,
-  icon: Icon,
-  active,
-}: {
-  label: string;
-  to: string;
-  icon: LucideIcon;
-  active: boolean;
-}) => (
-  <Link
-    to={to}
-    title={label}
-    className={cn(
-      "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all",
-      active
-        ? "bg-primary/15 text-primary shadow-sm"
-        : "text-secondary-foreground/60 hover:text-secondary-foreground hover:bg-foreground/5",
-    )}
-  >
-    <Icon className="size-4 shrink-0" />
-    <span className="hidden lg:inline">{label}</span>
-  </Link>
-);
+/**
+ * Slim top bar inside the working sheet: current page title on the left,
+ * date + utilities on the right. Navigation lives in the Sidebar.
+ */
+const Header = () => {
+  const title = usePageTitle();
+  const today = new Date().toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+
+  return (
+    <header className="flex h-12 shrink-0 items-center gap-3 border-b border-border bg-background px-4 md:px-6">
+      <h1 className="text-sm font-semibold tracking-tight">{title}</h1>
+      <div className="ml-auto flex items-center gap-0.5">
+        <span className="mr-2 hidden text-xs text-muted-foreground lg:block">
+          {today}
+        </span>
+        <ThemeModeToggle />
+        <RefreshButton />
+        <UserMenu>
+          <ProfileMenu />
+          <CanAccess resource="sales" action="list">
+            <UsersMenu />
+          </CanAccess>
+          <CanAccess resource="configuration" action="edit">
+            <SettingsMenu />
+          </CanAccess>
+          <ImportFromJsonMenuItem />
+          <ExportDataMenuItem />
+          <RestoreBackupMenuItem />
+          <ChangelogMenuItem />
+        </UserMenu>
+      </div>
+    </header>
+  );
+};
 
 const UsersMenu = () => {
   const translate = useTranslate();

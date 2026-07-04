@@ -14,7 +14,6 @@ import {
   Bell,
   Repeat,
   Briefcase,
-  Sparkles,
   CheckCircle2,
   Timer,
   Wallet,
@@ -506,18 +505,19 @@ export const TodayView = () => {
     <section className="flex flex-col gap-4">
       {/* Header + toggle */}
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          <Sparkles className="size-4 text-amber-400" />
+        <h2 className="u-label text-muted-foreground">
           {view === "today" ? "Today" : "This week"}
         </h2>
-        <div className="flex rounded-full border p-0.5 text-xs">
+        <div className="flex rounded-md bg-muted p-0.5 text-xs">
           {(["today", "week"] as const).map((v) => (
             <button
               key={v}
               onClick={() => setView(v)}
               className={cn(
-                "rounded-full px-3 py-1 transition-colors capitalize",
-                view === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
+                "rounded-[5px] px-2.5 py-1 font-medium capitalize transition-colors",
+                view === v
+                  ? "bg-background text-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {v}
@@ -530,27 +530,25 @@ export const TodayView = () => {
         <>
           {/* Do this next */}
           {nextItem && (
-            <Card className="p-4 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-              <div className="text-xs font-medium text-primary uppercase tracking-wide mb-1.5">
-                Do this next
-              </div>
+            <Card className="gap-0 p-4">
+              <div className="u-label mb-2 text-primary">Do this next</div>
               <div className="flex items-center gap-3">
                 <button
                   onClick={nextItem.done}
-                  className="shrink-0 text-primary hover:scale-110 transition-transform"
+                  className="shrink-0 text-primary transition-opacity hover:opacity-80"
                   aria-label="Complete"
                 >
-                  <CheckCircle2 className="size-7" />
+                  <CheckCircle2 className="size-6" />
                 </button>
-                <div className="flex-1 min-w-0">
-                  <div className="font-semibold truncate">{nextItem.label}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-semibold">{nextItem.label}</div>
                   {nextItem.meta && (
-                    <div className="text-xs text-muted-foreground truncate">{nextItem.meta}</div>
+                    <div className="truncate text-xs text-muted-foreground">{nextItem.meta}</div>
                   )}
                 </div>
                 <button
                   onClick={() => redirect(`/focus?label=${encodeURIComponent(nextItem.label)}`)}
-                  className="shrink-0 flex items-center gap-1 rounded-full bg-primary/10 text-primary px-3 py-1.5 text-xs font-medium hover:bg-primary/20 transition-colors"
+                  className="flex h-7 shrink-0 items-center gap-1 rounded-md border border-primary/30 px-2.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
                 >
                   <Timer className="size-3.5" /> Focus
                 </button>
@@ -560,25 +558,25 @@ export const TodayView = () => {
 
           {/* Agenda by band */}
           {todosLoading && sortedAgenda.length === 0 ? (
-            <Card className="h-32 animate-pulse bg-muted/40" />
+            <div className="h-32 animate-pulse rounded-lg border bg-muted/40" />
           ) : isEmpty ? (
-            <Card className="p-6 text-center text-sm text-muted-foreground border-dashed">
-              Nothing scheduled for today. Capture something above, or enjoy the open space. ✨
-            </Card>
+            <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
+              Nothing scheduled for today. Capture something above, or enjoy the open space.
+            </div>
           ) : (
             grouped.map((g) => {
               const Icon = BAND_META[g.band].icon;
               return (
                 <div key={g.band}>
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+                  <div className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                     <Icon className="size-3.5" />
                     {BAND_META[g.band].label}
                   </div>
-                  <Card className="divide-y p-0">
+                  <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
                     {g.items.map((i) => (
                       <AgendaRow key={i.key} item={i} />
                     ))}
-                  </Card>
+                  </div>
                 </div>
               );
             })
@@ -586,12 +584,12 @@ export const TodayView = () => {
 
           {/* This week so far — rhythm, not streaks */}
           {(doneThisWeek > 0 || focusMinThisWeek > 0) && (
-            <div className="flex gap-2 text-xs">
-              <span className="rounded-full bg-green-500/10 text-green-500 px-3 py-1 flex items-center gap-1">
+            <div className="flex gap-1.5 text-xs">
+              <span className="flex items-center gap-1 rounded-md border border-success/30 bg-success/10 px-2 py-1 text-success">
                 <CheckCircle2 className="size-3" /> {doneThisWeek} done this week
               </span>
               {focusMinThisWeek > 0 && (
-                <span className="rounded-full bg-indigo-500/10 text-indigo-400 px-3 py-1 flex items-center gap-1">
+                <span className="flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 px-2 py-1 text-primary">
                   <Timer className="size-3" /> {focusMinThisWeek}m focused
                 </span>
               )}
@@ -602,33 +600,33 @@ export const TodayView = () => {
         // Week ahead
         <div className="flex flex-col gap-3">
           {weekAhead.length === 0 ? (
-            <Card className="p-6 text-center text-sm text-muted-foreground border-dashed">
+            <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
               Nothing scheduled this week yet. A clear runway.
-            </Card>
+            </div>
           ) : (
             weekAhead.map((d) => (
               <div key={d.date}>
-                <div className="text-xs font-medium text-muted-foreground mb-1.5">{d.label}</div>
-                <Card className="divide-y p-0">
+                <div className="mb-1.5 text-xs font-medium text-muted-foreground">{d.label}</div>
+                <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
                   {d.items.map((it) => (
-                    <div key={it.key} className="flex items-center gap-3 px-4 py-2 text-sm">
+                    <div key={it.key} className="flex items-center gap-3 px-4 py-2 text-[13px]">
                       <span className="flex-1 truncate">{it.label}</span>
                       {it.meta && (
                         <span className="text-xs text-muted-foreground">{it.meta}</span>
                       )}
                     </div>
                   ))}
-                </Card>
+                </div>
               </div>
             ))
           )}
           {(doneThisWeek > 0 || focusMinThisWeek > 0) && (
-            <div className="flex gap-2 text-xs">
-              <span className="rounded-full bg-green-500/10 text-green-500 px-3 py-1 flex items-center gap-1">
+            <div className="flex gap-1.5 text-xs">
+              <span className="flex items-center gap-1 rounded-md border border-success/30 bg-success/10 px-2 py-1 text-success">
                 <CheckCircle2 className="size-3" /> {doneThisWeek} done this week
               </span>
               {focusMinThisWeek > 0 && (
-                <span className="rounded-full bg-indigo-500/10 text-indigo-400 px-3 py-1 flex items-center gap-1">
+                <span className="flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 px-2 py-1 text-primary">
                   <Timer className="size-3" /> {focusMinThisWeek}m focused
                 </span>
               )}
@@ -656,7 +654,7 @@ const AgendaRow = ({ item }: { item: AgendaItem }) => {
             ? Bell
             : Clock;
   return (
-    <div className="flex items-center gap-3 px-4 py-2.5">
+    <div className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-accent/50">
       <Checkbox
         checked={false}
         onCheckedChange={item.done}
@@ -665,21 +663,21 @@ const AgendaRow = ({ item }: { item: AgendaItem }) => {
       />
       <button
         onClick={item.open ?? item.done}
-        className="flex-1 min-w-0 text-left"
+        className="min-w-0 flex-1 text-left"
       >
-        <div className="text-sm truncate">{item.label}</div>
+        <div className="truncate text-[13px] font-medium">{item.label}</div>
         {item.meta && (
-          <div className="text-xs text-muted-foreground truncate flex items-center gap-1">
+          <div className="flex items-center gap-1 truncate text-xs text-muted-foreground">
             <KindIcon className="size-3" />
             {item.meta}
           </div>
         )}
       </button>
       {item.overdue && (
-        <span className="text-[11px] text-amber-500 shrink-0">carried</span>
+        <span className="shrink-0 text-[11px] font-medium text-warning">carried</span>
       )}
       {item.time && !item.overdue && (
-        <span className="text-xs text-primary shrink-0">{prettyTime(item.time)}</span>
+        <span className="shrink-0 text-xs text-muted-foreground">{prettyTime(item.time)}</span>
       )}
     </div>
   );

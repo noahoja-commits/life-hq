@@ -92,8 +92,8 @@ export const PushReminders = () => {
   if (!supported || enabled || dismissed) return null;
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3">
-      <BellRing className="size-5 text-primary shrink-0" />
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3">
+      <BellRing className="size-4 text-primary shrink-0" />
       <div className="flex-1 text-sm">
         <span className="font-medium">Turn on reminders</span>
         <span className="text-muted-foreground">
