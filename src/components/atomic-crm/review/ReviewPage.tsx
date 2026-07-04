@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useGetList, useGetIdentity, useCreate, useRedirect } from "ra-core";
 import {
-  CalendarCheck,
   CheckCircle2,
   Timer,
   Activity,
@@ -70,7 +69,8 @@ interface Application {
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");
-const dstr = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const dstr = (d: Date) =>
+  `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const daysAgo = (n: number) => {
   const d = new Date();
   d.setDate(d.getDate() - n);
@@ -131,7 +131,9 @@ export const ReviewPage = () => {
 
   // ── Done this week ─────────────────────────────────────────────────────
   const doneTodos = (todos ?? []).filter((t) => t.done && inWindow(t.done_at));
-  const capturedTodos = (todos ?? []).filter((t) => inWindow(t.created_at)).length;
+  const capturedTodos = (todos ?? []).filter((t) =>
+    inWindow(t.created_at),
+  ).length;
 
   // ── Focus ──────────────────────────────────────────────────────────────
   const focusSessions = (focus ?? []).filter(
@@ -166,7 +168,9 @@ export const ReviewPage = () => {
       if (stepIds.size === 0) return null;
       const activeDaysSet = new Set(
         (checks ?? [])
-          .filter((c) => stepIds.has(c.step_id) && weekDays.includes(c.checked_on))
+          .filter(
+            (c) => stepIds.has(c.step_id) && weekDays.includes(c.checked_on),
+          )
           .map((c) => c.checked_on),
       );
       return { r, days: activeDaysSet.size };
@@ -175,11 +179,14 @@ export const ReviewPage = () => {
 
   // ── Jobs ───────────────────────────────────────────────────────────────
   const activeApps = (apps ?? []).filter((a) => a.status !== "closed");
-  const interviewing = activeApps.filter((a) => a.status === "interview").length;
+  const interviewing = activeApps.filter(
+    (a) => a.status === "interview",
+  ).length;
 
   // ── Coming up (next 7 days) ────────────────────────────────────────────
   const upcomingTodos = (todos ?? []).filter(
-    (t) => !t.done && t.due_date && t.due_date > today && t.due_date <= weekAheadEnd,
+    (t) =>
+      !t.done && t.due_date && t.due_date > today && t.due_date <= weekAheadEnd,
   );
   const upcomingFollowUps = (apps ?? []).filter(
     (a) =>
@@ -198,49 +205,62 @@ export const ReviewPage = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-5">
-      <div className="flex items-center gap-2">
-        <CalendarCheck className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold">Weekly Review</h1>
-      </div>
-      <p className="text-sm text-muted-foreground -mt-3">
+      <h1 className="text-xl font-semibold tracking-tight">Weekly Review</h1>
+      <p className="text-[13px] text-muted-foreground -mt-3">
         The last 7 days — what you showed up for. No streaks, no scores.
       </p>
 
       {/* Headline chips */}
       <div className="flex flex-wrap gap-2">
-        <Chip icon={CheckCircle2} tone="text-green-500 bg-green-500/10">
+        <Chip
+          icon={CheckCircle2}
+          tone="border-success/30 bg-success/10 text-success"
+        >
           {doneTodos.length} done
         </Chip>
         {focusMinutes > 0 && (
-          <Chip icon={Timer} tone="text-indigo-400 bg-indigo-500/10">
+          <Chip
+            icon={Timer}
+            tone="border-primary/30 bg-primary/10 text-primary"
+          >
             {focusMinutes}m focused · {focusSessions.length} session
             {focusSessions.length === 1 ? "" : "s"}
           </Chip>
         )}
         {capturedTodos > 0 && (
-          <Chip icon={ArrowRight} tone="text-violet-400 bg-violet-500/10">
+          <Chip icon={ArrowRight} tone="border bg-card text-muted-foreground">
             {capturedTodos} captured
           </Chip>
         )}
         {interviewing > 0 && (
-          <Chip icon={Briefcase} tone="text-amber-500 bg-amber-500/10">
+          <Chip
+            icon={Briefcase}
+            tone="border-warning/30 bg-warning/10 text-warning"
+          >
             {interviewing} interviewing
           </Chip>
         )}
       </div>
 
       {nothingHappened && (
-        <Card className="p-6 text-center text-sm text-muted-foreground border-dashed">
-          A quiet week — that's allowed. Next week is a fresh page. ✨
+        <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
+          A quiet week — that's allowed. Next week is a fresh page.
         </Card>
       )}
 
       {/* Wins */}
       {doneTodos.length > 0 && (
-        <Section icon={CheckCircle2} title={`Checked off · ${doneTodos.length}`}>
-          <Card className="divide-y p-0">
+        <Section
+          icon={CheckCircle2}
+          title="Checked off"
+          count={doneTodos.length}
+        >
+          <Card className="divide-y divide-border overflow-hidden p-0">
             {doneTodos.slice(0, 12).map((t) => (
-              <div key={t.id} className="px-4 py-2 text-sm text-muted-foreground line-through">
+              <div
+                key={t.id}
+                className="px-4 py-2 text-[13px] text-muted-foreground line-through"
+              >
                 {t.text}
               </div>
             ))}
@@ -256,9 +276,12 @@ export const ReviewPage = () => {
       {/* Trackers */}
       {trackerStats.length > 0 && (
         <Section icon={Activity} title="Tracked">
-          <Card className="divide-y p-0">
+          <Card className="divide-y divide-border overflow-hidden p-0">
             {trackerStats.map(({ t, days, total }) => (
-              <div key={t.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+              <div
+                key={t.id}
+                className="flex items-center gap-3 px-4 py-2.5 text-[13px]"
+              >
                 <span>{t.emoji}</span>
                 <span className="flex-1 truncate">{t.name}</span>
                 <span className="text-xs text-muted-foreground">
@@ -277,9 +300,12 @@ export const ReviewPage = () => {
       {/* Routines */}
       {routineStats.length > 0 && (
         <Section icon={Repeat} title="Routines">
-          <Card className="divide-y p-0">
+          <Card className="divide-y divide-border overflow-hidden p-0">
             {routineStats.map(({ r, days }) => (
-              <div key={r.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+              <div
+                key={r.id}
+                className="flex items-center gap-3 px-4 py-2.5 text-[13px]"
+              >
                 <span>{r.emoji}</span>
                 <span className="flex-1 truncate">{r.name}</span>
                 <span className="text-xs text-muted-foreground">
@@ -298,21 +324,26 @@ export const ReviewPage = () => {
       {/* Coming up */}
       {(upcomingTodos.length > 0 || upcomingFollowUps.length > 0) && (
         <Section icon={Sun} title="Coming up this week">
-          <Card className="divide-y p-0">
+          <Card className="divide-y divide-border overflow-hidden p-0">
             {upcomingTodos
-              .sort((a, b) => (a.due_date ?? "").localeCompare(b.due_date ?? ""))
+              .sort((a, b) =>
+                (a.due_date ?? "").localeCompare(b.due_date ?? ""),
+              )
               .slice(0, 8)
               .map((t) => (
                 <button
                   key={`t${t.id}`}
                   onClick={() => redirect("/todos")}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm w-full text-left hover:bg-accent/50"
+                  className="flex items-center gap-3 px-4 py-2.5 text-[13px] w-full text-left hover:bg-accent/50"
                 >
                   <span className="flex-1 truncate">{t.text}</span>
                   <span className="text-xs text-muted-foreground shrink-0">
-                    {new Date(t.due_date + "T00:00:00").toLocaleDateString(undefined, {
-                      weekday: "short",
-                    })}
+                    {new Date(t.due_date + "T00:00:00").toLocaleDateString(
+                      undefined,
+                      {
+                        weekday: "short",
+                      },
+                    )}
                   </span>
                 </button>
               ))}
@@ -320,14 +351,17 @@ export const ReviewPage = () => {
               <button
                 key={`a${a.id}`}
                 onClick={() => redirect("/applications")}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm w-full text-left hover:bg-accent/50"
+                className="flex items-center gap-3 px-4 py-2.5 text-[13px] w-full text-left hover:bg-accent/50"
               >
                 <Briefcase className="size-3.5 text-muted-foreground shrink-0" />
                 <span className="flex-1 truncate">Follow up: {a.company}</span>
                 <span className="text-xs text-muted-foreground shrink-0">
-                  {new Date(a.follow_up_date + "T00:00:00").toLocaleDateString(undefined, {
-                    weekday: "short",
-                  })}
+                  {new Date(a.follow_up_date + "T00:00:00").toLocaleDateString(
+                    undefined,
+                    {
+                      weekday: "short",
+                    },
+                  )}
                 </span>
               </button>
             ))}
@@ -349,8 +383,10 @@ const Chip = ({
   tone: string;
   children: React.ReactNode;
 }) => (
-  <span className={`rounded-full px-3 py-1.5 text-sm flex items-center gap-1.5 ${tone}`}>
-    <Icon className="size-4" />
+  <span
+    className={`rounded-md border px-2.5 py-1 text-xs flex items-center gap-1.5 ${tone}`}
+  >
+    <Icon className="size-3.5" />
     {children}
   </span>
 );
@@ -358,16 +394,21 @@ const Chip = ({
 const Section = ({
   icon: Icon,
   title,
+  count,
   children,
 }: {
   icon: typeof CheckCircle2;
   title: string;
+  count?: number;
   children: React.ReactNode;
 }) => (
   <section>
-    <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+    <h2 className="u-label flex items-center gap-2 text-muted-foreground mb-2">
       <Icon className="size-3.5" />
       {title}
+      {typeof count === "number" && count > 0 && (
+        <span className="font-medium text-muted-foreground/60">{count}</span>
+      )}
     </h2>
     {children}
   </section>
@@ -385,7 +426,16 @@ const DayDots = ({ days }: { days: number }) => (
 );
 
 // ── Life balance pulse (periodic 1–5 self-check across domains) ─────────────
-const DOMAINS = ["Health", "Sleep", "Money", "Work", "Social", "Growth", "Fun", "Home"];
+const DOMAINS = [
+  "Health",
+  "Sleep",
+  "Money",
+  "Work",
+  "Social",
+  "Growth",
+  "Fun",
+  "Home",
+];
 
 interface BalanceCheck {
   id: number;
@@ -430,22 +480,33 @@ const BalanceSection = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2">
               {DOMAINS.map((d) => {
                 const v = Number(latest.scores?.[d] ?? 0);
-                const prev = previous ? Number(previous.scores?.[d] ?? 0) : null;
+                const prev = previous
+                  ? Number(previous.scores?.[d] ?? 0)
+                  : null;
                 const delta = prev !== null ? v - prev : 0;
                 return (
                   <div key={d} className="flex items-center gap-2">
-                    <span className="text-xs w-14 text-muted-foreground">{d}</span>
-                    <div className="flex-1 h-1.5 rounded-full bg-accent overflow-hidden">
+                    <span className="text-xs w-14 text-muted-foreground">
+                      {d}
+                    </span>
+                    <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
                       <div
                         className="h-full rounded-full"
                         style={{
                           width: `${(v / 5) * 100}%`,
-                          backgroundColor: v >= 4 ? "#34d399" : v >= 3 ? "var(--primary)" : "#f59e0b",
+                          backgroundColor:
+                            v >= 4
+                              ? "var(--success)"
+                              : v >= 3
+                                ? "var(--primary)"
+                                : "var(--warning)",
                         }}
                       />
                     </div>
                     {delta !== 0 && (
-                      <span className={`text-[10px] ${delta > 0 ? "text-green-500" : "text-amber-500"}`}>
+                      <span
+                        className={`text-[10px] ${delta > 0 ? "text-success" : "text-warning"}`}
+                      >
                         {delta > 0 ? "↑" : "↓"}
                       </span>
                     )}
@@ -455,10 +516,13 @@ const BalanceSection = () => {
             </div>
             <p className="text-[11px] text-muted-foreground">
               Last check-in{" "}
-              {new Date(latest.checked_on + "T00:00:00").toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-              })}
+              {new Date(latest.checked_on + "T00:00:00").toLocaleDateString(
+                undefined,
+                {
+                  month: "short",
+                  day: "numeric",
+                },
+              )}
               {previous ? " · arrows vs previous" : ""}
             </p>
           </>
@@ -468,7 +532,12 @@ const BalanceSection = () => {
             where life needs a little attention. No scores to beat.
           </p>
         )}
-        <Button size="sm" variant="secondary" className="self-start" onClick={() => setOpen(true)}>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="self-start"
+          onClick={() => setOpen(true)}
+        >
           Check in now
         </Button>
       </Card>
@@ -487,11 +556,15 @@ const BalanceSection = () => {
                   min={1}
                   max={5}
                   value={scores[d]}
-                  onChange={(e) => setScores({ ...scores, [d]: Number(e.target.value) })}
+                  onChange={(e) =>
+                    setScores({ ...scores, [d]: Number(e.target.value) })
+                  }
                   className="flex-1 accent-[var(--primary)]"
                   aria-label={`${d} score`}
                 />
-                <span className="text-sm tabular-nums w-4 text-right">{scores[d]}</span>
+                <span className="text-sm tabular-nums w-4 text-right">
+                  {scores[d]}
+                </span>
               </div>
             ))}
           </div>

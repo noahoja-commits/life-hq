@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useGetList, useGetIdentity, useCreate, useUpdate } from "ra-core";
-import { CheckSquare, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -65,19 +65,16 @@ export const NextActions = ({
     const parsed = parseNaturalTask(raw);
     haptic("tick");
     setText("");
-    create(
-      "todos",
-      {
-        data: {
-          text: parsed.text,
-          due_date: parsed.due_date,
-          priority: parsed.priority,
-          [filterField]: refId,
-          sales_id: identity?.id ? Number(identity.id) : null,
-          position: 0,
-        },
+    create("todos", {
+      data: {
+        text: parsed.text,
+        due_date: parsed.due_date,
+        priority: parsed.priority,
+        [filterField]: refId,
+        sales_id: identity?.id ? Number(identity.id) : null,
+        position: 0,
       },
-    );
+    });
   };
 
   const toggle = (t: Todo) => {
@@ -87,7 +84,10 @@ export const NextActions = ({
       "todos",
       {
         id: t.id,
-        data: { done: markingDone, done_at: markingDone ? new Date().toISOString() : null },
+        data: {
+          done: markingDone,
+          done_at: markingDone ? new Date().toISOString() : null,
+        },
         previousData: t,
       },
       { mutationMode: "optimistic" },
@@ -104,12 +104,14 @@ export const NextActions = ({
   return (
     <div>
       {!compact && (
-        <div className="flex items-center gap-2 mb-2">
-          <CheckSquare className="size-4 text-primary" />
-          <h3 className="text-sm font-medium">
-            Next actions{open.length > 0 ? ` · ${open.length}` : ""}
-          </h3>
-        </div>
+        <h3 className="u-label mb-2 text-muted-foreground">
+          Next actions
+          {open.length > 0 && (
+            <span className="ml-1.5 font-medium text-muted-foreground/60">
+              {open.length}
+            </span>
+          )}
+        </h3>
       )}
       <div className="flex gap-2 mb-2">
         <Input
@@ -122,7 +124,7 @@ export const NextActions = ({
         <Button
           size="icon"
           variant={compact ? "secondary" : "default"}
-          className="h-8 w-8 shrink-0 rounded-full"
+          className="h-8 w-8 shrink-0"
           onClick={add}
           aria-label="Add next action"
         >
@@ -139,7 +141,7 @@ export const NextActions = ({
           />
           <span
             className={cn(
-              "text-sm flex-1 truncate",
+              "text-[13px] flex-1 truncate",
               t.done && "line-through text-muted-foreground",
             )}
           >
@@ -147,10 +149,13 @@ export const NextActions = ({
           </span>
           {t.due_date && !t.done && (
             <span className="text-xs text-muted-foreground shrink-0">
-              {new Date(t.due_date + "T00:00:00").toLocaleDateString(undefined, {
-                month: "short",
-                day: "numeric",
-              })}
+              {new Date(t.due_date + "T00:00:00").toLocaleDateString(
+                undefined,
+                {
+                  month: "short",
+                  day: "numeric",
+                },
+              )}
             </span>
           )}
         </div>

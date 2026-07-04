@@ -45,14 +45,12 @@ export const DealCardContent = ({
     >
       <RecordContextProvider value={deal}>
         <Card
-          className={`py-3 transition-all duration-200 ${
-            snapshot?.isDragging
-              ? "opacity-90 transform rotate-1 shadow-lg"
-              : "shadow-sm hover:shadow-md"
+          className={`py-2.5 transition-all duration-150 ${
+            snapshot?.isDragging ? "opacity-90 shadow-md" : "hover:border-input"
           }`}
         >
           <CardContent className="px-3 flex flex-col gap-1">
-            <p className="text-sm font-medium">{deal.name}</p>
+            <p className="text-[13px] font-medium">{deal.name}</p>
             <p className="text-xs text-muted-foreground">
               {deal.category && (
                 <SelectField

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNotify, useGetIdentity, useCreate } from "ra-core";
 import {
-  FolderOpen,
   Upload,
   Download,
   Trash2,
@@ -13,7 +12,6 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -35,7 +33,9 @@ interface StoredFile {
 
 const extOf = (name: string) => name.split(".").pop()?.toLowerCase() ?? "";
 const isImage = (name: string) =>
-  ["png", "jpg", "jpeg", "gif", "webp", "svg", "avif", "bmp"].includes(extOf(name));
+  ["png", "jpg", "jpeg", "gif", "webp", "svg", "avif", "bmp"].includes(
+    extOf(name),
+  );
 const isPdf = (name: string) => extOf(name) === "pdf";
 const isPreviewable = (name: string) => isImage(name) || isPdf(name);
 
@@ -166,10 +166,7 @@ export const FilesPage = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <FolderOpen className="size-6 text-primary" />
-          <h1 className="text-2xl font-semibold">Files</h1>
-        </div>
+        <h1 className="text-xl font-semibold tracking-tight">Files</h1>
         <input
           ref={inputRef}
           type="file"
@@ -198,25 +195,28 @@ export const FilesPage = () => {
       </div>
 
       {loading ? (
-        <p className="text-muted-foreground">Loading…</p>
+        <p className="text-[13px] text-muted-foreground">Loading…</p>
       ) : shown.length === 0 ? (
-        <Card className="p-8 text-center text-muted-foreground border-dashed">
+        <div className="rounded-lg border border-dashed px-4 py-6 text-center text-[13px] text-muted-foreground">
           {files.length === 0
             ? "No files yet. Drop in your guides, docs, spreadsheets — anything."
             : "No files match your search."}
-        </Card>
+        </div>
       ) : (
-        <Card className="divide-y p-0">
+        <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
           {shown.map((f) => (
-            <div key={f.name} className="group flex items-center gap-2 px-4 py-3">
-              <FileText className="size-5 text-muted-foreground shrink-0" />
+            <div
+              key={f.name}
+              className="group flex items-center gap-2 px-4 py-2.5 transition-colors hover:bg-accent/50"
+            >
+              <FileText className="size-4 shrink-0 text-muted-foreground" />
               <button
                 onClick={() => openFile(f)}
-                className="text-sm truncate flex-1 text-left hover:text-primary transition-colors"
+                className="flex-1 truncate text-left text-[13px] transition-colors hover:text-primary"
               >
                 {f.displayName}
               </button>
-              <span className="hidden sm:block text-xs text-muted-foreground w-16 text-right">
+              <span className="hidden w-16 text-right text-xs text-muted-foreground sm:block">
                 {prettySize(f.size)}
               </span>
               {isPreviewable(f.name) && (
@@ -260,7 +260,7 @@ export const FilesPage = () => {
               </button>
             </div>
           ))}
-        </Card>
+        </div>
       )}
 
       {preview && (
@@ -274,12 +274,18 @@ export const FilesPage = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => window.open(preview.url, "_blank", "noopener,noreferrer")}
+                  onClick={() =>
+                    window.open(preview.url, "_blank", "noopener,noreferrer")
+                  }
                   className="gap-1"
                 >
                   <Download className="size-4" /> Open
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setPreview(null)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setPreview(null)}
+                >
                   <X className="size-4" />
                 </Button>
               </div>

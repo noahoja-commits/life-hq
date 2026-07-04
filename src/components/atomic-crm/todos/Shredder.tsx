@@ -32,16 +32,19 @@ export const Shredder = ({
   const shred = async () => {
     setBusy(true);
     try {
-      const { data, error } = await getSupabaseClient().functions.invoke("ai_chat", {
-        body: {
-          messages: [
-            {
-              role: "user",
-              text: `Break this overwhelming task into 3-7 TINY physical first-actions (each under ~5 minutes, concrete enough that "open laptop" would count). Reply with ONLY the steps, one per line, each starting with "- ". Task: "${todo.text}"${todo.notes ? ` (context: ${todo.notes.slice(0, 300)})` : ""}`,
-            },
-          ],
+      const { data, error } = await getSupabaseClient().functions.invoke(
+        "ai_chat",
+        {
+          body: {
+            messages: [
+              {
+                role: "user",
+                text: `Break this overwhelming task into 3-7 TINY physical first-actions (each under ~5 minutes, concrete enough that "open laptop" would count). Reply with ONLY the steps, one per line, each starting with "- ". Task: "${todo.text}"${todo.notes ? ` (context: ${todo.notes.slice(0, 300)})` : ""}`,
+              },
+            ],
+          },
         },
-      });
+      );
       if (error) throw new Error(error.message);
       const lines = String(data?.text ?? "")
         .split("\n")
@@ -83,9 +86,13 @@ export const Shredder = ({
         <button
           onClick={shred}
           disabled={busy}
-          className="flex items-center gap-1.5 self-start rounded-full border border-primary/30 bg-primary/10 text-primary px-3 py-1.5 hover:bg-primary/20 transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 self-start rounded-md border border-primary/30 bg-primary/10 text-primary px-2.5 py-1 hover:bg-primary/15 transition-colors disabled:opacity-50"
         >
-          {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
+          {busy ? (
+            <Loader2 className="size-3.5 animate-spin" />
+          ) : (
+            <Sparkles className="size-3.5" />
+          )}
           {busy ? "Shredding…" : "Break it down (AI)"}
         </button>
       ) : (
@@ -100,7 +107,12 @@ export const Shredder = ({
             <Button size="sm" className="h-7 text-xs gap-1" onClick={addAll}>
               <Plus className="size-3" /> Add all as to-dos
             </Button>
-            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setSteps(null)}>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 text-xs"
+              onClick={() => setSteps(null)}
+            >
               Dismiss
             </Button>
           </div>

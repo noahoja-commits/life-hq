@@ -133,9 +133,7 @@ export const SettingsPageMobile = () => {
 SettingsPageMobile.path = "/settings";
 
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 mb-1.5">
-    {children}
-  </p>
+  <p className="u-label px-1 mb-1.5 text-muted-foreground">{children}</p>
 );
 
 const ProfileSection = () => {

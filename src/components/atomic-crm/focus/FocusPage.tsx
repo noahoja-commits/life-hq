@@ -28,10 +28,13 @@ export const FocusPage = () => {
   const [create] = useCreate();
   const salesId = identity?.id ? Number(identity.id) : null;
 
-  const { data: sessions, refetch } = useGetList<FocusSession>("focus_sessions", {
-    pagination: { page: 1, perPage: 100 },
-    sort: { field: "started_at", order: "DESC" },
-  });
+  const { data: sessions, refetch } = useGetList<FocusSession>(
+    "focus_sessions",
+    {
+      pagination: { page: 1, perPage: 100 },
+      sort: { field: "started_at", order: "DESC" },
+    },
+  );
 
   const [searchParams] = useSearchParams();
   const [label, setLabel] = useState("");
@@ -86,13 +89,16 @@ export const FocusPage = () => {
     // Compute remaining from the target timestamp so the timer stays accurate
     // even when the PWA tab is backgrounded and setInterval is throttled.
     tick.current = setInterval(() => {
-      const remaining = Math.max(0, Math.round((endRef.current - Date.now()) / 1000));
+      const remaining = Math.max(
+        0,
+        Math.round((endRef.current - Date.now()) / 1000),
+      );
       setLeft(remaining);
       if (remaining <= 0) {
         stopTick();
         setRunning(false);
         log(planned, true);
-        notify("Focus session complete 🎯", { type: "info" });
+        notify("Focus session complete", { type: "info" });
         setLeft(planned * 60);
       }
     }, 250);
@@ -122,10 +128,7 @@ export const FocusPage = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-2 mb-6">
-        <Brain className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold">Focus</h1>
-      </div>
+      <h1 className="mb-6 text-xl font-semibold tracking-tight">Focus</h1>
 
       <Card className="p-8 flex flex-col items-center gap-6">
         <Input
@@ -139,7 +142,14 @@ export const FocusPage = () => {
         {/* Timer */}
         <div className="relative flex items-center justify-center">
           <svg className="size-56 -rotate-90" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="var(--muted)" strokeWidth="6" />
+            <circle
+              cx="50"
+              cy="50"
+              r="45"
+              fill="none"
+              stroke="var(--muted)"
+              strokeWidth="6"
+            />
             <circle
               cx="50"
               cy="50"
@@ -153,7 +163,9 @@ export const FocusPage = () => {
               style={{ transition: "stroke-dashoffset 1s linear" }}
             />
           </svg>
-          <span className="absolute text-5xl font-semibold tabular-nums">{fmt(left)}</span>
+          <span className="absolute text-5xl font-semibold tabular-nums">
+            {fmt(left)}
+          </span>
         </div>
 
         {!running && (
@@ -163,8 +175,10 @@ export const FocusPage = () => {
                 key={m}
                 onClick={() => setPlanned(m)}
                 className={cn(
-                  "rounded-full px-4 py-1.5 text-sm border transition-colors",
-                  planned === m ? "bg-primary/15 text-primary border-primary/30" : "hover:bg-accent",
+                  "rounded-md px-2.5 py-1 text-xs border transition-colors",
+                  planned === m
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : "hover:bg-accent/50",
                 )}
               >
                 {m}m
@@ -175,39 +189,55 @@ export const FocusPage = () => {
 
         <div className="flex gap-2">
           {!running ? (
-            <Button onClick={start} className="gap-1 rounded-full px-6">
+            <Button onClick={start} className="gap-1 px-6">
               <Play className="size-4" /> Start
             </Button>
           ) : (
-            <Button onClick={stop} variant="secondary" className="gap-1 rounded-full px-6">
+            <Button onClick={stop} variant="secondary" className="gap-1 px-6">
               <Square className="size-4" /> Stop
             </Button>
           )}
-          <Button onClick={reset} variant="ghost" size="icon" className="rounded-full" aria-label="Reset">
+          <Button
+            onClick={reset}
+            variant="ghost"
+            size="icon"
+            aria-label="Reset"
+          >
             <RotateCcw className="size-4" />
           </Button>
         </div>
 
-        <p className="text-sm text-muted-foreground">
-          {todayMinutes > 0 ? `${todayMinutes} min focused today 🔥` : "First focus of the day?"}
+        <p className="text-[13px] text-muted-foreground">
+          {todayMinutes > 0
+            ? `${todayMinutes} min focused today`
+            : "First focus of the day?"}
         </p>
       </Card>
 
       {sessions && sessions.length > 0 && (
         <section className="mt-6">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+          <h2 className="u-label mb-2 text-muted-foreground">
             Recent sessions
           </h2>
-          <Card className="divide-y p-0">
+          <Card className="divide-y divide-border overflow-hidden p-0">
             {sessions.slice(0, 10).map((s) => (
-              <div key={s.id} className="flex items-center gap-3 px-4 py-2 text-sm">
+              <div
+                key={s.id}
+                className="flex items-center gap-3 px-4 py-2 text-[13px]"
+              >
                 <Brain className="size-4 text-muted-foreground" />
-                <span className="flex-1 truncate">{s.label || "Focus session"}</span>
+                <span className="flex-1 truncate">
+                  {s.label || "Focus session"}
+                </span>
                 <span className="text-muted-foreground">
-                  {s.actual_minutes ?? s.planned_minutes}m{s.completed ? " ✓" : ""}
+                  {s.actual_minutes ?? s.planned_minutes}m
+                  {s.completed ? " ✓" : ""}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {new Date(s.started_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                  {new Date(s.started_at).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </span>
               </div>
             ))}

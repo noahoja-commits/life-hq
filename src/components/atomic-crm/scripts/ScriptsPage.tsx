@@ -7,14 +7,7 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import {
-  ScrollText,
-  Plus,
-  Trash2,
-  Copy,
-  ExternalLink,
-  ChevronDown,
-} from "lucide-react";
+import { Plus, Trash2, Copy, ExternalLink, ChevronDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +25,13 @@ export interface Script {
   position: number;
 }
 
-export const SCRIPT_CATEGORIES = ["Calls", "Interviews", "Emails", "Texts", "General"];
+export const SCRIPT_CATEGORIES = [
+  "Calls",
+  "Interviews",
+  "Emails",
+  "Texts",
+  "General",
+];
 
 /** Open a script in a small floating browser window (readable mid-call). */
 export const popOutScript = (id: number) => {
@@ -57,7 +56,9 @@ export const ScriptsPage = () => {
     pagination: { page: 1, perPage: 200 },
     sort: { field: "position", order: "ASC" },
   });
-  const scripts = (data ?? []).filter((s) => cat === "All" || s.category === cat);
+  const scripts = (data ?? []).filter(
+    (s) => cat === "All" || s.category === cat,
+  );
 
   const addScript = (category: string) =>
     create(
@@ -75,28 +76,31 @@ export const ScriptsPage = () => {
     );
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-2 mb-1">
-        <ScrollText className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold flex-1">Scripts</h1>
+    <div className="mx-auto max-w-3xl px-4 py-6">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold tracking-tight">Scripts</h1>
+          <p className="mt-0.5 text-[13px] text-muted-foreground">
+            Call openers, interview answers, follow-ups — pop one out into a
+            floating window and read it mid-call. The AI section can draft these
+            for you.
+          </p>
+        </div>
         <Button onClick={() => addScript(cat)} className="gap-1">
           <Plus className="size-4" /> New script
         </Button>
       </div>
-      <p className="text-sm text-muted-foreground mb-4">
-        Your words, ready to go — call openers, interview answers, follow-ups.
-        Pop one out into a floating window and read it mid-call. The AI section
-        can draft these for you.
-      </p>
 
-      <div className="flex gap-1.5 overflow-x-auto no-scrollbar mb-5">
+      <div className="no-scrollbar mb-5 flex gap-1.5 overflow-x-auto rounded-md bg-muted p-0.5">
         {["All", ...SCRIPT_CATEGORIES].map((c) => (
           <button
             key={c}
             onClick={() => setCat(c)}
             className={cn(
-              "rounded-full px-3.5 py-1.5 text-sm border whitespace-nowrap transition-colors",
-              cat === c ? "bg-primary text-primary-foreground border-primary" : "hover:bg-accent",
+              "shrink-0 rounded-[5px] px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-colors",
+              cat === c
+                ? "bg-background text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {c}
@@ -105,24 +109,36 @@ export const ScriptsPage = () => {
       </div>
 
       {isPending && scripts.length === 0 ? (
-        <CardsSkeleton count={3} className="grid grid-cols-1 gap-3" />
+        <CardsSkeleton count={3} className="grid grid-cols-1 gap-2" />
       ) : scripts.length === 0 ? (
-        <Card className="p-8 text-center text-sm text-muted-foreground border-dashed">
+        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
           No scripts yet. Add one, or ask the AI section to draft a cold-call
           opener — its replies have a "Save as script" button.
-        </Card>
+        </div>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {scripts.map((s) => (
             <ScriptCard
               key={s.id}
               script={s}
               onPatch={(d) =>
-                update("scripts", { id: s.id, data: { ...d, updated_at: new Date().toISOString() }, previousData: s }, { mutationMode: "optimistic" })
+                update(
+                  "scripts",
+                  {
+                    id: s.id,
+                    data: { ...d, updated_at: new Date().toISOString() },
+                    previousData: s,
+                  },
+                  { mutationMode: "optimistic" },
+                )
               }
               onDelete={() =>
                 confirm(`Delete "${s.title}"?`, () =>
-                  remove("scripts", { id: s.id, previousData: s }, { mutationMode: "optimistic" }),
+                  remove(
+                    "scripts",
+                    { id: s.id, previousData: s },
+                    { mutationMode: "optimistic" },
+                  ),
                 )
               }
               onCopy={() => {
@@ -158,63 +174,74 @@ const ScriptCard = ({
   const [body, setBody] = useState(script.body);
 
   return (
-    <Card className="p-4 flex flex-col gap-2">
+    <Card className="gap-2 p-3">
       <div className="flex items-center gap-2">
         <button
           onClick={() => setExpanded((e) => !e)}
-          className="flex items-center gap-2 flex-1 min-w-0 text-left"
+          className="flex min-w-0 flex-1 items-center gap-2 text-left"
         >
-          <ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180")} />
-          <span className="font-medium truncate">{script.title}</span>
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground rounded-full bg-accent px-2 py-0.5 shrink-0">
+          <ChevronDown
+            className={cn(
+              "size-3.5 shrink-0 text-muted-foreground transition-transform",
+              expanded && "rotate-180",
+            )}
+          />
+          <span className="truncate text-[13px] font-medium">
+            {script.title}
+          </span>
+          <span className="u-label shrink-0 rounded-md border px-2 py-0.5 text-muted-foreground">
             {script.category}
           </span>
         </button>
         <button
           onClick={onCopy}
-          className="text-muted-foreground hover:text-foreground"
+          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
           title="Copy text"
           aria-label="Copy script text"
         >
-          <Copy className="size-4" />
+          <Copy className="size-3.5" />
         </button>
         <button
           onClick={() => popOutScript(script.id)}
-          className="text-muted-foreground hover:text-primary"
+          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-primary"
           title="Pop out into a floating window"
           aria-label="Pop out script"
         >
-          <ExternalLink className="size-4" />
+          <ExternalLink className="size-3.5" />
         </button>
         <button
           onClick={onDelete}
-          className="text-muted-foreground hover:text-destructive"
+          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-destructive"
           aria-label="Delete script"
         >
-          <Trash2 className="size-4" />
+          <Trash2 className="size-3.5" />
         </button>
       </div>
 
       {!expanded && script.body && (
-        <p className="text-sm text-muted-foreground line-clamp-2 whitespace-pre-line pl-6">
+        <p className="line-clamp-2 pl-[22px] text-xs whitespace-pre-line text-muted-foreground">
           {script.body}
         </p>
       )}
 
       {expanded && (
-        <div className="flex flex-col gap-2 pl-6">
+        <div className="flex flex-col gap-2 pl-[22px]">
           <div className="flex gap-2">
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              onBlur={() => title.trim() && title !== script.title && onPatch({ title: title.trim() })}
-              className="flex-1 h-9"
+              onBlur={() =>
+                title.trim() &&
+                title !== script.title &&
+                onPatch({ title: title.trim() })
+              }
+              className="h-9 flex-1 text-[13px]"
               aria-label="Script title"
             />
             <select
               value={script.category}
               onChange={(e) => onPatch({ category: e.target.value })}
-              className="rounded-md border bg-transparent px-2 text-sm"
+              className="rounded-md border bg-transparent px-2 text-xs"
               aria-label="Category"
             >
               {SCRIPT_CATEGORIES.map((c) => (
@@ -229,7 +256,7 @@ const ScriptCard = ({
             onChange={(e) => setBody(e.target.value)}
             onBlur={() => body !== script.body && onPatch({ body })}
             placeholder="Write the script — saves when you click away."
-            className="min-h-40 text-[15px] leading-6 resize-y"
+            className="min-h-40 resize-y text-[13px] leading-6"
           />
         </div>
       )}

@@ -8,7 +8,6 @@ import {
   useNotify,
 } from "ra-core";
 import {
-  Briefcase,
   Plus,
   Trash2,
   ExternalLink,
@@ -51,11 +50,11 @@ const STATUSES = [
 type Status = (typeof STATUSES)[number];
 
 const STATUS_META: Record<Status, { label: string; color: string }> = {
-  wishlist: { label: "Wishlist", color: "#94a3b8" },
-  applied: { label: "Applied", color: "#7dbde8" },
-  interview: { label: "Interviewing", color: "#f59e0b" },
-  offer: { label: "Offer", color: "#34d399" },
-  closed: { label: "Closed", color: "#9ca3af" },
+  wishlist: { label: "Wishlist", color: "var(--muted-foreground)" },
+  applied: { label: "Applied", color: "var(--primary)" },
+  interview: { label: "Interviewing", color: "var(--warning)" },
+  offer: { label: "Offer", color: "var(--success)" },
+  closed: { label: "Closed", color: "var(--muted-foreground)" },
 };
 
 // Active-first order for display.
@@ -112,7 +111,11 @@ export const ApplicationsPage = () => {
     );
 
   const del = (a: Application) =>
-    remove("applications", { id: a.id, previousData: a }, { onSuccess: () => refetch() });
+    remove(
+      "applications",
+      { id: a.id, previousData: a },
+      { onSuccess: () => refetch() },
+    );
 
   const present = ORDER.filter((s) => apps.some((a) => a.status === s));
 
@@ -129,10 +132,7 @@ export const ApplicationsPage = () => {
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Briefcase className="size-6 text-primary" />
-          <h1 className="text-2xl font-semibold">Jobs</h1>
-        </div>
+        <h1 className="text-xl font-semibold tracking-tight">Jobs</h1>
         <Button onClick={() => setAddOpen(true)} className="gap-1">
           <Plus className="size-4" /> New application
         </Button>
@@ -141,12 +141,12 @@ export const ApplicationsPage = () => {
       <CallLogSection />
 
       {apps.length > 0 && (
-        <div className="flex gap-2 mb-6 text-xs">
-          <span className="rounded-full bg-primary/10 text-primary px-3 py-1">
+        <div className="flex gap-1.5 mb-6 text-xs">
+          <span className="rounded-md border border-primary/30 bg-primary/10 px-2 py-1 text-primary">
             {activeCount} active
           </span>
           {dueFollowUps > 0 && (
-            <span className="rounded-full bg-amber-500/15 text-amber-500 px-3 py-1 flex items-center gap-1">
+            <span className="flex items-center gap-1 rounded-md border border-warning/30 bg-warning/10 px-2 py-1 text-warning">
               <Bell className="size-3" /> {dueFollowUps} follow-up
               {dueFollowUps > 1 ? "s" : ""} due
             </span>
@@ -157,21 +157,21 @@ export const ApplicationsPage = () => {
       {isPending && apps.length === 0 ? (
         <CardsSkeleton count={4} />
       ) : apps.length === 0 ? (
-        <Card className="p-8 text-center text-muted-foreground border-dashed">
+        <div className="rounded-lg border border-dashed px-4 py-6 text-center text-[13px] text-muted-foreground">
           No applications yet. Add the jobs you're chasing — track each from
           wishlist to offer, and never miss a follow-up.
-        </Card>
+        </div>
       ) : (
         present.map((status) => (
           <section key={status} className="mb-8">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+            <h2 className="u-label mb-3 flex items-center gap-1.5 text-muted-foreground">
               <span
-                className="size-2 rounded-full"
+                className="size-1.5 rounded-full"
                 style={{ backgroundColor: STATUS_META[status].color }}
               />
               {STATUS_META[status].label}
-              <span className="text-muted-foreground/60">
-                · {apps.filter((a) => a.status === status).length}
+              <span className="ml-0.5 font-medium text-muted-foreground/60">
+                {apps.filter((a) => a.status === status).length}
               </span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -199,13 +199,16 @@ export const ApplicationsPage = () => {
           onAdd={(payload) =>
             create(
               "applications",
-              { data: { ...payload, sales_id: salesId, position: apps.length } },
+              {
+                data: { ...payload, sales_id: salesId, position: apps.length },
+              },
               {
                 onSuccess: () => {
                   setAddOpen(false);
                   refetch();
                 },
-                onError: () => notify("Could not add application", { type: "error" }),
+                onError: () =>
+                  notify("Could not add application", { type: "error" }),
               },
             )
           }
@@ -252,7 +255,9 @@ const AppCard = ({
         <div className="flex-1 min-w-0">
           <div className="font-semibold truncate">{a.company}</div>
           {a.role && (
-            <div className="text-sm text-muted-foreground truncate">{a.role}</div>
+            <div className="text-sm text-muted-foreground truncate">
+              {a.role}
+            </div>
           )}
         </div>
         <button
@@ -281,7 +286,7 @@ const AppCard = ({
           <span
             className={cn(
               "flex items-center gap-1",
-              followDue && "text-amber-500 font-medium",
+              followDue && "text-warning font-medium",
             )}
           >
             <Bell className="size-3" />
@@ -292,7 +297,10 @@ const AppCard = ({
       </div>
 
       <div className="flex items-center gap-2 mt-1">
-        <Select value={a.status} onValueChange={(s) => onPatch({ status: s as Status })}>
+        <Select
+          value={a.status}
+          onValueChange={(s) => onPatch({ status: s as Status })}
+        >
           <SelectTrigger className="h-8 w-32 text-xs">
             <SelectValue />
           </SelectTrigger>
@@ -320,7 +328,12 @@ const AppCard = ({
         >
           {hasNote && !expanded && <StickyNote className="size-3" />}
           Details
-          <ChevronDown className={cn("size-3.5 transition-transform", expanded && "rotate-180")} />
+          <ChevronDown
+            className={cn(
+              "size-3.5 transition-transform",
+              expanded && "rotate-180",
+            )}
+          />
         </button>
       </div>
 
@@ -338,7 +351,9 @@ const AppCard = ({
             <input
               type="date"
               value={a.follow_up_date ?? ""}
-              onChange={(e) => onPatch({ follow_up_date: e.target.value || null })}
+              onChange={(e) =>
+                onPatch({ follow_up_date: e.target.value || null })
+              }
               className="rounded-md border px-2 py-1 bg-transparent"
             />
           </div>
@@ -388,7 +403,11 @@ const AddApplicationDialog = ({
             value={company}
             onChange={(e) => setCompany(e.target.value)}
           />
-          <Input placeholder="Role / title" value={role} onChange={(e) => setRole(e.target.value)} />
+          <Input
+            placeholder="Role / title"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          />
           <Select value={status} onValueChange={(s) => setStatus(s as Status)}>
             <SelectTrigger>
               <SelectValue />
@@ -402,12 +421,26 @@ const AddApplicationDialog = ({
             </SelectContent>
           </Select>
           <div className="flex gap-2">
-            <Input placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
-            <Input placeholder="Pay" value={salary} onChange={(e) => setSalary(e.target.value)} />
+            <Input
+              placeholder="Location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+            <Input
+              placeholder="Pay"
+              value={salary}
+              onChange={(e) => setSalary(e.target.value)}
+            />
           </div>
-          <Input placeholder="Listing / apply link" value={url} onChange={(e) => setUrl(e.target.value)} />
+          <Input
+            placeholder="Listing / apply link"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
           <div className="flex items-center gap-2 text-sm">
-            <label className="text-muted-foreground shrink-0">Follow up on</label>
+            <label className="text-muted-foreground shrink-0">
+              Follow up on
+            </label>
             <input
               type="date"
               value={followUp}
@@ -415,7 +448,12 @@ const AddApplicationDialog = ({
               className="rounded-md border px-2 py-1 bg-transparent flex-1"
             />
           </div>
-          <Textarea rows={2} placeholder="Notes (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
+          <Textarea
+            rows={2}
+            placeholder="Notes (optional)"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
           <div className="flex justify-end gap-2 mt-1">
             <Button variant="ghost" onClick={onClose}>
               Cancel

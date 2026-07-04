@@ -15,21 +15,27 @@ export const ScriptPopOut = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-5">
+    <div className="min-h-screen bg-background p-5 text-foreground">
       {isPending || !script ? (
         <div className="flex justify-center pt-16">
           <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       ) : (
         <>
-          <div className="flex items-baseline gap-2 mb-3 border-b pb-2">
-            <h1 className="text-lg font-semibold flex-1">{script.title}</h1>
-            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+          <div className="mb-3 flex items-baseline gap-2 border-b pb-2">
+            <h1 className="flex-1 text-lg font-semibold tracking-tight">
+              {script.title}
+            </h1>
+            <span className="u-label shrink-0 rounded-md border px-2 py-0.5 text-muted-foreground">
               {script.category}
             </span>
           </div>
           <div className="whitespace-pre-line text-[17px] leading-8">
-            {script.body || "This script is empty — write it in the Scripts section."}
+            {script.body || (
+              <span className="text-muted-foreground">
+                This script is empty — write it in the Scripts section.
+              </span>
+            )}
           </div>
         </>
       )}

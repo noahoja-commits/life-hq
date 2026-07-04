@@ -176,7 +176,7 @@ const ProfileForm = ({
       <Card>
         <CardContent>
           <div className="mb-4 flex flex-row justify-between">
-            <h2 className="text-xl font-semibold text-muted-foreground">
+            <h2 className="u-label text-muted-foreground">
               {translate("crm.profile.title")}
             </h2>
           </div>
@@ -234,7 +234,7 @@ const ProfileForm = ({
         <Card>
           <CardContent>
             <div className="space-y-4 justify-between">
-              <h2 className="text-xl font-semibold text-muted-foreground">
+              <h2 className="u-label text-muted-foreground">
                 {translate("crm.profile.inbound.title")}
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -251,7 +251,7 @@ const ProfileForm = ({
       <Card>
         <CardContent>
           <div className="space-y-4 justify-between">
-            <h2 className="text-xl font-semibold text-muted-foreground">
+            <h2 className="u-label text-muted-foreground">
               {translate("crm.profile.mcp.title", {
                 _: "MCP Server",
               })}

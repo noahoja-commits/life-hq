@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { useCreate, useGetIdentity, useNotify, useRedirect } from "ra-core";
-import { CheckSquare, Inbox, LayoutGrid, Sparkles } from "lucide-react";
+import { CheckSquare, Inbox, LayoutGrid } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -46,7 +46,8 @@ export const CaptureRoute = () => {
       {
         data: {
           text: parsed.text,
-          notes: sharedUrl && !parsed.text.includes(sharedUrl) ? sharedUrl : null,
+          notes:
+            sharedUrl && !parsed.text.includes(sharedUrl) ? sharedUrl : null,
           due_date: parsed.due_date,
           priority: parsed.priority,
           sales_id: salesId,
@@ -86,12 +87,9 @@ export const CaptureRoute = () => {
 
   return (
     <div className="max-w-md mx-auto px-4 py-8 flex flex-col gap-4">
-      <div className="flex items-center gap-2">
-        <Sparkles className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold">Capture</h1>
-      </div>
+      <h1 className="text-xl font-semibold tracking-tight">Capture</h1>
 
-      <Card className="p-4 flex flex-col gap-3">
+      <Card className="gap-3 rounded-lg border bg-card p-4">
         <Textarea
           autoFocus
           value={text}
@@ -105,7 +103,7 @@ export const CaptureRoute = () => {
             {parsed.priority === 2 ? " · high priority" : ""}
           </span>
         )}
-        <Button onClick={asTodo} disabled={!text.trim()} className="gap-2 h-11 rounded-xl">
+        <Button onClick={asTodo} disabled={!text.trim()} className="gap-2 h-11">
           <CheckSquare className="size-4" /> Add as to-do
         </Button>
         <div className="grid grid-cols-2 gap-2">
@@ -113,7 +111,7 @@ export const CaptureRoute = () => {
             variant="secondary"
             onClick={asSomeday}
             disabled={!text.trim()}
-            className="gap-2 rounded-xl"
+            className="gap-2"
           >
             <Inbox className="size-4" /> Someday
           </Button>
@@ -121,17 +119,17 @@ export const CaptureRoute = () => {
             variant="secondary"
             onClick={asHubLink}
             disabled={!sharedUrl}
-            className="gap-2 rounded-xl"
+            className="gap-2"
           >
             <LayoutGrid className="size-4" /> Hub link
           </Button>
         </div>
       </Card>
       <p className="text-xs text-muted-foreground">
-        Tip: add an iOS Shortcut that opens
-        {" "}
-        <code className="bg-muted rounded px-1">…/#/capture?text=[Shortcut Input]</code>
-        {" "}
+        Tip: add an iOS Shortcut that opens{" "}
+        <code className="bg-muted rounded px-1">
+          …/#/capture?text=[Shortcut Input]
+        </code>{" "}
         to share into Life HQ from any app.
       </p>
     </div>

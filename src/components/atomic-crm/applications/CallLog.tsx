@@ -17,10 +17,10 @@ export interface CallLogEntry {
 
 export const CALL_OUTCOMES: { key: string; label: string; tone: string }[] = [
   { key: "no_answer", label: "No answer", tone: "text-muted-foreground" },
-  { key: "voicemail", label: "Voicemail", tone: "text-sky-400" },
-  { key: "gatekeeper", label: "Gatekeeper", tone: "text-amber-400" },
-  { key: "talked", label: "Talked!", tone: "text-green-500" },
-  { key: "interview", label: "Interview!", tone: "text-fuchsia-400" },
+  { key: "voicemail", label: "Voicemail", tone: "text-primary" },
+  { key: "gatekeeper", label: "Gatekeeper", tone: "text-warning" },
+  { key: "talked", label: "Talked!", tone: "text-success" },
+  { key: "interview", label: "Interview!", tone: "text-success" },
 ];
 
 export const outcomeMeta = (key: string) =>
@@ -49,7 +49,9 @@ export const CallLogSection = () => {
   const today = calls.filter((c) => isToday(c.called_at));
 
   const log = (outcome: string) => {
-    haptic(outcome === "talked" || outcome === "interview" ? "success" : "tick");
+    haptic(
+      outcome === "talked" || outcome === "interview" ? "success" : "tick",
+    );
     create("call_logs", {
       data: { outcome, who: who.trim(), sales_id: salesId },
     });
@@ -59,19 +61,19 @@ export const CallLogSection = () => {
   return (
     <Card className="p-4 mb-6 flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <Phone className="size-4 text-primary" />
-        <h2 className="text-sm font-medium flex-1">
+        <Phone className="size-4 text-muted-foreground" />
+        <h2 className="text-[13px] font-medium flex-1">
           Calls today:{" "}
-          <span className="text-primary font-semibold tabular-nums">{today.length}</span>
+          <span className="font-semibold tabular-nums">{today.length}</span>
           <span className="text-xs text-muted-foreground ml-2">
             every dial counts, whatever happens
           </span>
         </h2>
         {today.some((c) => c.outcome === "interview") && (
-          <PartyPopper className="size-4 text-fuchsia-400" />
+          <PartyPopper className="size-4 text-success" />
         )}
       </div>
-      <div className="flex flex-wrap gap-2 items-center">
+      <div className="flex flex-wrap gap-1.5 items-center">
         <Input
           value={who}
           onChange={(e) => setWho(e.target.value)}
@@ -83,7 +85,7 @@ export const CallLogSection = () => {
             key={o.key}
             onClick={() => log(o.key)}
             className={cn(
-              "rounded-full border px-3 py-1.5 text-xs transition-all active:scale-95 hover:bg-accent",
+              "rounded-md border bg-card px-2.5 py-1 text-xs transition-colors hover:bg-accent/50 active:scale-[0.98]",
               o.tone,
             )}
           >
@@ -92,22 +94,42 @@ export const CallLogSection = () => {
         ))}
       </div>
       {calls.length > 0 && (
-        <div className="flex flex-col divide-y text-sm border-t pt-1">
+        <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
           {calls.slice(0, 6).map((c) => (
-            <div key={c.id} className="group flex items-center gap-2 py-1.5">
-              <span className={cn("text-xs w-20 shrink-0", outcomeMeta(c.outcome).tone)}>
+            <div
+              key={c.id}
+              className="group flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-accent/50"
+            >
+              <span
+                className={cn(
+                  "text-xs w-20 shrink-0",
+                  outcomeMeta(c.outcome).tone,
+                )}
+              >
                 {outcomeMeta(c.outcome).label}
               </span>
-              <span className="flex-1 truncate text-muted-foreground">{c.who || "—"}</span>
+              <span className="min-w-0 flex-1 truncate text-[13px] text-muted-foreground">
+                {c.who || "—"}
+              </span>
               <span className="text-xs text-muted-foreground shrink-0">
-                {new Date(c.called_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}{" "}
-                {new Date(c.called_at).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
+                {new Date(c.called_at).toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                })}{" "}
+                {new Date(c.called_at).toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })}
               </span>
               <button
                 onClick={() =>
-                  remove("call_logs", { id: c.id, previousData: c }, { mutationMode: "optimistic" })
+                  remove(
+                    "call_logs",
+                    { id: c.id, previousData: c },
+                    { mutationMode: "optimistic" },
+                  )
                 }
-                className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive shrink-0"
                 aria-label="Delete call log"
               >
                 <Trash2 className="size-3.5" />
@@ -141,12 +163,22 @@ export const LogCallChips = ({
         <button
           key={o.key}
           onClick={() => {
-            haptic(o.key === "talked" || o.key === "interview" ? "success" : "tick");
+            haptic(
+              o.key === "talked" || o.key === "interview" ? "success" : "tick",
+            );
             create("call_logs", {
-              data: { outcome: o.key, who: company, application_id: applicationId, sales_id: salesId },
+              data: {
+                outcome: o.key,
+                who: company,
+                application_id: applicationId,
+                sales_id: salesId,
+              },
             });
           }}
-          className={cn("rounded-full border px-2 py-0.5 transition-all active:scale-95 hover:bg-accent", o.tone)}
+          className={cn(
+            "rounded-md border bg-card px-2 py-0.5 text-xs transition-colors hover:bg-accent/50 active:scale-[0.98]",
+            o.tone,
+          )}
         >
           {o.label}
         </button>

@@ -1,7 +1,12 @@
 import { useState } from "react";
-import { useGetList, useGetIdentity, useCreate, useUpdate, useDelete } from "ra-core";
+import {
+  useGetList,
+  useGetIdentity,
+  useCreate,
+  useUpdate,
+  useDelete,
+} from "ra-core";
 import { Package, Plus, Trash2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -41,17 +46,20 @@ export const WhereIsItSection = () => {
 
   return (
     <section className="mt-8">
-      <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+      <h2 className="u-label mb-1 flex items-center gap-1.5 text-muted-foreground">
         <Package className="size-3.5" /> Where is it?
       </h2>
-      <p className="text-xs text-muted-foreground mb-3">
+      <p className="mb-3 text-xs text-muted-foreground">
         Passport, spare key, that one cable — log where things live, find them
         later by typing the item into ⌘K search.
       </p>
-      <Card className="p-0 divide-y">
+      <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
         {things.map((t) => (
-          <div key={t.id} className="group flex items-center gap-3 px-4 py-2 text-sm">
-            <span className="font-medium w-36 truncate shrink-0">{t.item}</span>
+          <div
+            key={t.id}
+            className="group flex items-center gap-3 px-4 py-2.5 text-[13px]"
+          >
+            <span className="w-36 shrink-0 truncate font-medium">{t.item}</span>
             <input
               defaultValue={t.location}
               onBlur={(e) => {
@@ -59,43 +67,59 @@ export const WhereIsItSection = () => {
                 if (v && v !== t.location)
                   update(
                     "things",
-                    { id: t.id, data: { location: v, updated_at: new Date().toISOString() }, previousData: t },
+                    {
+                      id: t.id,
+                      data: {
+                        location: v,
+                        updated_at: new Date().toISOString(),
+                      },
+                      previousData: t,
+                    },
                     { mutationMode: "optimistic" },
                   );
               }}
-              className="flex-1 bg-transparent outline-none text-muted-foreground focus:text-foreground"
+              className="flex-1 bg-transparent text-muted-foreground outline-none focus:text-foreground"
               aria-label={`Location of ${t.item}`}
             />
             <button
               onClick={() =>
-                remove("things", { id: t.id, previousData: t }, { mutationMode: "optimistic" })
+                remove(
+                  "things",
+                  { id: t.id, previousData: t },
+                  { mutationMode: "optimistic" },
+                )
               }
-              className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+              className="text-muted-foreground opacity-60 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
               aria-label={`Delete ${t.item}`}
             >
               <Trash2 className="size-3.5" />
             </button>
           </div>
         ))}
-        <div className="flex flex-wrap gap-2 items-center p-3">
+        <div className="flex flex-wrap items-center gap-2 p-3">
           <Input
             value={item}
             onChange={(e) => setItem(e.target.value)}
             placeholder="Item (passport, AA batteries…)"
-            className="w-48 h-8 text-sm"
+            className="h-8 w-48 text-[13px]"
           />
           <Input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && add()}
             placeholder="Where it lives"
-            className="flex-1 min-w-36 h-8 text-sm"
+            className="h-8 min-w-36 flex-1 text-[13px]"
           />
-          <Button size="sm" variant="secondary" className="h-8 gap-1" onClick={add}>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 gap-1"
+            onClick={add}
+          >
             <Plus className="size-3.5" /> Add
           </Button>
         </div>
-      </Card>
+      </div>
     </section>
   );
 };

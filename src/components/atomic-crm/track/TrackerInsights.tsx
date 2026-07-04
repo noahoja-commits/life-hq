@@ -49,7 +49,11 @@ export const TrackerInsights = ({
   entries: LogEntry[];
   onClose: () => void;
   onDelete: (id: number) => void;
-  onLog: (value: number | null, note: string | null, loggedAtISO: string) => void;
+  onLog: (
+    value: number | null,
+    note: string | null,
+    loggedAtISO: string,
+  ) => void;
   onRemindTime?: (t: string | null) => void;
 }) => {
   const mine = entries.filter((e) => e.tracker_id === tracker.id);
@@ -98,7 +102,7 @@ export const TrackerInsights = ({
     return agg.count;
   };
 
-  const accent = tracker.color ?? "#6366f1";
+  const accent = tracker.color ?? "var(--primary)";
 
   // Stats — this week = from Sunday through today.
   const today = new Date();
@@ -112,8 +116,11 @@ export const TrackerInsights = ({
     last7Total += dayValue(dateStr(cell));
   }
   const activeDays = [...perDay.values()].length;
-  const total = mine.reduce((s, e) => s + Number(e.value ?? (tracker.kind === "check" ? 1 : 0)), 0);
-  const avgPerActiveDay = activeDays > 0 ? (total / activeDays) : 0;
+  const total = mine.reduce(
+    (s, e) => s + Number(e.value ?? (tracker.kind === "check" ? 1 : 0)),
+    0,
+  );
+  const avgPerActiveDay = activeDays > 0 ? total / activeDays : 0;
 
   const stat = (label: string, value: string) => (
     <div className="flex flex-col">
@@ -122,15 +129,14 @@ export const TrackerInsights = ({
     </div>
   );
 
-  const fmt = (n: number) =>
-    Number.isInteger(n) ? String(n) : n.toFixed(1);
+  const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
 
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <span className="text-xl">{tracker.emoji}</span> {tracker.name}
+          <DialogTitle>
+            {tracker.emoji} {tracker.name}
           </DialogTitle>
         </DialogHeader>
 
@@ -195,7 +201,9 @@ export const TrackerInsights = ({
               value={logVal}
               onChange={(e) => setLogVal(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && submitLog()}
-              placeholder={tracker.kind === "scale" ? "1–5" : tracker.unit || "amount"}
+              placeholder={
+                tracker.kind === "scale" ? "1–5" : tracker.unit || "amount"
+              }
               className="h-9 w-28"
             />
           )}
@@ -214,15 +222,21 @@ export const TrackerInsights = ({
         {/* Recent history (editable) */}
         {mine.length > 0 && (
           <div className="mt-2">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+            <h3 className="u-label mb-2 text-muted-foreground">
               Recent
+              <span className="ml-1.5 font-medium text-muted-foreground/60">
+                {mine.length}
+              </span>
             </h3>
-            <div className="max-h-52 overflow-auto rounded-lg border divide-y">
+            <div className="max-h-52 divide-y divide-border overflow-auto rounded-lg border bg-card">
               {[...mine]
                 .sort((a, b) => b.logged_at.localeCompare(a.logged_at))
                 .slice(0, 30)
                 .map((e) => (
-                  <div key={e.id} className="group flex items-center gap-2 px-3 py-1.5 text-sm">
+                  <div
+                    key={e.id}
+                    className="group flex items-center gap-2 px-4 py-2.5 text-[13px]"
+                  >
                     <span className="text-muted-foreground text-xs w-28 shrink-0">
                       {new Date(e.logged_at).toLocaleDateString(undefined, {
                         month: "short",

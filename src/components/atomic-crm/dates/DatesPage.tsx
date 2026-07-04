@@ -7,7 +7,7 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import { CalendarHeart, Plus, Trash2, Bell } from "lucide-react";
+import { Plus, Trash2, Bell } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,7 +39,9 @@ const todayStr = () => {
 
 // Feb-29 anniversaries fall back to Feb 28 in non-leap years.
 const safeDate = (s: string): string =>
-  Number.isNaN(new Date(s + "T00:00:00").getTime()) ? s.replace("-02-29", "-02-28") : s;
+  Number.isNaN(new Date(s + "T00:00:00").getTime())
+    ? s.replace("-02-29", "-02-28")
+    : s;
 
 /** Next occurrence (this year or next for yearly; the date itself otherwise). */
 export const nextOccurrence = (d: LifeDate): string => {
@@ -51,7 +53,11 @@ export const nextOccurrence = (d: LifeDate): string => {
   return safeDate(`${Number(today.slice(0, 4)) + 1}-${m}-${day}`);
 };
 const daysUntil = (iso: string) =>
-  Math.round((new Date(iso + "T00:00:00").getTime() - new Date(todayStr() + "T00:00:00").getTime()) / 86400000);
+  Math.round(
+    (new Date(iso + "T00:00:00").getTime() -
+      new Date(todayStr() + "T00:00:00").getTime()) /
+      86400000,
+  );
 
 export const DatesPage = () => {
   const { identity } = useGetIdentity();
@@ -72,7 +78,11 @@ export const DatesPage = () => {
     sort: { field: "on_date", order: "ASC" },
   });
   const dates = (data ?? [])
-    .map((d) => ({ d, next: nextOccurrence(d), days: daysUntil(nextOccurrence(d)) }))
+    .map((d) => ({
+      d,
+      next: nextOccurrence(d),
+      days: daysUntil(nextOccurrence(d)),
+    }))
     .filter((x) => x.days >= 0 || x.d.repeat_yearly)
     .sort((a, b) => a.days - b.days);
 
@@ -101,22 +111,24 @@ export const DatesPage = () => {
   };
 
   const countdownLabel = (days: number) =>
-    days === 0 ? "Today! 🎉" : days === 1 ? "Tomorrow" : `${days} days`;
+    days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `${days} days`;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-2 mb-1">
-        <CalendarHeart className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold">Dates</h1>
-      </div>
-      <p className="text-sm text-muted-foreground mb-5">
+      <h1 className="mb-1 text-xl font-semibold tracking-tight">Dates</h1>
+      <p className="text-[13px] text-muted-foreground mb-5">
         Birthdays, anniversaries, renewals, deadlines — with countdowns and a
         heads-up push before each one.
       </p>
 
       {/* Add */}
       <Card className="p-3 mb-6 flex flex-wrap gap-2 items-center">
-        <Input className="w-14 text-center" placeholder="🎂" value={emoji} onChange={(e) => setEmoji(e.target.value)} />
+        <Input
+          className="w-14 text-center"
+          placeholder="🎂"
+          value={emoji}
+          onChange={(e) => setEmoji(e.target.value)}
+        />
         <Input
           className="flex-1 min-w-40"
           placeholder="Mom's birthday, lease renewal…"
@@ -134,13 +146,20 @@ export const DatesPage = () => {
         <button
           onClick={() => setYearly((y) => !y)}
           className={cn(
-            "text-xs rounded-full px-2.5 py-1.5 border transition-colors",
-            yearly ? "bg-primary/15 text-primary border-primary/30" : "hover:bg-accent",
+            "text-xs rounded-md px-2.5 py-1.5 border transition-colors",
+            yearly
+              ? "border-primary/30 bg-primary/10 text-primary"
+              : "hover:bg-accent/50",
           )}
         >
           {yearly ? "Every year" : "One time"}
         </button>
-        <Button onClick={add} size="icon" className="rounded-full shrink-0" aria-label="Add date">
+        <Button
+          onClick={add}
+          size="icon"
+          className="shrink-0"
+          aria-label="Add date"
+        >
           <Plus className="size-4" />
         </Button>
       </Card>
@@ -148,16 +167,21 @@ export const DatesPage = () => {
       {isPending && dates.length === 0 ? (
         <CardsSkeleton count={3} className="grid grid-cols-1 gap-2" />
       ) : dates.length === 0 ? (
-        <Card className="p-8 text-center text-sm text-muted-foreground border-dashed">
+        <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
           Nothing yet. Add the dates you never want to be surprised by.
         </Card>
       ) : (
-        <Card className="divide-y p-0">
+        <Card className="divide-y divide-border overflow-hidden p-0">
           {dates.map(({ d, next, days }) => (
-            <div key={d.id} className="group flex items-center gap-3 px-4 py-3">
+            <div
+              key={d.id}
+              className="group flex items-center gap-3 px-4 py-2.5"
+            >
               <span className="text-xl">{d.emoji || "📅"}</span>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">{d.title}</div>
+                <div className="text-[13px] font-medium truncate">
+                  {d.title}
+                </div>
                 <div className="text-xs text-muted-foreground">
                   {new Date(next + "T00:00:00").toLocaleDateString(undefined, {
                     weekday: "short",
@@ -170,7 +194,11 @@ export const DatesPage = () => {
               <span
                 className={cn(
                   "text-sm font-semibold tabular-nums shrink-0",
-                  days <= 3 ? "text-amber-400" : days <= 14 ? "text-primary" : "text-muted-foreground",
+                  days <= 3
+                    ? "text-warning"
+                    : days <= 14
+                      ? "text-primary"
+                      : "text-muted-foreground",
                 )}
               >
                 {countdownLabel(days)}
@@ -180,12 +208,19 @@ export const DatesPage = () => {
                 onValueChange={(v) =>
                   update(
                     "life_dates",
-                    { id: d.id, data: { remind_days_before: Number(v) }, previousData: d },
+                    {
+                      id: d.id,
+                      data: { remind_days_before: Number(v) },
+                      previousData: d,
+                    },
                     { mutationMode: "optimistic" },
                   )
                 }
               >
-                <SelectTrigger className="h-7 w-24 text-xs shrink-0" aria-label="Remind before">
+                <SelectTrigger
+                  className="h-7 w-24 text-xs shrink-0"
+                  aria-label="Remind before"
+                >
                   <Bell className="size-3" />
                   <SelectValue />
                 </SelectTrigger>
@@ -198,7 +233,15 @@ export const DatesPage = () => {
                 </SelectContent>
               </Select>
               <button
-                onClick={() => confirm(`Delete "${d.title}"?`, () => remove("life_dates", { id: d.id, previousData: d }, { mutationMode: "optimistic" }))}
+                onClick={() =>
+                  confirm(`Delete "${d.title}"?`, () =>
+                    remove(
+                      "life_dates",
+                      { id: d.id, previousData: d },
+                      { mutationMode: "optimistic" },
+                    ),
+                  )
+                }
                 className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"
                 aria-label={`Delete ${d.title}`}
               >
@@ -238,7 +281,8 @@ const KeepInTouchSection = () => {
   const people = data ?? [];
   const withCadence = people.filter((p) => p.touch_cadence_days);
   const without = people.filter((p) => !p.touch_cadence_days);
-  const name = (p: Person) => `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim() || "Unnamed";
+  const name = (p: Person) =>
+    `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim() || "Unnamed";
 
   const setCadence = (p: Person, days: number | null) =>
     update(
@@ -258,26 +302,34 @@ const KeepInTouchSection = () => {
 
   return (
     <section className="mt-8">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-        Keep in touch
-      </h2>
+      <h2 className="u-label mb-1 text-muted-foreground">Keep in touch</h2>
       <p className="text-xs text-muted-foreground mb-3">
         Pick how often per person — when it lapses, "Reach out to…" shows up on
         Today. Checking it off marks them touched.
       </p>
-      <Card className="p-0 divide-y">
+      <Card className="p-0 divide-y divide-border overflow-hidden">
         {withCadence.map((p) => {
           const ds = daysSince(p);
           const lapsed = ds === null || ds >= (p.touch_cadence_days ?? 9999);
           return (
-            <div key={p.id} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+            <div
+              key={p.id}
+              className="flex items-center gap-3 px-4 py-2.5 text-[13px]"
+            >
               <span className="flex-1 truncate">{name(p)}</span>
-              <span className={cn("text-xs shrink-0", lapsed ? "text-amber-500" : "text-muted-foreground")}>
+              <span
+                className={cn(
+                  "text-xs shrink-0",
+                  lapsed ? "text-warning" : "text-muted-foreground",
+                )}
+              >
                 {ds === null ? "never" : ds === 0 ? "today" : `${ds}d ago`}
               </span>
               <Select
                 value={String(p.touch_cadence_days)}
-                onValueChange={(v) => setCadence(p, v === "off" ? null : Number(v))}
+                onValueChange={(v) =>
+                  setCadence(p, v === "off" ? null : Number(v))
+                }
               >
                 <SelectTrigger className="h-7 w-28 text-xs shrink-0">
                   <SelectValue />
@@ -296,10 +348,13 @@ const KeepInTouchSection = () => {
         })}
         {without.length > 0 && (
           <div className="flex items-center gap-3 px-4 py-3">
-            <Select value="" onValueChange={(v) => {
-              const p = people.find((x) => x.id === Number(v));
-              if (p) setCadence(p, 30);
-            }}>
+            <Select
+              value=""
+              onValueChange={(v) => {
+                const p = people.find((x) => x.id === Number(v));
+                if (p) setCadence(p, 30);
+              }}
+            >
               <SelectTrigger className="h-8 text-sm flex-1">
                 <SelectValue placeholder="+ Add a person (starts at every 30d)" />
               </SelectTrigger>

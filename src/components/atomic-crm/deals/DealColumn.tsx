@@ -15,21 +15,21 @@ export const DealColumn = ({
   const { dealStages } = useConfigurationContext();
   return (
     <div className="flex-1 pb-8">
-      <div className="flex flex-col items-center">
-        <h3 className="text-base font-medium">
+      <div className="flex items-baseline gap-1.5 px-1">
+        <h3 className="u-label text-muted-foreground">
           {findDealLabel(dealStages, stage)}
         </h3>
-        <p className="text-sm text-muted-foreground">
-          {deals.length} {deals.length === 1 ? "project" : "projects"}
-        </p>
+        <span className="text-xs font-medium text-muted-foreground/60">
+          {deals.length}
+        </span>
       </div>
       <Droppable droppableId={stage}>
         {(droppableProvided, snapshot) => (
           <div
             ref={droppableProvided.innerRef}
             {...droppableProvided.droppableProps}
-            className={`flex flex-col rounded-2xl mt-2 gap-2 ${
-              snapshot.isDraggingOver ? "bg-muted" : ""
+            className={`flex flex-col rounded-lg mt-2 gap-1.5 ${
+              snapshot.isDraggingOver ? "bg-accent/60" : ""
             }`}
           >
             {deals.map((deal, index) => (

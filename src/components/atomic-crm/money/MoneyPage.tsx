@@ -8,11 +8,8 @@ import {
   useNotify,
 } from "ra-core";
 import {
-  Wallet,
   Plus,
   Trash2,
-  TrendingUp,
-  TrendingDown,
   ReceiptText,
   Target,
   CheckCircle2,
@@ -57,7 +54,16 @@ interface Budget {
   monthly: number;
 }
 
-const EXPENSE_CATS = ["Housing", "Food", "Transport", "Bills", "Health", "Fun", "Shopping", "Other"];
+const EXPENSE_CATS = [
+  "Housing",
+  "Food",
+  "Transport",
+  "Bills",
+  "Health",
+  "Fun",
+  "Shopping",
+  "Other",
+];
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const todayStr = () => {
@@ -66,7 +72,11 @@ const todayStr = () => {
 };
 const monthKey = () => todayStr().slice(0, 7); // YYYY-MM
 const fmt$ = (n: number) =>
-  n.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: n % 1 ? 2 : 0 });
+  n.toLocaleString(undefined, {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: n % 1 ? 2 : 0,
+  });
 
 /** Next occurrence of a bill's due day (clamped to month length). */
 const nextDue = (dueDay: number): string => {
@@ -113,12 +123,19 @@ export const MoneyPage = () => {
 
   const mk = monthKey();
   const monthTxns = (txns ?? []).filter((t) => t.occurred_on.startsWith(mk));
-  const incomeMo = monthTxns.filter((t) => t.kind === "income").reduce((s, t) => s + Number(t.amount), 0);
-  const spentMo = monthTxns.filter((t) => t.kind === "expense").reduce((s, t) => s + Number(t.amount), 0);
+  const incomeMo = monthTxns
+    .filter((t) => t.kind === "income")
+    .reduce((s, t) => s + Number(t.amount), 0);
+  const spentMo = monthTxns
+    .filter((t) => t.kind === "expense")
+    .reduce((s, t) => s + Number(t.amount), 0);
   const spentByCat = new Map<string, number>();
   for (const t of monthTxns) {
     if (t.kind !== "expense") continue;
-    spentByCat.set(t.category, (spentByCat.get(t.category) ?? 0) + Number(t.amount));
+    spentByCat.set(
+      t.category,
+      (spentByCat.get(t.category) ?? 0) + Number(t.amount),
+    );
   }
   const activeBills = (bills ?? []).filter((b) => b.active);
   const billsMoTotal = activeBills.reduce((s, b) => s + Number(b.amount), 0);
@@ -170,47 +187,73 @@ export const MoneyPage = () => {
           sales_id: salesId,
         },
       },
-      { onError: () => notify("Bill marked paid, but logging the expense failed", { type: "warning" }) },
+      {
+        onError: () =>
+          notify("Bill marked paid, but logging the expense failed", {
+            type: "warning",
+          }),
+      },
     );
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 flex flex-col gap-6">
+    <div className="mx-auto flex max-w-4xl flex-col gap-6 px-4 py-6">
       <div className="flex items-center gap-2">
-        <Wallet className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold">Money</h1>
+        <h1 className="text-xl font-semibold tracking-tight">Money</h1>
         <span className="ml-auto text-xs text-muted-foreground">
-          {new Date().toLocaleDateString(undefined, { month: "long", year: "numeric" })}
+          {new Date().toLocaleDateString(undefined, {
+            month: "long",
+            year: "numeric",
+          })}
         </span>
       </div>
 
       {/* Month summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatCard icon={TrendingUp} label="In" value={fmt$(incomeMo)} tone="text-green-500" />
-        <StatCard icon={TrendingDown} label="Out" value={fmt$(spentMo)} tone="text-rose-400" />
+      <div className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card sm:grid-cols-4">
         <StatCard
-          icon={Wallet}
+          label="In"
+          value={fmt$(incomeMo)}
+          dotClass="bg-success"
+          valueClass="text-success"
+        />
+        <StatCard
+          label="Out"
+          value={fmt$(spentMo)}
+          dotClass="bg-destructive"
+          valueClass="text-destructive"
+          className="border-l"
+        />
+        <StatCard
           label="Net"
           value={fmt$(incomeMo - spentMo)}
-          tone={incomeMo - spentMo >= 0 ? "text-green-500" : "text-rose-400"}
+          dotClass={incomeMo - spentMo >= 0 ? "bg-success" : "bg-destructive"}
+          valueClass={
+            incomeMo - spentMo >= 0 ? "text-success" : "text-destructive"
+          }
+          className="max-sm:border-t sm:border-l"
         />
-        <StatCard icon={ReceiptText} label="Bills / mo" value={fmt$(billsMoTotal)} tone="text-amber-400" />
+        <StatCard
+          label="Bills / mo"
+          value={fmt$(billsMoTotal)}
+          dotClass="bg-warning"
+          className="border-l max-sm:border-t"
+        />
       </div>
 
       {/* Quick add */}
-      <Card className="p-3 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
-        <div className="flex rounded-full border p-0.5 text-xs self-start sm:self-auto">
+      <Card className="flex flex-col items-stretch gap-2 p-3 sm:flex-row sm:items-center">
+        <div className="flex self-start rounded-md bg-muted p-0.5 text-xs sm:self-auto">
           {(["out", "in"] as const).map((v) => (
             <button
               key={v}
               onClick={() => setIsIncome(v === "in")}
               className={cn(
-                "rounded-full px-3 py-1.5 transition-colors",
+                "rounded-[5px] px-2.5 py-1 font-medium transition-colors",
                 (v === "in") === isIncome
                   ? v === "in"
-                    ? "bg-green-500/20 text-green-500"
-                    : "bg-rose-500/20 text-rose-400"
-                  : "text-muted-foreground",
+                    ? "bg-background text-success shadow-xs"
+                    : "bg-background text-destructive shadow-xs"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {v === "in" ? "+ Income" : "− Expense"}
@@ -257,7 +300,12 @@ export const MoneyPage = () => {
           aria-label="Transaction date (defaults to today)"
           title="Date (defaults to today)"
         />
-        <Button onClick={addTxn} size="icon" className="rounded-full shrink-0" aria-label="Add">
+        <Button
+          onClick={addTxn}
+          size="icon"
+          className="shrink-0 rounded-md"
+          aria-label="Add"
+        >
           <Plus className="size-4" />
         </Button>
       </Card>
@@ -275,7 +323,11 @@ export const MoneyPage = () => {
         onPaid={markPaid}
         onDelete={(b) =>
           confirm(`Delete bill "${b.name}"?`, () =>
-            remove("bills", { id: b.id, previousData: b }, { mutationMode: "optimistic" }),
+            remove(
+              "bills",
+              { id: b.id, previousData: b },
+              { mutationMode: "optimistic" },
+            ),
           )
         }
         salesId={salesId}
@@ -283,45 +335,57 @@ export const MoneyPage = () => {
 
       {/* Recent transactions */}
       <section>
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-          Recent
-        </h2>
+        <h2 className="u-label mb-2 text-muted-foreground">Recent</h2>
         {isPending && (txns ?? []).length === 0 ? (
           <CardsSkeleton count={2} className="grid grid-cols-1 gap-2" />
         ) : (txns ?? []).length === 0 ? (
-          <Card className="p-6 text-center text-sm text-muted-foreground border-dashed">
+          <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
             No transactions yet — log your first one above.
-          </Card>
+          </div>
         ) : (
-          <Card className="divide-y p-0">
+          <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
             {(txns ?? []).slice(0, 25).map((t) => (
-              <div key={t.id} className="group flex items-center gap-3 px-4 py-2 text-sm">
+              <div
+                key={t.id}
+                className="group flex items-center gap-3 px-4 py-2.5 text-[13px] hover:bg-accent/50"
+              >
                 <span
                   className={cn(
-                    "font-semibold tabular-nums w-20",
-                    t.kind === "income" ? "text-green-500" : "text-rose-400",
+                    "w-20 font-medium tabular-nums",
+                    t.kind === "income" ? "text-success" : "text-destructive",
                   )}
                 >
                   {t.kind === "income" ? "+" : "−"}
                   {fmt$(Number(t.amount))}
                 </span>
-                <span className="text-xs rounded-full bg-accent px-2 py-0.5">{t.category}</span>
-                <span className="flex-1 truncate text-muted-foreground">{t.note}</span>
-                <span className="text-xs text-muted-foreground shrink-0">
-                  {new Date(t.occurred_on + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                <span className="rounded-md border bg-card px-2.5 py-1 text-xs">
+                  {t.category}
+                </span>
+                <span className="flex-1 truncate text-muted-foreground">
+                  {t.note}
+                </span>
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  {new Date(t.occurred_on + "T00:00:00").toLocaleDateString(
+                    undefined,
+                    { month: "short", day: "numeric" },
+                  )}
                 </span>
                 <button
                   onClick={() =>
-                    remove("transactions", { id: t.id, previousData: t }, { mutationMode: "optimistic" })
+                    remove(
+                      "transactions",
+                      { id: t.id, previousData: t },
+                      { mutationMode: "optimistic" },
+                    )
                   }
-                  className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                  className="text-muted-foreground opacity-60 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
                   aria-label="Delete transaction"
                 >
                   <Trash2 className="size-4" />
                 </button>
               </div>
             ))}
-          </Card>
+          </div>
         )}
       </section>
       {confirmUI}
@@ -332,22 +396,32 @@ export const MoneyPage = () => {
 MoneyPage.path = "/money";
 
 const StatCard = ({
-  icon: Icon,
   label,
   value,
-  tone,
+  dotClass,
+  valueClass,
+  className,
 }: {
-  icon: typeof Wallet;
   label: string;
   value: string;
-  tone: string;
+  dotClass: string;
+  valueClass?: string;
+  className?: string;
 }) => (
-  <Card className="p-3 flex flex-col gap-1">
-    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-      <Icon className={cn("size-3.5", tone)} /> {label}
+  <div className={cn("flex flex-col gap-1.5 px-4 py-3", className)}>
+    <span
+      className={cn(
+        "text-lg leading-none font-semibold tabular-nums",
+        valueClass,
+      )}
+    >
+      {value}
     </span>
-    <span className={cn("text-lg font-semibold tabular-nums", tone)}>{value}</span>
-  </Card>
+    <span className="u-label flex items-center gap-1.5 text-muted-foreground/80">
+      <span className={cn("size-1.5 rounded-full", dotClass)} />
+      {label}
+    </span>
+  </div>
 );
 
 // ── Budgets ─────────────────────────────────────────────────────────────────
@@ -366,10 +440,14 @@ const BudgetsSection = ({
   const notify = useNotify();
   const [newCat, setNewCat] = useState("Food");
   const [newAmt, setNewAmt] = useState("");
-  const unbudgeted = EXPENSE_CATS.filter((c) => !budgets.some((b) => b.category === c));
+  const unbudgeted = EXPENSE_CATS.filter(
+    (c) => !budgets.some((b) => b.category === c),
+  );
 
   // Keep the picker on a category that's actually still unbudgeted.
-  const effectiveCat = unbudgeted.includes(newCat) ? newCat : (unbudgeted[0] ?? "");
+  const effectiveCat = unbudgeted.includes(newCat)
+    ? newCat
+    : (unbudgeted[0] ?? "");
   const add = () => {
     const val = Number(newAmt);
     if (!val || !effectiveCat) return;
@@ -383,40 +461,51 @@ const BudgetsSection = ({
 
   return (
     <section>
-      <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+      <h2 className="u-label mb-2 flex items-center gap-1.5 text-muted-foreground">
         <Target className="size-3.5" /> Budgets this month
       </h2>
-      <Card className="p-4 flex flex-col gap-3">
+      <Card className="flex flex-col gap-3 p-4">
         {budgets.length === 0 && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-[13px] text-muted-foreground">
             Set a monthly cap per category — the bar fills as you spend. Gentle,
             not punitive.
           </p>
         )}
         {budgets.map((b) => {
           const spent = spentByCat.get(b.category) ?? 0;
-          const pct = Math.min(100, Math.round((spent / Number(b.monthly)) * 100));
+          const pct = Math.min(
+            100,
+            Math.round((spent / Number(b.monthly)) * 100),
+          );
           const over = spent > Number(b.monthly);
           return (
             <div key={b.id} className="group flex items-center gap-3">
-              <span className="w-20 text-sm shrink-0">{b.category}</span>
-              <div className="flex-1 h-2 rounded-full bg-accent overflow-hidden">
+              <span className="w-20 shrink-0 text-[13px]">{b.category}</span>
+              <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
                 <div
-                  className="h-full rounded-full transition-all"
-                  style={{
-                    width: `${pct}%`,
-                    backgroundColor: over ? "#fb7185" : pct > 80 ? "#f59e0b" : "var(--primary)",
-                  }}
+                  className={cn(
+                    "h-full rounded-full transition-all",
+                    over
+                      ? "bg-destructive"
+                      : pct > 80
+                        ? "bg-warning"
+                        : "bg-primary",
+                  )}
+                  style={{ width: `${pct}%` }}
                 />
               </div>
-              <span className="text-xs text-muted-foreground tabular-nums shrink-0">
+              <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
                 {fmt$(spent)} / {fmt$(Number(b.monthly))}
               </span>
               <button
                 onClick={() =>
-                  remove("budgets", { id: b.id, previousData: b }, { mutationMode: "optimistic" })
+                  remove(
+                    "budgets",
+                    { id: b.id, previousData: b },
+                    { mutationMode: "optimistic" },
+                  )
                 }
-                className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                className="text-muted-foreground opacity-60 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
                 aria-label={`Remove ${b.category} budget`}
               >
                 <Trash2 className="size-3.5" />
@@ -427,18 +516,22 @@ const BudgetsSection = ({
                 onBlur={(e) => {
                   const v = Number(e.target.value);
                   if (v && v !== Number(b.monthly))
-                    update("budgets", { id: b.id, data: { monthly: v }, previousData: b }, { mutationMode: "optimistic" });
+                    update(
+                      "budgets",
+                      { id: b.id, data: { monthly: v }, previousData: b },
+                      { mutationMode: "optimistic" },
+                    );
                 }}
-                className="w-20 rounded-md border px-2 py-1 text-xs bg-transparent tabular-nums hidden sm:block"
+                className="hidden w-20 rounded-md border bg-transparent px-2 py-1 text-xs tabular-nums sm:block"
                 aria-label={`${b.category} budget amount`}
               />
             </div>
           );
         })}
         {unbudgeted.length > 0 && (
-          <div className="flex gap-2 items-center pt-1">
+          <div className="flex items-center gap-2 pt-1">
             <Select value={effectiveCat} onValueChange={setNewCat}>
-              <SelectTrigger className="w-32 h-8 text-xs">
+              <SelectTrigger className="h-8 w-32 text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -455,9 +548,14 @@ const BudgetsSection = ({
               onChange={(e) => setNewAmt(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && add()}
               placeholder="$/month"
-              className="w-24 h-8 text-xs"
+              className="h-8 w-24 text-xs"
             />
-            <Button size="sm" variant="secondary" className="h-8 gap-1" onClick={add}>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="h-8 gap-1"
+              onClick={add}
+            >
               <Plus className="size-3.5" /> Budget
             </Button>
           </div>
@@ -499,7 +597,9 @@ const BillsSection = ({
   };
 
   const mk = monthKey();
-  const sorted = [...bills].sort((a, b) => nextDue(a.due_day).localeCompare(nextDue(b.due_day)));
+  const sorted = [...bills].sort((a, b) =>
+    nextDue(a.due_day).localeCompare(nextDue(b.due_day)),
+  );
   const soonCutoff = (() => {
     const d = new Date();
     d.setDate(d.getDate() + 7);
@@ -508,43 +608,59 @@ const BillsSection = ({
 
   return (
     <section>
-      <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+      <h2 className="u-label mb-2 flex items-center gap-1.5 text-muted-foreground">
         <ReceiptText className="size-3.5" /> Bills & subscriptions
       </h2>
-      <Card className="p-0 divide-y">
+      <Card className="divide-y divide-border p-0">
         {sorted.map((b) => {
           const due = nextDue(b.due_day);
-          const paidThisMonth = !!b.last_paid_on && b.last_paid_on.startsWith(mk);
+          const paidThisMonth =
+            !!b.last_paid_on && b.last_paid_on.startsWith(mk);
           const dueSoon = !paidThisMonth && !b.autopay && due <= soonCutoff;
           return (
-            <div key={b.id} className="group flex items-center gap-3 px-4 py-2.5 text-sm">
+            <div
+              key={b.id}
+              className="group flex items-center gap-3 px-4 py-2.5 text-[13px]"
+            >
               <span className="flex-1 truncate">{b.name}</span>
               {b.autopay && (
-                <span className="text-[10px] rounded-full bg-sky-500/15 text-sky-400 px-2 py-0.5 flex items-center gap-0.5">
+                <span className="flex items-center gap-0.5 rounded-md border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
                   <Zap className="size-2.5" /> auto
                 </span>
               )}
-              <span className="tabular-nums text-muted-foreground">{fmt$(Number(b.amount))}</span>
+              <span className="tabular-nums text-muted-foreground">
+                {fmt$(Number(b.amount))}
+              </span>
               <span
                 className={cn(
-                  "text-xs shrink-0 w-16 text-right",
-                  dueSoon ? "text-amber-500 font-medium" : "text-muted-foreground",
+                  "w-16 shrink-0 text-right text-xs",
+                  dueSoon
+                    ? "font-medium text-warning"
+                    : "text-muted-foreground",
                 )}
               >
-                {new Date(due + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                {new Date(due + "T00:00:00").toLocaleDateString(undefined, {
+                  month: "short",
+                  day: "numeric",
+                })}
               </span>
               {paidThisMonth ? (
-                <span className="text-green-500 flex items-center gap-1 text-xs w-16 justify-end">
+                <span className="flex w-16 items-center justify-end gap-1 text-xs text-success">
                   <CheckCircle2 className="size-3.5" /> paid
                 </span>
               ) : (
-                <Button size="sm" variant="secondary" className="h-7 text-xs w-16" onClick={() => onPaid(b)}>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="h-7 w-16 text-xs"
+                  onClick={() => onPaid(b)}
+                >
                   Paid
                 </Button>
               )}
               <button
                 onClick={() => onDelete(b)}
-                className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"
+                className="text-muted-foreground opacity-60 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
                 aria-label={`Delete ${b.name}`}
               >
                 <Trash2 className="size-4" />
@@ -552,19 +668,19 @@ const BillsSection = ({
             </div>
           );
         })}
-        <div className="flex flex-wrap gap-2 items-center p-3">
+        <div className="flex flex-wrap items-center gap-2 p-3">
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Bill name (Rent, Spotify…)"
-            className="flex-1 min-w-36 h-8 text-sm"
+            className="h-8 min-w-36 flex-1 text-sm"
           />
           <Input
             type="number"
             value={amt}
             onChange={(e) => setAmt(e.target.value)}
             placeholder="$"
-            className="w-20 h-8 text-sm"
+            className="h-8 w-20 text-sm"
           />
           <span className="text-xs text-muted-foreground">due day</span>
           <Input
@@ -573,9 +689,14 @@ const BillsSection = ({
             max={31}
             value={day}
             onChange={(e) => setDay(e.target.value)}
-            className="w-16 h-8 text-sm"
+            className="h-8 w-16 text-sm"
           />
-          <Button size="sm" variant="secondary" className="h-8 gap-1" onClick={add}>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 gap-1"
+            onClick={add}
+          >
             <Plus className="size-3.5" /> Bill
           </Button>
         </div>

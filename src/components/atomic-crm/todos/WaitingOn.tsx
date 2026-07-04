@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { useGetList, useGetIdentity, useCreate, useUpdate, useDelete } from "ra-core";
+import {
+  useGetList,
+  useGetIdentity,
+  useCreate,
+  useUpdate,
+  useDelete,
+} from "ra-core";
 import { Hourglass, Plus, Trash2, RotateCcw } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +30,9 @@ const todayStr = () => {
 };
 export const daysSince = (iso: string) =>
   Math.round(
-    (new Date(todayStr() + "T00:00:00").getTime() - new Date(iso + "T00:00:00").getTime()) / 86400000,
+    (new Date(todayStr() + "T00:00:00").getTime() -
+      new Date(iso + "T00:00:00").getTime()) /
+      86400000,
   );
 
 /**
@@ -59,15 +67,23 @@ export const WaitingOnSection = () => {
 
   return (
     <section className="mb-6">
-      <h2 className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-        <Hourglass className="size-3.5" /> Waiting on {open.length > 0 ? `· ${open.length}` : ""}
+      <h2 className="u-label flex items-center gap-1.5 text-muted-foreground mb-2">
+        <Hourglass className="size-3.5" /> Waiting on
+        {open.length > 0 && (
+          <span className="ml-0.5 font-medium text-muted-foreground/60">
+            {open.length}
+          </span>
+        )}
       </h2>
-      <Card className="p-0 divide-y">
+      <Card className="p-0 divide-y divide-border overflow-hidden">
         {open.map((w) => {
           const days = daysSince(w.since);
           const lapsed = days >= w.nudge_after_days;
           return (
-            <div key={w.id} className="group flex items-center gap-3 px-4 py-2.5 text-sm">
+            <div
+              key={w.id}
+              className="group flex items-center gap-3 px-4 py-2.5 text-[13px]"
+            >
               <Checkbox
                 checked={false}
                 onCheckedChange={() => {
@@ -83,12 +99,16 @@ export const WaitingOnSection = () => {
               />
               <div className="flex-1 min-w-0">
                 <span className="truncate block">{w.text}</span>
-                {w.who && <span className="text-xs text-muted-foreground">on {w.who}</span>}
+                {w.who && (
+                  <span className="text-xs text-muted-foreground">
+                    on {w.who}
+                  </span>
+                )}
               </div>
               <span
                 className={cn(
                   "text-xs shrink-0 tabular-nums",
-                  lapsed ? "text-amber-500 font-medium" : "text-muted-foreground",
+                  lapsed ? "text-warning font-medium" : "text-muted-foreground",
                 )}
               >
                 {days === 0 ? "today" : `${days}d`}
@@ -111,7 +131,11 @@ export const WaitingOnSection = () => {
               </button>
               <button
                 onClick={() =>
-                  remove("waiting_items", { id: w.id, previousData: w }, { mutationMode: "optimistic" })
+                  remove(
+                    "waiting_items",
+                    { id: w.id, previousData: w },
+                    { mutationMode: "optimistic" },
+                  )
                 }
                 className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"
                 aria-label="Delete waiting item"
@@ -136,7 +160,12 @@ export const WaitingOnSection = () => {
             placeholder="From whom?"
             className="w-32 h-8 text-sm"
           />
-          <Button size="sm" variant="secondary" className="h-8 gap-1" onClick={add}>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-8 gap-1"
+            onClick={add}
+          >
             <Plus className="size-3.5" /> Add
           </Button>
         </div>

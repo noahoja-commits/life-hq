@@ -7,7 +7,7 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import { Activity, Plus, Check, BarChart3 } from "lucide-react";
+import { Plus, Check, BarChart3 } from "lucide-react";
 import { TrackerInsights } from "./TrackerInsights";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { Card } from "@/components/ui/card";
@@ -64,14 +64,20 @@ export const TrackPage = () => {
   const [noteFor, setNoteFor] = useState<Tracker | null>(null);
   const [insightsFor, setInsightsFor] = useState<Tracker | null>(null);
 
-  const { data: trackers, refetch: refetchTrackers, isPending: trackersLoading } =
-    useGetList<Tracker>("trackers", {
-      pagination: { page: 1, perPage: 200 },
-      sort: { field: "position", order: "ASC" },
-    });
+  const {
+    data: trackers,
+    refetch: refetchTrackers,
+    isPending: trackersLoading,
+  } = useGetList<Tracker>("trackers", {
+    pagination: { page: 1, perPage: 200 },
+    sort: { field: "position", order: "ASC" },
+  });
   const { data: entries, refetch: refetchEntries } = useGetList<LogEntry>(
     "log_entries",
-    { pagination: { page: 1, perPage: 300 }, sort: { field: "logged_at", order: "DESC" } },
+    {
+      pagination: { page: 1, perPage: 300 },
+      sort: { field: "logged_at", order: "DESC" },
+    },
   );
 
   const allTrackers = trackers ?? [];
@@ -131,12 +137,9 @@ export const TrackPage = () => {
   const todayFor = (id: number) => today.filter((e) => e.tracker_id === id);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Activity className="size-6 text-primary" />
-          <h1 className="text-2xl font-semibold">Track</h1>
-        </div>
+    <div className="mx-auto max-w-5xl px-4 py-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-xl font-semibold tracking-tight">Track</h1>
         <Button onClick={() => setAddOpen(true)} className="gap-1">
           <Plus className="size-4" /> New tracker
         </Button>
@@ -145,17 +148,15 @@ export const TrackPage = () => {
       {trackersLoading && allTrackers.length === 0 ? (
         <CardsSkeleton count={6} />
       ) : allTrackers.length === 0 ? (
-        <p className="text-muted-foreground">
+        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
           No trackers yet. Add the first thing you want to track.
-        </p>
+        </div>
       ) : (
         categories.map((cat) => {
           const large = cat === "Business";
           return (
             <section key={cat} className="mb-8">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-                {cat}
-              </h2>
+              <h2 className="u-label mb-2 text-muted-foreground">{cat}</h2>
               <div
                 className={
                   large
@@ -186,14 +187,15 @@ export const TrackPage = () => {
       {/* Today feed */}
       {today.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-            Today
-          </h2>
-          <Card className="divide-y p-0">
+          <h2 className="u-label mb-2 text-muted-foreground">Today</h2>
+          <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
             {today.slice(0, 20).map((e) => {
               const t = allTrackers.find((x) => x.id === e.tracker_id);
               return (
-                <div key={e.id} className="flex items-center gap-3 px-4 py-2 text-sm">
+                <div
+                  key={e.id}
+                  className="flex items-center gap-3 px-4 py-2.5 text-[13px]"
+                >
                   <span>{t?.emoji ?? "•"}</span>
                   <span className="font-medium">{t?.name ?? "Entry"}</span>
                   <span className="text-muted-foreground">
@@ -212,7 +214,7 @@ export const TrackPage = () => {
                 </div>
               );
             })}
-          </Card>
+          </div>
         </section>
       )}
 
@@ -226,7 +228,11 @@ export const TrackPage = () => {
           onRemindTime={(t) => {
             update(
               "trackers",
-              { id: insightsFor.id, data: { remind_time: t }, previousData: insightsFor },
+              {
+                id: insightsFor.id,
+                data: { remind_time: t },
+                previousData: insightsFor,
+              },
               { mutationMode: "optimistic" },
             );
             setInsightsFor({ ...insightsFor, remind_time: t });
@@ -251,7 +257,11 @@ export const TrackPage = () => {
             create(
               "trackers",
               {
-                data: { ...data, sales_id: identity?.id ? Number(identity.id) : null, position: 999 },
+                data: {
+                  ...data,
+                  sales_id: identity?.id ? Number(identity.id) : null,
+                  position: 999,
+                },
               },
               {
                 onSuccess: () => {
@@ -259,7 +269,8 @@ export const TrackPage = () => {
                   setAddOpen(false);
                   refetchTrackers();
                 },
-                onError: () => notify("Could not add tracker", { type: "error" }),
+                onError: () =>
+                  notify("Could not add tracker", { type: "error" }),
               },
             )
           }
@@ -317,7 +328,7 @@ const TrackerTile = ({
           {tracker.name}
         </button>
         {tracker.kind === "check" && done && (
-          <Check className="size-4 text-green-500" />
+          <Check className="size-4 text-success" />
         )}
         <button
           onClick={onInsights}
@@ -334,8 +345,8 @@ const TrackerTile = ({
       {tracker.kind === "check" && (
         <button
           onClick={() => onLog(1)}
-          className={`rounded-lg py-2 text-sm font-medium transition-colors ${
-            done ? "bg-green-500/15 text-green-500" : "bg-accent hover:bg-accent/70"
+          className={`rounded-md py-2 text-sm font-medium transition-colors ${
+            done ? "bg-success/10 text-success" : "bg-accent hover:bg-accent/70"
           }`}
         >
           {done ? `Done ×${count}` : "Mark done"}
@@ -345,7 +356,7 @@ const TrackerTile = ({
       {tracker.kind === "count" && (
         <button
           onClick={() => onLog(1)}
-          className="rounded-lg py-2 text-sm font-medium bg-accent hover:bg-accent/70 transition-colors"
+          className="rounded-md py-2 text-sm font-medium bg-accent hover:bg-accent/70 transition-colors"
         >
           +1 · {sum}
           {tracker.unit ? ` ${tracker.unit}` : ""} today
@@ -373,7 +384,7 @@ const TrackerTile = ({
       {tracker.kind === "note" && (
         <button
           onClick={onNote}
-          className="rounded-lg py-2 text-sm font-medium bg-accent hover:bg-accent/70 transition-colors"
+          className="rounded-md py-2 text-sm font-medium bg-accent hover:bg-accent/70 transition-colors"
         >
           Add note {count > 0 ? `· ${count}` : ""}
         </button>
@@ -381,19 +392,18 @@ const TrackerTile = ({
 
       {progressPct !== null && target && (
         <div className="flex items-center gap-2">
-          <div className="flex-1 h-1.5 rounded-full bg-accent overflow-hidden">
+          <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
             <div
               className="h-full rounded-full transition-all"
               style={{
                 width: `${progressPct}%`,
-                backgroundColor: progressPct >= 100 ? "#34d399" : accent,
+                backgroundColor: progressPct >= 100 ? "var(--success)" : accent,
               }}
             />
           </div>
           <span className="text-[11px] text-muted-foreground tabular-nums shrink-0">
             {progressValue}/{target}
             {tracker.unit ? ` ${tracker.unit}` : ""}
-            {progressPct >= 100 ? " 🎉" : ""}
           </span>
         </div>
       )}
@@ -430,7 +440,9 @@ const NoteDialog = ({
           <Button variant="ghost" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={() => note.trim() && onSave(note.trim())}>Save</Button>
+          <Button onClick={() => note.trim() && onSave(note.trim())}>
+            Save
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -467,10 +479,23 @@ const AddTrackerDialog = ({
           <DialogTitle>New tracker</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-3">
-          <Input placeholder="Name (e.g. Meditate)" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input
+            placeholder="Name (e.g. Meditate)"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <div className="flex gap-2">
-            <Input className="w-20" placeholder="Emoji" value={emoji} onChange={(e) => setEmoji(e.target.value)} />
-            <Input placeholder="Category (Life, Business, Skills…)" value={category} onChange={(e) => setCategory(e.target.value)} />
+            <Input
+              className="w-20"
+              placeholder="Emoji"
+              value={emoji}
+              onChange={(e) => setEmoji(e.target.value)}
+            />
+            <Input
+              placeholder="Category (Life, Business, Skills…)"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
           </div>
           <Select value={kind} onValueChange={(v) => setKind(v as Kind)}>
             <SelectTrigger>
@@ -478,13 +503,19 @@ const AddTrackerDialog = ({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="check">Check (did it — tap ✓)</SelectItem>
-              <SelectItem value="count">Count (tap +1, e.g. glasses)</SelectItem>
+              <SelectItem value="count">
+                Count (tap +1, e.g. glasses)
+              </SelectItem>
               <SelectItem value="scale">Scale (1–5, e.g. mood)</SelectItem>
               <SelectItem value="note">Note (journal)</SelectItem>
             </SelectContent>
           </Select>
           {kind === "count" && (
-            <Input placeholder="Unit (glasses, min, $…)" value={unit} onChange={(e) => setUnit(e.target.value)} />
+            <Input
+              placeholder="Unit (glasses, min, $…)"
+              value={unit}
+              onChange={(e) => setUnit(e.target.value)}
+            />
           )}
           {kind !== "note" && (
             <Input

@@ -40,7 +40,7 @@ export const buildHeatmapGrid = (
 export const Heatmap = ({
   dayValue,
   weeks = 13,
-  accent = "#6366f1",
+  accent = "var(--primary)",
   size = "md",
 }: {
   dayValue: (isoDate: string) => number;
@@ -54,14 +54,13 @@ export const Heatmap = ({
     if (future) return "transparent";
     if (value <= 0) return "var(--muted)";
     const t = max > 0 ? value / max : 0;
-    const opacity = 0.25 + 0.75 * Math.min(1, t);
-    return (
-      accent + Math.round(opacity * 255).toString(16).padStart(2, "0")
-    );
+    const opacity = 25 + 75 * Math.min(1, t);
+    return `color-mix(in oklch, ${accent} ${Math.round(opacity)}%, transparent)`;
   };
 
   const fmt = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
-  const cellClass = size === "sm" ? "size-2.5 rounded-[3px]" : "size-3.5 rounded-sm";
+  const cellClass =
+    size === "sm" ? "size-2.5 rounded-[3px]" : "size-3.5 rounded-sm";
   const gap = size === "sm" ? "gap-0.5" : "gap-1";
 
   return (

@@ -90,66 +90,51 @@ export const LoginPage = (props: { redirectTo?: string }) => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="relative grid w-full lg:grid-cols-2">
-        <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
-          <div className="absolute inset-0 bg-zinc-900" />
-          <div className="relative z-20 flex items-center text-lg font-medium">
-            <img className="h-6 mr-2" src={darkModeLogo} alt={title} />
-            {title}
-          </div>
-        </div>
-        <div className="flex flex-col justify-center w-full p-4 lg:p-8">
-          <div className="w-full space-y-6 lg:mx-auto lg:w-[350px]">
-            <div className="text-center">
-              <h1 className="text-2xl font-semibold tracking-tight">
-                {translate("ra.auth.sign_in")}
-              </h1>
-            </div>
-            {disableEmailPasswordAuthentication ? null : (
-              <Form className="space-y-8" onSubmit={handleSubmit}>
-                <TextInput
-                  label="ra.auth.email"
-                  source="email"
-                  type="email"
-                  validate={required()}
-                />
-                <TextInput
-                  label="ra.auth.password"
-                  source="password"
-                  type="password"
-                  validate={required()}
-                />
-                <div className="flex flex-col gap-4">
-                  <Button
-                    type="submit"
-                    className="cursor-pointer"
-                    disabled={loading}
-                  >
-                    {translate("ra.auth.sign_in")}
-                  </Button>
-                </div>
-              </Form>
-            )}
-            {googleWorkplaceDomain ? (
-              <SSOAuthButton className="w-full" domain={googleWorkplaceDomain}>
-                {translate("crm.auth.sign_in_google_workspace", {
-                  _: "Sign in with Google Workplace",
-                })}
-              </SSOAuthButton>
-            ) : null}
-            {disableEmailPasswordAuthentication ? null : (
-              <Link
-                to={"/forgot-password"}
-                className="block text-sm text-center hover:underline"
-              >
-                {translate("ra-supabase.auth.forgot_password", {
-                  _: "Forgot password?",
-                })}
-              </Link>
-            )}
-          </div>
-        </div>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
+      <div className="flex items-center gap-2">
+        <img className="size-5" src={darkModeLogo} alt={title} />
+        <span className="text-xl font-semibold tracking-tight">{title}</span>
+      </div>
+      <div className="w-full max-w-sm space-y-5 rounded-lg border bg-card p-6">
+        <h1 className="text-center text-xl font-semibold tracking-tight">
+          {translate("ra.auth.sign_in")}
+        </h1>
+        {disableEmailPasswordAuthentication ? null : (
+          <Form className="space-y-4" onSubmit={handleSubmit}>
+            <TextInput
+              label="ra.auth.email"
+              source="email"
+              type="email"
+              validate={required()}
+            />
+            <TextInput
+              label="ra.auth.password"
+              source="password"
+              type="password"
+              validate={required()}
+            />
+            <Button type="submit" className="w-full" disabled={loading}>
+              {translate("ra.auth.sign_in")}
+            </Button>
+          </Form>
+        )}
+        {googleWorkplaceDomain ? (
+          <SSOAuthButton className="w-full" domain={googleWorkplaceDomain}>
+            {translate("crm.auth.sign_in_google_workspace", {
+              _: "Sign in with Google Workplace",
+            })}
+          </SSOAuthButton>
+        ) : null}
+        {disableEmailPasswordAuthentication ? null : (
+          <Link
+            to={"/forgot-password"}
+            className="block text-center text-[13px] text-muted-foreground hover:text-foreground hover:underline"
+          >
+            {translate("ra-supabase.auth.forgot_password", {
+              _: "Forgot password?",
+            })}
+          </Link>
+        )}
       </div>
       <Notification />
     </div>

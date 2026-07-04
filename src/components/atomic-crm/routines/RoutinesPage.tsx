@@ -7,7 +7,7 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import { Repeat, Plus, Trash2, X, Bell } from "lucide-react";
+import { Plus, Trash2, X, Bell } from "lucide-react";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useConfirm } from "../misc/useConfirm";
 import { useHaptics } from "@/hooks/useHaptics";
+import { cn } from "@/lib/utils";
 import { Heatmap } from "../track/Heatmap";
 import {
   Dialog,
@@ -102,15 +103,30 @@ export const RoutinesPage = () => {
   const addStep = (routineId: number, text: string) =>
     create(
       "routine_steps",
-      { data: { routine_id: routineId, sales_id: salesId, text, position: allSteps.length } },
+      {
+        data: {
+          routine_id: routineId,
+          sales_id: salesId,
+          text,
+          position: allSteps.length,
+        },
+      },
       { onError: () => notify("Could not add", { type: "error" }) },
     );
 
   const delStep = (step: Step) =>
-    remove("routine_steps", { id: step.id, previousData: step }, { mutationMode: "optimistic" });
+    remove(
+      "routine_steps",
+      { id: step.id, previousData: step },
+      { mutationMode: "optimistic" },
+    );
 
   const delRoutine = (r: Routine) =>
-    remove("routines", { id: r.id, previousData: r }, { mutationMode: "optimistic" });
+    remove(
+      "routines",
+      { id: r.id, previousData: r },
+      { mutationMode: "optimistic" },
+    );
 
   const setRemindTime = (r: Routine, remind_time: string | null) =>
     update(
@@ -121,22 +137,23 @@ export const RoutinesPage = () => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Repeat className="size-6 text-primary" />
-          <h1 className="text-2xl font-semibold">Routines</h1>
-        </div>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-xl font-semibold tracking-tight">Routines</h1>
         <Button onClick={() => setAddOpen(true)} className="gap-1">
           <Plus className="size-4" /> New routine
         </Button>
       </div>
 
       {routinesLoading && allRoutines.length === 0 ? (
-        <CardsSkeleton count={3} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" />
+        <CardsSkeleton
+          count={3}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        />
       ) : allRoutines.length === 0 ? (
-        <p className="text-muted-foreground">
-          No routines yet. Build a morning or wind-down flow — check off what you get to, skip the rest, no guilt.
-        </p>
+        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
+          No routines yet. Build a morning or wind-down flow — check off what
+          you get to, skip the rest, no guilt.
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {allRoutines.map((routine) => (
@@ -166,10 +183,18 @@ export const RoutinesPage = () => {
           onAdd={(name, emoji) =>
             create(
               "routines",
-              { data: { name, emoji, sales_id: salesId, position: allRoutines.length } },
+              {
+                data: {
+                  name,
+                  emoji,
+                  sales_id: salesId,
+                  position: allRoutines.length,
+                },
+              },
               {
                 onSuccess: () => setAddOpen(false),
-                onError: () => notify("Could not add routine", { type: "error" }),
+                onError: () =>
+                  notify("Could not add routine", { type: "error" }),
               },
             )
           }
@@ -227,43 +252,54 @@ const RoutineCard = ({
     >
       <div className="flex items-center gap-2">
         <span className="text-lg">{routine.emoji}</span>
-        <span className="font-semibold flex-1 truncate">{routine.name}</span>
+        <span className="flex-1 truncate text-[13px] font-semibold">
+          {routine.name}
+        </span>
         <span className="text-xs text-muted-foreground">
           {doneCount}/{steps.length} today
         </span>
         <button
           onClick={onDelRoutine}
-          className="text-muted-foreground hover:text-destructive"
+          className="shrink-0 text-muted-foreground transition-colors hover:text-destructive"
           aria-label="Delete routine"
         >
           <Trash2 className="size-4" />
         </button>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        {steps.map((step) => {
-          const done = checkByStep.has(step.id);
-          return (
-            <div key={step.id} className="group flex items-center gap-2">
-              <Checkbox checked={done} onCheckedChange={() => onToggle(step)} />
-              <span
-                className={`text-sm flex-1 ${
-                  done ? "line-through text-muted-foreground" : ""
-                }`}
+      {steps.length > 0 && (
+        <div className="divide-y divide-border overflow-hidden rounded-md border">
+          {steps.map((step) => {
+            const done = checkByStep.has(step.id);
+            return (
+              <div
+                key={step.id}
+                className="group flex items-center gap-2 px-2.5 py-2 transition-colors hover:bg-accent/50"
               >
-                {step.text}
-              </span>
-              <button
-                onClick={() => onDelStep(step)}
-                className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"
-                aria-label="Remove"
-              >
-                <X className="size-3.5" />
-              </button>
-            </div>
-          );
-        })}
-      </div>
+                <Checkbox
+                  checked={done}
+                  onCheckedChange={() => onToggle(step)}
+                />
+                <span
+                  className={cn(
+                    "flex-1 text-[13px]",
+                    done && "text-muted-foreground line-through",
+                  )}
+                >
+                  {step.text}
+                </span>
+                <button
+                  onClick={() => onDelStep(step)}
+                  className="text-muted-foreground opacity-60 transition-colors hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
+                  aria-label="Remove"
+                >
+                  <X className="size-3.5" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className="flex gap-2">
         <Input
@@ -273,7 +309,12 @@ const RoutineCard = ({
           placeholder="Add step…"
           className="h-9"
         />
-        <Button size="icon" variant="secondary" className="h-9 w-9" onClick={add}>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="h-9 w-9"
+          onClick={add}
+        >
           <Plus className="size-4" />
         </Button>
       </div>
@@ -286,13 +327,13 @@ const RoutineCard = ({
           type="time"
           value={(routine.remind_time ?? "").slice(0, 5)}
           onChange={(e) => onRemindTime(e.target.value || null)}
-          className="rounded-md border px-2 py-1 bg-transparent"
+          className="rounded-md border bg-transparent px-2 py-1"
           aria-label="Daily nudge time"
         />
         {routine.remind_time && (
           <button
             onClick={() => onRemindTime(null)}
-            className="underline hover:text-destructive"
+            className="underline transition-colors hover:text-destructive"
           >
             off
           </button>
@@ -304,7 +345,7 @@ const RoutineCard = ({
           <Heatmap
             dayValue={(d) => perDay.get(d) ?? 0}
             weeks={8}
-            accent={routine.color ?? "#6366f1"}
+            accent={routine.color ?? "var(--primary)"}
             size="sm"
           />
           <p className="text-[10px] text-muted-foreground">
@@ -332,12 +373,29 @@ const AddRoutineDialog = ({
           <DialogTitle>New routine</DialogTitle>
         </DialogHeader>
         <div className="flex gap-2">
-          <Input className="w-16" placeholder="🌅" value={emoji} onChange={(e) => setEmoji(e.target.value)} />
-          <Input autoFocus placeholder="Routine name" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && name.trim() && onAdd(name.trim(), emoji)} />
+          <Input
+            className="w-16"
+            placeholder="🌅"
+            value={emoji}
+            onChange={(e) => setEmoji(e.target.value)}
+          />
+          <Input
+            autoFocus
+            placeholder="Routine name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) =>
+              e.key === "Enter" && name.trim() && onAdd(name.trim(), emoji)
+            }
+          />
         </div>
         <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button onClick={() => name.trim() && onAdd(name.trim(), emoji)}>Add</Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={() => name.trim() && onAdd(name.trim(), emoji)}>
+            Add
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

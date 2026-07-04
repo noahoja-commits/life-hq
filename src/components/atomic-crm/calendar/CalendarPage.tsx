@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useGetList, useRedirect } from "ra-core";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -52,11 +52,11 @@ const todayStr = () => {
 };
 
 const COLORS = {
-  todo: "#818cf8",
-  bill: "#f59e0b",
-  date: "#f472b6",
-  job: "#fbbf24",
-  goal: "#34d399",
+  todo: "bg-primary",
+  bill: "bg-warning",
+  date: "bg-muted-foreground/50",
+  job: "bg-destructive",
+  goal: "bg-success",
 };
 
 export const CalendarPage = () => {
@@ -98,29 +98,56 @@ export const CalendarPage = () => {
 
     for (const t of todos ?? []) {
       if (!t.done && t.due_date?.startsWith(ym))
-        push(t.due_date, { key: `t${t.id}`, label: t.text, color: COLORS.todo, to: "/todos" });
+        push(t.due_date, {
+          key: `t${t.id}`,
+          label: t.text,
+          color: COLORS.todo,
+          to: "/todos",
+        });
     }
     for (const b of bills ?? []) {
       if (!b.active) continue;
       const day = `${ym}-${pad(Math.min(b.due_day, daysInMonth))}`;
-      push(day, { key: `b${b.id}`, label: `${b.name} · $${Number(b.amount)}`, color: COLORS.bill, to: "/money" });
+      push(day, {
+        key: `b${b.id}`,
+        label: `${b.name} · $${Number(b.amount)}`,
+        color: COLORS.bill,
+        to: "/money",
+      });
     }
     for (const d of dates ?? []) {
       const [, m, dd] = d.on_date.split("-");
-      const occurs = d.repeat_yearly ? Number(m) === month + 1 : d.on_date.startsWith(ym);
+      const occurs = d.repeat_yearly
+        ? Number(m) === month + 1
+        : d.on_date.startsWith(ym);
       if (occurs) {
         // Feb-29 anniversaries land on Feb 28 in non-leap years.
         const day = Number(dd) > daysInMonth ? pad(daysInMonth) : dd;
-        push(`${ym}-${day}`, { key: `d${d.id}`, label: `${d.emoji || "📅"} ${d.title}`, color: COLORS.date, to: "/dates" });
+        push(`${ym}-${day}`, {
+          key: `d${d.id}`,
+          label: `${d.emoji || "📅"} ${d.title}`,
+          color: COLORS.date,
+          to: "/dates",
+        });
       }
     }
     for (const a of apps ?? []) {
       if (a.follow_up_date?.startsWith(ym) && a.status !== "closed")
-        push(a.follow_up_date, { key: `a${a.id}`, label: `Follow up: ${a.company}`, color: COLORS.job, to: "/applications" });
+        push(a.follow_up_date, {
+          key: `a${a.id}`,
+          label: `Follow up: ${a.company}`,
+          color: COLORS.job,
+          to: "/applications",
+        });
     }
     for (const g of goals ?? []) {
       if (g.status === "active" && g.target_date?.startsWith(ym))
-        push(g.target_date, { key: `g${g.id}`, label: `${g.emoji || "🎯"} ${g.title} target`, color: COLORS.goal, to: "/goals" });
+        push(g.target_date, {
+          key: `g${g.id}`,
+          label: `${g.emoji || "🎯"} ${g.title} target`,
+          color: COLORS.goal,
+          to: "/goals",
+        });
     }
     return map;
   }, [todos, bills, dates, apps, goals, year, month]);
@@ -129,7 +156,10 @@ export const CalendarPage = () => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const cells: (string | null)[] = [
     ...Array.from({ length: firstDow }, () => null),
-    ...Array.from({ length: daysInMonth }, (_, i) => `${year}-${pad(month + 1)}-${pad(i + 1)}`),
+    ...Array.from(
+      { length: daysInMonth },
+      (_, i) => `${year}-${pad(month + 1)}-${pad(i + 1)}`,
+    ),
   ];
   const today = todayStr();
   const move = (delta: number) => {
@@ -143,15 +173,27 @@ export const CalendarPage = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
       <div className="flex items-center gap-2 mb-5">
-        <CalendarDays className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold flex-1">Calendar</h1>
-        <button onClick={() => move(-1)} className="rounded-full border p-2 hover:bg-accent" aria-label="Previous month">
+        <h1 className="text-xl font-semibold tracking-tight flex-1">
+          Calendar
+        </h1>
+        <button
+          onClick={() => move(-1)}
+          className="rounded-md border p-2 hover:bg-accent/50"
+          aria-label="Previous month"
+        >
           <ChevronLeft className="size-4" />
         </button>
         <span className="text-sm font-medium w-36 text-center">
-          {new Date(year, month, 1).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
+          {new Date(year, month, 1).toLocaleDateString(undefined, {
+            month: "long",
+            year: "numeric",
+          })}
         </span>
-        <button onClick={() => move(1)} className="rounded-full border p-2 hover:bg-accent" aria-label="Next month">
+        <button
+          onClick={() => move(1)}
+          className="rounded-md border p-2 hover:bg-accent/50"
+          aria-label="Next month"
+        >
           <ChevronRight className="size-4" />
         </button>
       </div>
@@ -179,12 +221,17 @@ export const CalendarPage = () => {
                       : "border-transparent hover:bg-accent",
                 )}
               >
-                <span className={cn(day === today && "text-primary font-semibold")}>
+                <span
+                  className={cn(day === today && "text-primary font-semibold")}
+                >
                   {Number(day.slice(-2))}
                 </span>
                 <span className="flex gap-0.5 h-1.5">
                   {(byDay.get(day) ?? []).slice(0, 4).map((it) => (
-                    <span key={it.key} className="size-1.5 rounded-full" style={{ backgroundColor: it.color }} />
+                    <span
+                      key={it.key}
+                      className={cn("size-1.5 rounded-full", it.color)}
+                    />
                   ))}
                 </span>
               </button>
@@ -205,7 +252,7 @@ export const CalendarPage = () => {
           ] as const
         ).map(([label, color]) => (
           <span key={label} className="flex items-center gap-1">
-            <span className="size-2 rounded-full" style={{ backgroundColor: color }} />
+            <span className={cn("size-2 rounded-full", color)} />
             {label}
           </span>
         ))}
@@ -213,7 +260,7 @@ export const CalendarPage = () => {
 
       {/* Selected day */}
       <section className="mt-5">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+        <h2 className="u-label mb-2 text-muted-foreground">
           {new Date(selected + "T00:00:00").toLocaleDateString(undefined, {
             weekday: "long",
             month: "long",
@@ -221,18 +268,20 @@ export const CalendarPage = () => {
           })}
         </h2>
         {selectedItems.length === 0 ? (
-          <Card className="p-5 text-sm text-muted-foreground border-dashed">
+          <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
             Nothing scheduled — open space.
           </Card>
         ) : (
-          <Card className="divide-y p-0">
+          <Card className="divide-y divide-border overflow-hidden p-0">
             {selectedItems.map((it) => (
               <button
                 key={it.key}
                 onClick={() => redirect(it.to)}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm w-full text-left hover:bg-accent/50"
+                className="flex items-center gap-3 px-4 py-2.5 text-[13px] w-full text-left hover:bg-accent/50"
               >
-                <span className="size-2 rounded-full shrink-0" style={{ backgroundColor: it.color }} />
+                <span
+                  className={cn("size-2 rounded-full shrink-0", it.color)}
+                />
                 <span className="truncate">{it.label}</span>
               </button>
             ))}

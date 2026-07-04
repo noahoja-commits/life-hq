@@ -24,7 +24,7 @@ export const ThemePicker = ({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-full border p-2 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+        className="rounded-md border p-2 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
         aria-label={label}
         title={label}
       >
@@ -44,15 +44,17 @@ export const ThemePicker = ({
                   setOpen(false);
                 }}
                 className={cn(
-                  "flex flex-col items-center gap-1.5 rounded-xl p-2 border transition-colors hover:bg-accent",
-                  accent === p.accent && "border-foreground/40 bg-accent",
+                  "flex flex-col items-center gap-1.5 rounded-md border p-2 transition-colors hover:bg-accent/50",
+                  accent === p.accent && "border-foreground/40 bg-accent/50",
                 )}
               >
                 <span
                   className="size-7 rounded-full"
                   style={{ backgroundColor: p.accent }}
                 />
-                <span className="text-[10px] text-muted-foreground">{p.name}</span>
+                <span className="text-[10px] text-muted-foreground">
+                  {p.name}
+                </span>
               </button>
             ))}
           </div>

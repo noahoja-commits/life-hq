@@ -99,101 +99,96 @@ export const SignupPage = () => {
   };
 
   return (
-    <div className="h-screen p-8">
-      <div className="flex items-center gap-4">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
+      <div className="flex items-center gap-2">
         <img
           src={logo}
           alt={title}
-          width={24}
+          width={20}
           className="filter brightness-0 invert"
         />
-        <h1 className="text-xl font-semibold">{title}</h1>
+        <span className="text-xl font-semibold tracking-tight">{title}</span>
       </div>
-      <div className="h-full">
-        <div className="max-w-sm mx-auto h-full flex flex-col justify-center gap-4">
-          <h1 className="text-2xl font-bold mb-4">
+      <div className="w-full max-w-sm rounded-lg border bg-card p-6">
+        <div className="mb-4 text-center">
+          <h1 className="text-xl font-semibold tracking-tight">
             {translate("crm.auth.welcome_title", {
               _: "Welcome to Atomic CRM",
             })}
           </h1>
-          <p className="text-base mb-4">
+          <p className="mt-1 text-[13px] text-muted-foreground">
             {translate("crm.auth.signup.create_first_user", {
               _: "Create the first user account to complete the setup.",
             })}
           </p>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="first_name">
-                {translate("crm.auth.first_name")}
-              </Label>
-              <Input
-                {...register("first_name", { required: true })}
-                id="first_name"
-                type="text"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="last_name">
-                {translate("crm.auth.last_name")}
-              </Label>
-              <Input
-                {...register("last_name", { required: true })}
-                id="last_name"
-                type="text"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">{translate("ra.auth.email")}</Label>
-              <Input
-                {...register("email", { required: true })}
-                id="email"
-                type="email"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">{translate("ra.auth.password")}</Label>
-              <Input
-                {...register("password", { required: true })}
-                id="password"
-                type="password"
-                required
-              />
-            </div>
-            <div className="flex flex-col gap-4 justify-between items-center mt-8">
-              <Button
-                type="submit"
-                disabled={!isValid || isSignUpPending}
-                className="w-full"
-              >
-                {isSignUpPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    {translate("crm.auth.signup.creating", {
-                      _: "Creating...",
-                    })}
-                  </>
-                ) : (
-                  translate("crm.auth.signup.create_account", {
-                    _: "Create account",
-                  })
-                )}
-              </Button>
-              {googleWorkplaceDomain ? (
-                <SSOAuthButton
-                  className="w-full"
-                  domain={googleWorkplaceDomain}
-                >
-                  {translate("crm.auth.sign_in_google_workspace", {
-                    _: "Sign in with Google Workplace",
-                  })}
-                </SSOAuthButton>
-              ) : null}
-            </div>
-          </form>
         </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="first_name">
+              {translate("crm.auth.first_name")}
+            </Label>
+            <Input
+              {...register("first_name", { required: true })}
+              id="first_name"
+              type="text"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="last_name">{translate("crm.auth.last_name")}</Label>
+            <Input
+              {...register("last_name", { required: true })}
+              id="last_name"
+              type="text"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="email">{translate("ra.auth.email")}</Label>
+            <Input
+              {...register("email", { required: true })}
+              id="email"
+              type="email"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="password">{translate("ra.auth.password")}</Label>
+            <Input
+              {...register("password", { required: true })}
+              id="password"
+              type="password"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-4 justify-between items-center mt-8">
+            <Button
+              type="submit"
+              disabled={!isValid || isSignUpPending}
+              className="w-full"
+            >
+              {isSignUpPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  {translate("crm.auth.signup.creating", {
+                    _: "Creating...",
+                  })}
+                </>
+              ) : (
+                translate("crm.auth.signup.create_account", {
+                  _: "Create account",
+                })
+              )}
+            </Button>
+            {googleWorkplaceDomain ? (
+              <SSOAuthButton className="w-full" domain={googleWorkplaceDomain}>
+                {translate("crm.auth.sign_in_google_workspace", {
+                  _: "Sign in with Google Workplace",
+                })}
+              </SSOAuthButton>
+            ) : null}
+          </div>
+        </form>
       </div>
       <Notification />
     </div>

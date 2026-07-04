@@ -249,7 +249,7 @@ const SettingsFormFields = () => {
       {/* Left navigation */}
       <nav className="hidden md:block w-48 shrink-0">
         <div className="sticky top-4 space-y-1">
-          <h1 className="text-2xl font-semibold px-3 mb-2">
+          <h1 className="text-xl font-semibold tracking-tight px-3 mb-2">
             {translate("crm.settings.title")}
           </h1>
           {SECTIONS.map((section) => (
@@ -261,7 +261,7 @@ const SettingsFormFields = () => {
                   .getElementById(section.id)
                   ?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="block w-full text-left px-3 py-1 text-sm rounded-md hover:text-foreground hover:bg-muted transition-colors"
+              className="block w-full text-left px-3 py-1 text-[13px] rounded-md text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
             >
               {translate(section.label, { smart_count: 2 })}
             </button>
@@ -274,7 +274,7 @@ const SettingsFormFields = () => {
         {/* Branding */}
         <Card id="branding">
           <CardContent className="space-y-4">
-            <h2 className="text-xl font-semibold text-muted-foreground">
+            <h2 className="u-label text-muted-foreground">
               {translate("crm.settings.sections.branding")}
             </h2>
             <TextInput source="title" label="crm.settings.app_title" />
@@ -310,12 +310,12 @@ const SettingsFormFields = () => {
         {/* Companies */}
         <Card id="companies">
           <CardContent className="space-y-4">
-            <h2 className="text-xl font-semibold text-muted-foreground">
+            <h2 className="u-label text-muted-foreground">
               {translate("resources.companies.name", {
                 smart_count: 2,
               })}
             </h2>
-            <h3 className="text-lg font-medium text-muted-foreground">
+            <h3 className="text-[13px] font-semibold">
               {translate("crm.settings.companies.sectors")}
             </h3>
             <ArrayInput
@@ -333,12 +333,12 @@ const SettingsFormFields = () => {
         {/* Deals */}
         <Card id="deals">
           <CardContent className="space-y-4">
-            <h2 className="text-xl font-semibold text-muted-foreground">
+            <h2 className="u-label text-muted-foreground">
               {translate("resources.deals.name", {
                 smart_count: 2,
               })}
             </h2>
-            <h3 className="text-lg font-medium text-muted-foreground">
+            <h3 className="text-[13px] font-semibold">
               {translate("crm.settings.deals.currency")}
             </h3>
             <AutocompleteInput
@@ -351,7 +351,7 @@ const SettingsFormFields = () => {
 
             <Separator />
 
-            <h3 className="text-lg font-medium text-muted-foreground">
+            <h3 className="text-[13px] font-semibold">
               {translate("crm.settings.deals.stages")}
             </h3>
             <ArrayInput
@@ -367,7 +367,7 @@ const SettingsFormFields = () => {
 
             <Separator />
 
-            <h3 className="text-lg font-medium text-muted-foreground">
+            <h3 className="text-[13px] font-semibold">
               {translate("crm.settings.deals.pipeline_statuses")}
             </h3>
             <p className="text-sm text-muted-foreground">
@@ -408,7 +408,7 @@ const SettingsFormFields = () => {
 
             <Separator />
 
-            <h3 className="text-lg font-medium text-muted-foreground">
+            <h3 className="text-[13px] font-semibold">
               {translate("crm.settings.deals.categories")}
             </h3>
             <ArrayInput
@@ -427,12 +427,12 @@ const SettingsFormFields = () => {
         {/* Notes */}
         <Card id="notes">
           <CardContent className="space-y-4">
-            <h2 className="text-xl font-semibold text-muted-foreground">
+            <h2 className="u-label text-muted-foreground">
               {translate("resources.notes.name", {
                 smart_count: 2,
               })}
             </h2>
-            <h3 className="text-lg font-medium text-muted-foreground">
+            <h3 className="text-[13px] font-semibold">
               {translate("crm.settings.notes.statuses")}
             </h3>
             <ArrayInput source="noteStatuses" label={false} helperText={false}>
@@ -447,12 +447,12 @@ const SettingsFormFields = () => {
         {/* Tasks */}
         <Card id="tasks">
           <CardContent className="space-y-4">
-            <h2 className="text-xl font-semibold text-muted-foreground">
+            <h2 className="u-label text-muted-foreground">
               {translate("resources.tasks.name", {
                 smart_count: 2,
               })}
             </h2>
-            <h3 className="text-lg font-medium text-muted-foreground">
+            <h3 className="text-[13px] font-semibold">
               {translate("crm.settings.tasks.types")}
             </h3>
             <ArrayInput source="taskTypes" label={false} helperText={false}>

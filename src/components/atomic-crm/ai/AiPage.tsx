@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useGetList, useGetIdentity, useCreate, useNotify } from "ra-core";
-import { Sparkles, Send, Loader2, ScrollText, Eraser } from "lucide-react";
+import { Send, Loader2, ScrollText, Eraser } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,15 +37,29 @@ export const AiPage = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Light data snapshot so answers are grounded in real life, not generic.
-  const { data: todos } = useGetList<{ id: number; text: string; done: boolean; due_date?: string | null }>(
-    "todos",
-    { pagination: { page: 1, perPage: 100 }, sort: { field: "created_at", order: "DESC" } },
-  );
-  const { data: apps } = useGetList<{ id: number; company: string; role?: string; status: string }>(
-    "applications",
-    { pagination: { page: 1, perPage: 50 }, sort: { field: "position", order: "ASC" } },
-  );
-  const { data: goals } = useGetList<{ id: number; title: string; status: string }>("goals", {
+  const { data: todos } = useGetList<{
+    id: number;
+    text: string;
+    done: boolean;
+    due_date?: string | null;
+  }>("todos", {
+    pagination: { page: 1, perPage: 100 },
+    sort: { field: "created_at", order: "DESC" },
+  });
+  const { data: apps } = useGetList<{
+    id: number;
+    company: string;
+    role?: string;
+    status: string;
+  }>("applications", {
+    pagination: { page: 1, perPage: 50 },
+    sort: { field: "position", order: "ASC" },
+  });
+  const { data: goals } = useGetList<{
+    id: number;
+    title: string;
+    status: string;
+  }>("goals", {
     pagination: { page: 1, perPage: 50 },
     sort: { field: "position", order: "ASC" },
   });
@@ -67,20 +81,36 @@ export const AiPage = () => {
       const snapshot = {
         today,
         open_todos: open.length,
-        overdue: open.filter((t) => t.due_date && t.due_date < today).slice(0, 10).map((t) => t.text),
-        due_today: open.filter((t) => t.due_date === today).slice(0, 10).map((t) => t.text),
+        overdue: open
+          .filter((t) => t.due_date && t.due_date < today)
+          .slice(0, 10)
+          .map((t) => t.text),
+        due_today: open
+          .filter((t) => t.due_date === today)
+          .slice(0, 10)
+          .map((t) => t.text),
         job_applications: (apps ?? [])
           .filter((a) => a.status !== "closed")
           .slice(0, 15)
-          .map((a) => `${a.company}${a.role ? ` (${a.role})` : ""} [${a.status}]`),
-        active_goals: (goals ?? []).filter((g) => g.status === "active").map((g) => g.title),
+          .map(
+            (a) => `${a.company}${a.role ? ` (${a.role})` : ""} [${a.status}]`,
+          ),
+        active_goals: (goals ?? [])
+          .filter((g) => g.status === "active")
+          .map((g) => g.title),
       };
-      const { data, error } = await getSupabaseClient().functions.invoke("ai_chat", {
-        body: { messages: history, today, snapshot },
-      });
+      const { data, error } = await getSupabaseClient().functions.invoke(
+        "ai_chat",
+        {
+          body: { messages: history, today, snapshot },
+        },
+      );
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
-      setMessages([...history, { role: "assistant", text: String(data?.text ?? "") }]);
+      setMessages([
+        ...history,
+        { role: "assistant", text: String(data?.text ?? "") },
+      ]);
     } catch {
       notify("The AI hit a snag — try again in a moment.", { type: "error" });
       setMessages(history.slice(0, -1));
@@ -95,7 +125,11 @@ export const AiPage = () => {
       "scripts",
       {
         data: {
-          title: text.split("\n")[0].slice(0, 60).replace(/^#+\s*/, "") || "AI script",
+          title:
+            text
+              .split("\n")[0]
+              .slice(0, 60)
+              .replace(/^#+\s*/, "") || "AI script",
           category: SCRIPT_CATEGORIES[0],
           body: text,
           sales_id: salesId,
@@ -110,10 +144,12 @@ export const AiPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col" style={{ minHeight: "calc(100vh - 8rem)" }}>
+    <div
+      className="max-w-3xl mx-auto px-4 py-6 flex flex-col"
+      style={{ minHeight: "calc(100vh - 8rem)" }}
+    >
       <div className="flex items-center gap-2 mb-1">
-        <Sparkles className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold flex-1">AI</h1>
+        <h1 className="text-xl font-semibold tracking-tight flex-1">AI</h1>
         {messages.length > 0 && (
           <button
             onClick={() => setMessages([])}
@@ -123,9 +159,9 @@ export const AiPage = () => {
           </button>
         )}
       </div>
-      <p className="text-sm text-muted-foreground mb-4">
-        Knows your to-dos, jobs, and goals. Great at drafting scripts — save
-        any reply straight to your Scripts section.
+      <p className="text-[13px] text-muted-foreground mb-4">
+        Knows your to-dos, jobs, and goals. Great at drafting scripts — save any
+        reply straight to your Scripts section.
       </p>
 
       {/* Conversation */}
@@ -136,7 +172,7 @@ export const AiPage = () => {
               <button
                 key={p}
                 onClick={() => send(p)}
-                className="rounded-xl border bg-card p-3 text-sm text-left text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                className="rounded-lg border bg-card p-3 text-left text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
               >
                 {p}
               </button>
@@ -147,10 +183,10 @@ export const AiPage = () => {
           <div
             key={i}
             className={cn(
-              "max-w-[85%] rounded-2xl px-4 py-2.5 text-[15px] leading-6 whitespace-pre-line",
+              "max-w-[85%] rounded-lg px-4 py-2.5 text-[13px] leading-6 whitespace-pre-line",
               m.role === "user"
-                ? "self-end bg-primary text-primary-foreground rounded-br-sm"
-                : "self-start bg-card border rounded-bl-sm",
+                ? "self-end bg-primary text-primary-foreground"
+                : "self-start border bg-card",
             )}
           >
             {m.text}
@@ -167,7 +203,7 @@ export const AiPage = () => {
           </div>
         ))}
         {busy && (
-          <div className="self-start rounded-2xl border bg-card px-4 py-3">
+          <div className="self-start rounded-lg border bg-card px-4 py-3">
             <Loader2 className="size-4 animate-spin text-primary" />
           </div>
         )}
@@ -175,7 +211,7 @@ export const AiPage = () => {
       </div>
 
       {/* Composer */}
-      <Card className="p-2 flex gap-2 items-end sticky bottom-20 md:bottom-4">
+      <Card className="gap-2 rounded-lg border bg-card p-2 flex-row items-end sticky bottom-20 md:bottom-4">
         <Textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -192,7 +228,7 @@ export const AiPage = () => {
           onClick={() => send(input)}
           disabled={busy || !input.trim()}
           size="icon"
-          className="rounded-full shrink-0 mb-0.5"
+          className="rounded-md shrink-0 mb-0.5"
           aria-label="Send"
         >
           <Send className="size-4" />

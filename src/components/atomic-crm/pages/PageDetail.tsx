@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
-import { useGetOne, useUpdate, useDelete, useRedirect, useNotify } from "ra-core";
+import {
+  useGetOne,
+  useUpdate,
+  useDelete,
+  useRedirect,
+  useNotify,
+} from "ra-core";
 import { ArrowLeft, Trash2, ExternalLink, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,7 +101,7 @@ export const PageDetail = () => {
   if (isPending || !page) {
     return (
       <div className="flex justify-center pt-24">
-        <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="size-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
   }
@@ -113,7 +119,7 @@ export const PageDetail = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => redirect("/pages")}
-            className="rounded-full border p-2 text-muted-foreground hover:text-foreground hover:bg-accent"
+            className="rounded-md border p-2 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
             aria-label="Back to pages"
           >
             <ArrowLeft className="size-4" />
@@ -123,19 +129,21 @@ export const PageDetail = () => {
             onChange={(e) => setEmoji(e.target.value)}
             onBlur={() => save({ emoji })}
             placeholder="📄"
-            className="w-14 text-center text-xl border-0 shadow-none focus-visible:ring-0"
+            className="w-14 border-0 text-center text-xl shadow-none focus-visible:ring-0"
             aria-label="Page emoji"
           />
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onBlur={() => title.trim() && save({ title: title.trim() })}
-            className="flex-1 text-xl font-semibold border-0 shadow-none focus-visible:ring-0"
+            className="flex-1 border-0 text-xl font-semibold tracking-tight shadow-none focus-visible:ring-0"
             aria-label="Page title"
           />
           <ThemePicker
             accent={accent}
-            onChange={(a) => save({ theme: { ...(page.theme ?? {}), accent: a ?? undefined } })}
+            onChange={(a) =>
+              save({ theme: { ...(page.theme ?? {}), accent: a ?? undefined } })
+            }
           />
           <button
             onClick={() =>
@@ -152,7 +160,7 @@ export const PageDetail = () => {
                 ),
               )
             }
-            className="rounded-full border p-2 text-muted-foreground hover:text-destructive hover:bg-accent"
+            className="rounded-md border p-2 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-destructive"
             aria-label="Delete page"
           >
             <Trash2 className="size-4" />
@@ -162,9 +170,11 @@ export const PageDetail = () => {
         {page.kind === "doc" && (
           <textarea
             value={String(content.text ?? "")}
-            onChange={(e) => queueContentSave({ ...content, text: e.target.value })}
+            onChange={(e) =>
+              queueContentSave({ ...content, text: e.target.value })
+            }
             placeholder="Write anything…"
-            className="min-h-[65vh] w-full resize-y rounded-xl border bg-card p-5 text-[15px] leading-7 outline-none focus:ring-2 focus:ring-ring/40"
+            className="min-h-[65vh] w-full resize-y rounded-lg border bg-card p-5 text-[15px] leading-7 outline-none focus:ring-2 focus:ring-ring/40"
           />
         )}
 
@@ -204,18 +214,28 @@ const SheetEditor = ({
     onChange({ ...content, rows: next });
   };
   const setHeader = (c: number, v: string) =>
-    setCols(cols.map((h, ci) => (ci === c ? v : h)), rows);
-  const addRow = () => onChange({ ...content, rows: [...rows, cols.map(() => "")] });
+    setCols(
+      cols.map((h, ci) => (ci === c ? v : h)),
+      rows,
+    );
+  const addRow = () =>
+    onChange({ ...content, rows: [...rows, cols.map(() => "")] });
   const addCol = () =>
-    setCols([...cols, String.fromCharCode(65 + cols.length)], rows.map((r) => [...r, ""]));
+    setCols(
+      [...cols, String.fromCharCode(65 + cols.length)],
+      rows.map((r) => [...r, ""]),
+    );
   const delRow = (r: number) =>
     onChange({ ...content, rows: rows.filter((_, ri) => ri !== r) });
   const delCol = (c: number) =>
-    setCols(cols.filter((_, ci) => ci !== c), rows.map((row) => row.filter((_, ci) => ci !== c)));
+    setCols(
+      cols.filter((_, ci) => ci !== c),
+      rows.map((row) => row.filter((_, ci) => ci !== c)),
+    );
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="overflow-x-auto rounded-xl border">
+      <div className="overflow-x-auto rounded-lg border">
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-muted/50">
@@ -268,10 +288,20 @@ const SheetEditor = ({
         </table>
       </div>
       <div className="flex gap-2">
-        <Button variant="secondary" size="sm" className="gap-1" onClick={addRow}>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="gap-1"
+          onClick={addRow}
+        >
           <Plus className="size-3.5" /> Row
         </Button>
-        <Button variant="secondary" size="sm" className="gap-1" onClick={addCol}>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="gap-1"
+          onClick={addCol}
+        >
           <Plus className="size-3.5" /> Column
         </Button>
         <span className="ml-auto self-center text-[11px] text-muted-foreground">
@@ -302,7 +332,12 @@ const EmbedEditor = ({
           className="flex-1"
         />
         {src && (
-          <Button asChild variant="secondary" size="icon" aria-label="Open in new tab">
+          <Button
+            asChild
+            variant="secondary"
+            size="icon"
+            aria-label="Open in new tab"
+          >
             <a href={url} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="size-4" />
             </a>
@@ -313,11 +348,11 @@ const EmbedEditor = ({
         <iframe
           src={src}
           title="Embedded content"
-          className="w-full h-[70vh] rounded-xl border bg-white"
+          className="w-full h-[70vh] rounded-lg border bg-white"
           sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
         />
       ) : (
-        <div className="h-[40vh] rounded-xl border border-dashed flex items-center justify-center text-sm text-muted-foreground">
+        <div className="flex h-[40vh] items-center justify-center rounded-lg border border-dashed text-[13px] text-muted-foreground">
           Paste a link above to embed it here
         </div>
       )}

@@ -11,7 +11,6 @@ import {
   Database,
   ExternalLink,
   Link as LinkIcon,
-  LayoutGrid,
   Maximize2,
   Plus,
   Trash2,
@@ -86,31 +85,31 @@ export const HubPage = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <LayoutGrid className="size-6 text-primary" />
-          <h1 className="text-2xl font-semibold">Command Center</h1>
-        </div>
+        <h1 className="text-xl font-semibold tracking-tight">Command Center</h1>
         <Button onClick={() => setAddOpen(true)} className="gap-1">
           <Plus className="size-4" /> Add tile
         </Button>
       </div>
 
       {isLoading ? (
-        <p className="text-muted-foreground">Loading your tools…</p>
+        <p className="text-[13px] text-muted-foreground">Loading your tools…</p>
       ) : items.length === 0 ? (
-        <p className="text-muted-foreground">
+        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
           No tiles yet. Add your first website, dashboard, or database.
-        </p>
+        </div>
       ) : (
-        categories.map((cat) => (
-          <section key={cat} className="mb-8">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-              {cat}
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {items
-                .filter((i) => i.category === cat)
-                .map((item) => (
+        categories.map((cat) => {
+          const catItems = items.filter((i) => i.category === cat);
+          return (
+            <section key={cat} className="mb-8">
+              <h2 className="u-label mb-2 text-muted-foreground">
+                {cat}
+                <span className="ml-1.5 font-medium text-muted-foreground/60">
+                  {catItems.length}
+                </span>
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {catItems.map((item) => (
                   <HubTile
                     key={item.id}
                     item={item}
@@ -118,9 +117,10 @@ export const HubPage = () => {
                     onDeleted={refetch}
                   />
                 ))}
-            </div>
-          </section>
-        ))
+              </div>
+            </section>
+          );
+        })
       )}
 
       {embedItem && (
@@ -174,19 +174,19 @@ const HubTile = ({
   return (
     <Card
       onClick={onOpen}
-      className="group relative cursor-pointer p-4 flex flex-col gap-2 hover:shadow-md transition-shadow border-l-4"
+      className="group relative cursor-pointer gap-2 rounded-lg border-l-4 bg-card p-4 transition-colors hover:bg-accent/50"
       style={{ borderLeftColor: item.color ?? "var(--primary)" }}
     >
       <button
         onClick={handleDelete}
-        className="absolute top-1 right-1 opacity-60 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+        className="absolute top-1 right-1 rounded-md p-1 text-muted-foreground opacity-60 transition-opacity hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
         aria-label="Remove tile"
       >
         <Trash2 className="size-4" />
       </button>
       <div className="flex items-center gap-2">
         <Icon className="size-4 shrink-0 text-muted-foreground" />
-        <span className="font-medium text-sm truncate">{item.title}</span>
+        <span className="truncate text-[13px] font-medium">{item.title}</span>
       </div>
       {item.description && (
         <p className="text-xs text-muted-foreground line-clamp-2">

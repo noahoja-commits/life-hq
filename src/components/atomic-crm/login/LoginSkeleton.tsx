@@ -2,16 +2,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const LoginSkeleton = () => {
   return (
-    <div className="max-w-screen-xl mx-auto h-screen pt-8">
-      <div className="h-full">
-        <div className="max-w-sm mx-auto h-full flex flex-col justify-center gap-8">
-          <Skeleton className="w-full h-[100px]" />
-          <Skeleton className="w-4/5 h-[50px]" />
-          <Skeleton className="w-full h-9" />
-          <Skeleton className="w-full h-9" />
-          <Skeleton className="w-full h-9" />
-          <Skeleton className="w-2/5 h-9" />
-        </div>
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-8">
+      <Skeleton className="h-5 w-32 rounded-md" />
+      <div className="w-full max-w-sm space-y-4 rounded-lg border bg-card p-6">
+        <Skeleton className="mx-auto h-6 w-40 rounded-md" />
+        <Skeleton className="h-9 w-full rounded-md" />
+        <Skeleton className="h-9 w-full rounded-md" />
+        <Skeleton className="h-9 w-full rounded-md" />
+        <Skeleton className="h-4 w-2/5 rounded-md" />
       </div>
     </div>
   );

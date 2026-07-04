@@ -8,7 +8,6 @@ import {
   useNotify,
 } from "ra-core";
 import {
-  CheckSquare,
   Plus,
   Trash2,
   Flag,
@@ -66,9 +65,13 @@ const toLocalInput = (iso?: string | null) => {
   const d = new Date(iso);
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 };
-const fromLocalInput = (val: string) => (val ? new Date(val).toISOString() : null);
+const fromLocalInput = (val: string) =>
+  val ? new Date(val).toISOString() : null;
 const prettyTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  new Date(iso).toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 
 const localToday = () => {
   const d = new Date();
@@ -110,13 +113,14 @@ export const TodosPage = () => {
     pagination: { page: 1, perPage: 500 },
     sort: { field: "created_at", order: "DESC" },
   });
-  const { data: projectsData } = useGetList<{ id: number; name: string; stage: string }>(
-    "deals",
-    {
-      pagination: { page: 1, perPage: 200 },
-      sort: { field: "updated_at", order: "DESC" },
-    },
-  );
+  const { data: projectsData } = useGetList<{
+    id: number;
+    name: string;
+    stage: string;
+  }>("deals", {
+    pagination: { page: 1, perPage: 200 },
+    sort: { field: "updated_at", order: "DESC" },
+  });
   const projects = (projectsData ?? []).filter((p) => p.stage !== "done");
   const projectName = new Map(projects.map((p) => [p.id, p.name]));
   const salesId = identity?.id ? Number(identity.id) : null;
@@ -159,7 +163,10 @@ export const TodosPage = () => {
       "todos",
       {
         id: t.id,
-        data: { done: markingDone, done_at: markingDone ? new Date().toISOString() : null },
+        data: {
+          done: markingDone,
+          done_at: markingDone ? new Date().toISOString() : null,
+        },
         previousData: t,
       },
       { mutationMode: "optimistic" },
@@ -168,7 +175,11 @@ export const TodosPage = () => {
     // Guard: if an open sibling of this series already exists (e.g. the user
     // un-checked and re-checked), don't create a second one.
     const hasOpenSibling = todos.some(
-      (o) => !o.done && o.id !== t.id && o.text === t.text && o.recur_freq === t.recur_freq,
+      (o) =>
+        !o.done &&
+        o.id !== t.id &&
+        o.text === t.text &&
+        o.recur_freq === t.recur_freq,
     );
     if (markingDone && t.recur_freq && !hasOpenSibling) {
       const next = nextOccurrenceFields(t);
@@ -201,7 +212,11 @@ export const TodosPage = () => {
   };
 
   const del = (t: Todo) =>
-    remove("todos", { id: t.id, previousData: t }, { mutationMode: "optimistic" });
+    remove(
+      "todos",
+      { id: t.id, previousData: t },
+      { mutationMode: "optimistic" },
+    );
 
   const patch = (t: Todo, data: Partial<Todo>) =>
     update(
@@ -218,21 +233,38 @@ export const TodosPage = () => {
   const done = todos.filter((t) => t.done);
 
   const byPriorityThenDate = (a: Todo, b: Todo) =>
-    b.priority - a.priority || (a.due_date || "9999").localeCompare(b.due_date || "9999");
+    b.priority - a.priority ||
+    (a.due_date || "9999").localeCompare(b.due_date || "9999");
 
-  const groups: { key: string; label: string; items: Todo[]; tone?: string }[] = [
-    { key: "overdue", label: "Overdue", items: [...overdue].sort(byPriorityThenDate), tone: "text-red-500" },
-    { key: "today", label: "Today", items: [...dueToday].sort(byPriorityThenDate), tone: "text-primary" },
-    { key: "upcoming", label: "Upcoming", items: [...upcoming].sort(byPriorityThenDate) },
-    { key: "anytime", label: "Anytime", items: [...anytime].sort(byPriorityThenDate) },
-  ];
+  const groups: { key: string; label: string; items: Todo[]; tone?: string }[] =
+    [
+      {
+        key: "overdue",
+        label: "Overdue",
+        items: [...overdue].sort(byPriorityThenDate),
+        tone: "text-destructive",
+      },
+      {
+        key: "today",
+        label: "Today",
+        items: [...dueToday].sort(byPriorityThenDate),
+        tone: "text-primary",
+      },
+      {
+        key: "upcoming",
+        label: "Upcoming",
+        items: [...upcoming].sort(byPriorityThenDate),
+      },
+      {
+        key: "anytime",
+        label: "Anytime",
+        items: [...anytime].sort(byPriorityThenDate),
+      },
+    ];
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <div className="flex items-center gap-2 mb-6">
-        <CheckSquare className="size-6 text-primary" />
-        <h1 className="text-2xl font-semibold">To-Dos</h1>
-      </div>
+      <h1 className="mb-6 text-xl font-semibold tracking-tight">To-Dos</h1>
 
       {/* Quick add */}
       <Card className="p-3 mb-6 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
@@ -254,8 +286,10 @@ export const TodosPage = () => {
                 key={q.label}
                 onClick={() => setDue(due === q.v ? "" : q.v)}
                 className={cn(
-                  "text-xs rounded-full px-2.5 py-1 border transition-colors",
-                  due === q.v ? "bg-primary/15 text-primary border-primary/30" : "hover:bg-accent",
+                  "rounded-md border px-2.5 py-1 text-xs transition-colors",
+                  due === q.v
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : "hover:bg-accent/50",
                 )}
               >
                 {q.label}
@@ -265,7 +299,7 @@ export const TodosPage = () => {
               type="date"
               value={due}
               onChange={(e) => setDue(e.target.value)}
-              className="text-xs rounded-full px-2 py-1 border bg-transparent"
+              className="rounded-md border bg-transparent px-2 py-1 text-xs"
               aria-label="Due date"
             />
           </div>
@@ -273,31 +307,41 @@ export const TodosPage = () => {
             onClick={() => setHigh((h) => !h)}
             aria-label="High priority"
             className={cn(
-              "rounded-full p-1.5 border transition-colors",
-              high ? "bg-red-500/15 text-red-500 border-red-500/30" : "text-muted-foreground hover:bg-accent",
+              "rounded-md border p-1.5 transition-colors",
+              high
+                ? "border-destructive/30 bg-destructive/10 text-destructive"
+                : "text-muted-foreground hover:bg-accent/50",
             )}
           >
             <Flag className="size-4" />
           </button>
-          <Button onClick={add} size="icon" className="rounded-full shrink-0">
+          <Button onClick={add} size="icon" className="shrink-0">
             <Plus className="size-4" />
           </Button>
         </div>
       </Card>
 
       {open.length === 0 ? (
-        <Card className="p-8 text-center text-muted-foreground border-dashed">
-          Nothing on your plate. Add a to-do above — or enjoy the clear deck. ✨
+        <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
+          Nothing on your plate. Add a to-do above — or enjoy the clear deck.
         </Card>
       ) : (
         groups
           .filter((g) => g.items.length > 0)
           .map((g) => (
             <section key={g.key} className="mb-6">
-              <h2 className={cn("text-xs font-semibold uppercase tracking-wide mb-2", g.tone || "text-muted-foreground")}>
-                {g.label} · {g.items.length}
+              <h2
+                className={cn(
+                  "u-label mb-2",
+                  g.tone || "text-muted-foreground",
+                )}
+              >
+                {g.label}
+                <span className="ml-1.5 font-medium text-muted-foreground/60">
+                  {g.items.length}
+                </span>
               </h2>
-              <Card className="divide-y p-0">
+              <Card className="divide-y divide-border overflow-hidden p-0">
                 {g.items.map((t) => (
                   <TodoRow
                     key={t.id}
@@ -318,10 +362,13 @@ export const TodosPage = () => {
 
       {done.length > 0 && (
         <section className="mb-6 opacity-70">
-          <h2 className="text-xs font-semibold uppercase tracking-wide mb-2 text-muted-foreground">
-            Done · {done.length}
+          <h2 className="u-label mb-2 text-muted-foreground">
+            Done
+            <span className="ml-1.5 font-medium text-muted-foreground/60">
+              {done.length}
+            </span>
           </h2>
-          <Card className="divide-y p-0">
+          <Card className="divide-y divide-border overflow-hidden p-0">
             {done.slice(0, 30).map((t) => (
               <TodoRow
                 key={t.id}
@@ -378,11 +425,13 @@ const TodoRow = ({
           aria-label={`Mark ${t.text} done`}
           className="transition-transform active:scale-90"
         />
-        {t.priority === 2 && !t.done && <Flag className="size-3.5 text-red-500 shrink-0" />}
+        {t.priority === 2 && !t.done && (
+          <Flag className="size-3.5 text-destructive shrink-0" />
+        )}
         <button
           onClick={() => setExpanded((e) => !e)}
           className={cn(
-            "flex-1 text-left text-sm truncate",
+            "flex-1 text-left text-[13px] truncate",
             t.done && "line-through text-muted-foreground",
           )}
         >
@@ -420,7 +469,12 @@ const TodoRow = ({
           className="text-muted-foreground hover:text-foreground transition-colors"
           aria-label={expanded ? "Collapse" : "Expand details"}
         >
-          <ChevronDown className={cn("size-4 transition-transform", expanded && "rotate-180")} />
+          <ChevronDown
+            className={cn(
+              "size-4 transition-transform",
+              expanded && "rotate-180",
+            )}
+          />
         </button>
         <button
           onClick={onDelete}
@@ -450,10 +504,10 @@ const TodoRow = ({
             <button
               onClick={() => onPatch({ priority: t.priority === 2 ? 1 : 2 })}
               className={cn(
-                "rounded-full px-2 py-1 border transition-colors",
+                "rounded-md border px-2.5 py-1 transition-colors",
                 t.priority === 2
-                  ? "bg-red-500/15 text-red-500 border-red-500/30"
-                  : "text-muted-foreground hover:bg-accent",
+                  ? "border-destructive/30 bg-destructive/10 text-destructive"
+                  : "text-muted-foreground hover:bg-accent/50",
               )}
             >
               {t.priority === 2 ? "High priority" : "Set high priority"}
@@ -468,7 +522,9 @@ const TodoRow = ({
             <input
               type="datetime-local"
               value={toLocalInput(t.remind_at)}
-              onChange={(e) => onPatch({ remind_at: fromLocalInput(e.target.value) })}
+              onChange={(e) =>
+                onPatch({ remind_at: fromLocalInput(e.target.value) })
+              }
               className="rounded-md border px-2 py-1 bg-transparent"
             />
             {t.remind_at && (
@@ -531,15 +587,27 @@ const RecurControl = ({
   const freq = t.recur_freq ?? null;
   const setFreq = (f: RecurFreq | null) => {
     if (!f) {
-      onPatch({ recur_freq: null, recur_byweekday: null, recur_day_of_month: null });
+      onPatch({
+        recur_freq: null,
+        recur_byweekday: null,
+        recur_day_of_month: null,
+      });
       return;
     }
     const patch: Partial<Todo> = { recur_freq: f };
-    if (f === "weekly" && (!t.recur_byweekday || t.recur_byweekday.length === 0)) {
-      patch.recur_byweekday = [new Date((t.due_date ?? "") + "T00:00:00").getDay() || new Date().getDay()];
+    if (
+      f === "weekly" &&
+      (!t.recur_byweekday || t.recur_byweekday.length === 0)
+    ) {
+      patch.recur_byweekday = [
+        new Date((t.due_date ?? "") + "T00:00:00").getDay() ||
+          new Date().getDay(),
+      ];
     }
     if (f === "monthly" && !t.recur_day_of_month) {
-      patch.recur_day_of_month = t.due_date ? new Date(t.due_date + "T00:00:00").getDate() : new Date().getDate();
+      patch.recur_day_of_month = t.due_date
+        ? new Date(t.due_date + "T00:00:00").getDate()
+        : new Date().getDate();
     }
     onPatch(patch);
   };
@@ -569,10 +637,10 @@ const RecurControl = ({
               key={o.label}
               onClick={() => setFreq(o.value)}
               className={cn(
-                "rounded-full px-2.5 py-1 border transition-colors",
+                "rounded-md border px-2.5 py-1 transition-colors",
                 freq === o.value
-                  ? "bg-primary/15 text-primary border-primary/30"
-                  : "hover:bg-accent",
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : "hover:bg-accent/50",
               )}
             >
               {o.label}
@@ -587,10 +655,10 @@ const RecurControl = ({
               key={i}
               onClick={() => toggleDay(i)}
               className={cn(
-                "size-7 rounded-full border text-[11px] transition-colors",
+                "size-7 rounded-md border text-[11px] transition-colors",
                 (t.recur_byweekday ?? []).includes(i)
-                  ? "bg-primary/15 text-primary border-primary/30"
-                  : "hover:bg-accent",
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : "hover:bg-accent/50",
               )}
               aria-label={`weekday ${i}`}
             >
