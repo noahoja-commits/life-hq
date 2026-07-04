@@ -24,11 +24,38 @@ const raSupabaseFrenchMessagesOverride = {
   },
 };
 
+// Life HQ overrides: reframe the sales CRM as a personal life CRM.
+const lifeCrmOverrides = {
+  resources: {
+    contacts: {
+      name: "Person |||| People",
+      forcedCaseName: "Person",
+    },
+    deals: {
+      name: "Project |||| Projects",
+      forcedCaseName: "Project",
+      action: { new: "New project", create: "Create project" },
+      empty: {
+        title: "No projects yet",
+        description:
+          "Capture anything from the dashboard, or add one here — no pressure.",
+      },
+      filters: { only_mine: "Only mine" },
+    },
+    companies: {
+      name: "Place |||| Places",
+      forcedCaseName: "Place",
+      filters: { only_mine: "Only mine" },
+    },
+  },
+};
+
 const englishCatalog = mergeTranslations(
   englishMessages,
   raSupabaseEnglishMessages,
   raSupabaseEnglishMessagesOverride,
   englishCrmMessages,
+  lifeCrmOverrides,
 );
 
 const frenchCatalog = mergeTranslations(

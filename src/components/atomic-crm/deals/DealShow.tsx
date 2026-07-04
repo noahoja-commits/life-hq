@@ -27,6 +27,7 @@ import { NotesIterator } from "../notes/NotesIterator";
 import { useConfigurationContext } from "../root/ConfigurationContext";
 import type { Deal } from "../types";
 import { ContactList } from "./ContactList";
+import { LinkedTodos } from "./LinkedTodos";
 import { findDealLabel, formatISODateString } from "./dealUtils";
 
 export const DealShow = ({ open, id }: { open: boolean; id?: string }) => {
@@ -86,38 +87,42 @@ const DealShowContent = () => {
           </div>
 
           <div className="flex gap-8 m-4">
-            <div className="flex flex-col mr-10">
-              <span className="text-xs text-muted-foreground tracking-wide">
-                {translate("resources.deals.fields.expected_closing_date")}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="text-sm">
-                  {isValid(new Date(record.expected_closing_date))
-                    ? formatISODateString(record.expected_closing_date)
-                    : translate("resources.deals.invalid_date")}
+            {record.expected_closing_date ? (
+              <div className="flex flex-col mr-10">
+                <span className="text-xs text-muted-foreground tracking-wide">
+                  {translate("resources.deals.fields.expected_closing_date")}
                 </span>
-                {new Date(record.expected_closing_date) < new Date() ? (
-                  <Badge variant="destructive">
-                    {translate("crm.common.past")}
-                  </Badge>
-                ) : null}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">
+                    {isValid(new Date(record.expected_closing_date))
+                      ? formatISODateString(record.expected_closing_date)
+                      : translate("resources.deals.invalid_date")}
+                  </span>
+                  {new Date(record.expected_closing_date) < new Date() ? (
+                    <Badge variant="destructive">
+                      {translate("crm.common.past")}
+                    </Badge>
+                  ) : null}
+                </div>
               </div>
-            </div>
+            ) : null}
 
-            <div className="flex flex-col mr-10">
-              <span className="text-xs text-muted-foreground tracking-wide">
-                {translate("resources.deals.fields.amount")}
-              </span>
-              <span className="text-sm">
-                {record.amount.toLocaleString("en-US", {
-                  notation: "compact",
-                  style: "currency",
-                  currency,
-                  currencyDisplay: "narrowSymbol",
-                  minimumSignificantDigits: 3,
-                })}
-              </span>
-            </div>
+            {record.amount ? (
+              <div className="flex flex-col mr-10">
+                <span className="text-xs text-muted-foreground tracking-wide">
+                  {translate("resources.deals.fields.amount")}
+                </span>
+                <span className="text-sm">
+                  {record.amount.toLocaleString("en-US", {
+                    notation: "compact",
+                    style: "currency",
+                    currency,
+                    currencyDisplay: "narrowSymbol",
+                    minimumSignificantDigits: 3,
+                  })}
+                </span>
+              </div>
+            ) : null}
 
             {record.category && (
               <div className="flex flex-col mr-10">
@@ -165,6 +170,8 @@ const DealShowContent = () => {
               <p className="text-sm leading-6">{record.description}</p>
             </div>
           )}
+
+          <LinkedTodos />
 
           <div className="m-4">
             <Separator className="mb-4" />

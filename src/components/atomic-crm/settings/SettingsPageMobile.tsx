@@ -43,7 +43,6 @@ import {
 
 import { MobileContent } from "../layout/MobileContent";
 import MobileHeader from "../layout/MobileHeader";
-import { ChangelogPage } from "../misc/ChangelogPage";
 import ImageEditorField from "../misc/ImageEditorField";
 import type { CrmDataProvider } from "../providers/types";
 import type { SalesFormData } from "../types";
@@ -504,7 +503,7 @@ const AboutSection = () => {
       <SectionLabel>{translate("crm.settings.about")}</SectionLabel>
       <ItemGroup className="rounded-lg border overflow-hidden">
         <Item asChild size="sm" className="cursor-pointer">
-          <Link to={ChangelogPage.path}>
+          <Link to="/changelog">
             <ItemContent>
               <ItemTitle className="font-normal">
                 {translate("crm.changelog.title")}

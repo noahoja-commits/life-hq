@@ -5,12 +5,14 @@ import { Error } from "@/components/admin/error";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { useConfigurationLoader } from "../root/useConfigurationLoader";
+import { CommandPalette } from "../command/CommandPalette";
 import Header from "./Header";
 
 export const Layout = ({ children }: { children: ReactNode }) => {
   useConfigurationLoader();
   return (
     <>
+      <CommandPalette />
       <Header />
       <main className="max-w-screen-xl mx-auto pt-4 px-4" id="main-content">
         <ErrorBoundary FallbackComponent={Error}>

@@ -32,5 +32,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "demo", "vitest-browser.d.ts"]
+  "include": ["src", "demo", "vitest-browser.d.ts"],
+  "exclude": ["src/sw.ts"]
 }

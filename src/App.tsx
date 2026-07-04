@@ -24,6 +24,6 @@ import { CRM } from "@/components/atomic-crm/root/CRM";
  *    />
  * );
  */
-const App = () => <CRM />;
+const App = () => <CRM title="Life HQ" />;
 
 export default App;

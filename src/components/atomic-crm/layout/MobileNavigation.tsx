@@ -1,82 +1,126 @@
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Home, ListTodo, Plus, Settings, Users } from "lucide-react";
-import { useTranslate } from "ra-core";
-import { Link, matchPath, useLocation, useMatch } from "react-router";
-import { ContactCreateSheet } from "../contacts/ContactCreateSheet";
-import { useState } from "react";
-import { NoteCreateSheet } from "../notes/NoteCreateSheet";
-import { TaskCreateSheet } from "../tasks/TaskCreateSheet";
+import {
+  Home,
+  Menu as MenuIcon,
+  Plus,
+  Search,
+  SlidersHorizontal,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Link, matchPath, useLocation } from "react-router";
+import { useGetIdentity } from "ra-core";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { QuickCaptureSheet } from "./QuickCaptureSheet";
+import { applyNavPrefs, isPrimaryNav, navPrefsStore } from "./navPrefsStore";
+import { NavCustomizer } from "./NavCustomizer";
 
 export const MobileNavigation = () => {
   const location = useLocation();
-  const translate = useTranslate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [customizeOpen, setCustomizeOpen] = useState(false);
+  const prefs = useSyncExternalStore(navPrefsStore.subscribe, navPrefsStore.get);
+  const { identity } = useGetIdentity();
+  const salesId = identity?.id ? Number(identity.id) : null;
+  useEffect(() => {
+    if (salesId) void navPrefsStore.load(salesId);
+  }, [salesId]);
+  const menuSections = applyNavPrefs(prefs);
+  // Bottom-bar slots follow the user's nav order (first two after Dashboard),
+  // so reordering nav personalizes the bar too.
+  const pinned = menuSections
+    .filter((n) => n.key !== "dashboard" && n.key !== "settings" && isPrimaryNav(prefs, n))
+    .slice(0, 2);
 
-  let currentPath: string | boolean = "/";
-  if (matchPath("/", location.pathname)) {
-    currentPath = "/";
-  } else if (matchPath("/contacts/*", location.pathname)) {
-    currentPath = "/contacts";
-  } else if (matchPath("/companies/*", location.pathname)) {
-    currentPath = "/companies";
-  } else if (matchPath("/tasks/*", location.pathname)) {
-    currentPath = "/tasks";
-  } else if (matchPath("/deals/*", location.pathname)) {
-    currentPath = "/deals";
-  } else {
-    currentPath = false;
-  }
+  const isActive = (path: string) =>
+    path === "/"
+      ? !!matchPath("/", location.pathname)
+      : !!matchPath(`${path}/*`, location.pathname);
 
-  // Check if the app is running as a PWA (standalone mode)
   const isPwa = window.matchMedia("(display-mode: standalone)").matches;
-  // Check if it's iOS on the web
   const isWebiOS = /iPad|iPod|iPhone/.test(window.navigator.userAgent);
 
   return (
     <nav
-      aria-label={translate("crm.navigation.label")}
-      className="fixed bottom-0 left-0 right-0 z-50 bg-secondary h-14"
-      style={{
-        // iOS bug: even though viewport is set correctly, the bottom safe area inset is not accounted for
-        // So we manually add some padding to avoid the navigation being too close to the home bar
-        paddingBottom: isPwa && isWebiOS ? 15 : undefined,
-        // We use box-sizing: border-box, so the height contains the padding.
-        // To actually increase the padding, we need to increase the height as well
-        height:
-          "calc(var(--spacing)) * 6" + (isPwa && isWebiOS ? " + 15px" : ""),
-      }}
+      className="fixed bottom-0 left-0 right-0 z-50 bg-secondary/80 backdrop-blur-lg border-t border-border/40 h-14"
+      style={{ paddingBottom: isPwa && isWebiOS ? 15 : undefined }}
     >
-      <div className="flex justify-center">
-        <>
+      <div className="flex justify-around items-center h-14">
+        <NavigationButton href="/" Icon={Home} label="Home" isActive={isActive("/")} />
+        {pinned[0] && (
           <NavigationButton
-            href="/"
-            Icon={Home}
-            label={translate("ra.page.dashboard")}
-            isActive={currentPath === "/"}
+            href={pinned[0].to}
+            Icon={pinned[0].icon}
+            label={pinned[0].label}
+            isActive={isActive(pinned[0].to)}
           />
+        )}
+        <CreateButton />
+        {pinned[1] && (
           <NavigationButton
-            href="/contacts"
-            Icon={Users}
-            label={translate("resources.contacts.name", {
-              smart_count: 2,
-            })}
-            isActive={currentPath === "/contacts"}
+            href={pinned[1].to}
+            Icon={pinned[1].icon}
+            label={pinned[1].label}
+            isActive={isActive(pinned[1].to)}
           />
-          <CreateButton />
-          <NavigationButton
-            href="/tasks"
-            Icon={ListTodo}
-            label={translate("resources.tasks.name", { smart_count: 2 })}
-            isActive={currentPath === "/tasks"}
-          />
-          <SettingsButton />
-        </>
+        )}
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <SheetTrigger asChild>
+            <button className="flex flex-col items-center gap-1 w-16 text-muted-foreground">
+              <MenuIcon className="size-6" />
+              <span className="text-[0.6rem] font-medium">Menu</span>
+            </button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="rounded-t-2xl">
+            <SheetHeader>
+              <SheetTitle>Life HQ</SheetTitle>
+            </SheetHeader>
+            <div className="px-4 pt-2">
+              <button
+                onClick={() => {
+                  window.dispatchEvent(new Event("open-command-palette"));
+                  setMenuOpen(false);
+                }}
+                className="flex items-center gap-2 w-full rounded-xl border bg-card p-3 text-sm text-muted-foreground"
+              >
+                <Search className="size-4" /> Search everything…
+              </button>
+            </div>
+            <div className="grid grid-cols-4 gap-3 p-4">
+              {menuSections.map((s) => (
+                <Link
+                  key={s.to}
+                  to={s.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex flex-col items-center gap-1.5 rounded-xl border bg-card p-3 hover:bg-accent transition-colors"
+                >
+                  <s.icon className="size-5 text-primary" />
+                  <span className="text-[0.7rem] font-medium text-center">
+                    {s.label}
+                  </span>
+                </Link>
+              ))}
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  setCustomizeOpen(true);
+                }}
+                className="flex flex-col items-center gap-1.5 rounded-xl border border-dashed bg-card p-3 hover:bg-accent transition-colors"
+              >
+                <SlidersHorizontal className="size-5 text-muted-foreground" />
+                <span className="text-[0.7rem] font-medium text-muted-foreground">Customize</span>
+              </button>
+            </div>
+          </SheetContent>
+        </Sheet>
+        <NavCustomizer open={customizeOpen} onOpenChange={setCustomizeOpen} />
       </div>
     </nav>
   );
@@ -89,7 +133,7 @@ const NavigationButton = ({
   isActive,
 }: {
   href: string;
-  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  Icon: LucideIcon;
   label: string;
   isActive: boolean;
 }) => (
@@ -98,7 +142,7 @@ const NavigationButton = ({
     variant="ghost"
     className={cn(
       "flex-col gap-1 h-auto py-2 px-1 rounded-md w-16",
-      isActive ? null : "text-muted-foreground",
+      isActive ? "text-primary" : "text-muted-foreground",
     )}
   >
     <Link to={href}>
@@ -109,81 +153,20 @@ const NavigationButton = ({
 );
 
 const CreateButton = () => {
-  const translate = useTranslate();
-  const contact_id = useMatch("/contacts/:id/*")?.params.id;
-  const [contactCreateOpen, setContactCreateOpen] = useState(false);
-  const [noteCreateOpen, setNoteCreateOpen] = useState(false);
-  const [taskCreateOpen, setTaskCreateOpen] = useState(false);
+  const [captureOpen, setCaptureOpen] = useState(false);
 
   return (
     <>
-      <ContactCreateSheet
-        open={contactCreateOpen}
-        onOpenChange={setContactCreateOpen}
-      />
-      <NoteCreateSheet
-        open={noteCreateOpen}
-        onOpenChange={setNoteCreateOpen}
-        contact_id={contact_id}
-      />
-      <TaskCreateSheet
-        open={taskCreateOpen}
-        onOpenChange={setTaskCreateOpen}
-        contact_id={contact_id}
-      />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="default"
-            size="icon"
-            className="h-16 w-16 rounded-full -mt-3"
-            aria-label={translate("ra.action.create")}
-          >
-            <Plus className="size-10" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem
-            className="h-12 px-4 text-base"
-            onSelect={() => {
-              setContactCreateOpen(true);
-            }}
-          >
-            {translate("resources.contacts.forcedCaseName")}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="h-12 px-4 text-base"
-            onSelect={() => {
-              setNoteCreateOpen(true);
-            }}
-          >
-            {translate("resources.notes.forcedCaseName")}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="h-12 px-4 text-base"
-            onSelect={() => {
-              setTaskCreateOpen(true);
-            }}
-          >
-            {translate("resources.tasks.forcedCaseName")}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <QuickCaptureSheet open={captureOpen} onOpenChange={setCaptureOpen} />
+      <Button
+        variant="default"
+        size="icon"
+        className="h-14 w-14 rounded-full -mt-3 shadow-lg transition-transform active:scale-90"
+        aria-label="Quick capture"
+        onClick={() => setCaptureOpen(true)}
+      >
+        <Plus className="size-8" />
+      </Button>
     </>
-  );
-};
-
-const SettingsButton = () => {
-  const translate = useTranslate();
-  const location = useLocation();
-  const isActive = !!matchPath("/settings", location.pathname);
-
-  return (
-    <NavigationButton
-      href="/settings"
-      Icon={Settings}
-      label={translate("crm.settings.title")}
-      isActive={isActive}
-    />
   );
 };

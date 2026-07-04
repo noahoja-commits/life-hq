@@ -3,7 +3,6 @@ import { AutocompleteArrayInput } from "@/components/admin/autocomplete-array-in
 import { ReferenceArrayInput } from "@/components/admin/reference-array-input";
 import { ReferenceInput } from "@/components/admin/reference-input";
 import { TextInput } from "@/components/admin/text-input";
-import { NumberInput } from "@/components/admin/number-input";
 import { DateInput } from "@/components/admin/date-input";
 import { SelectInput } from "@/components/admin/select-input";
 import { Separator } from "@/components/ui/separator";
@@ -47,7 +46,6 @@ const DealLinkedToInputs = () => {
       <ReferenceInput source="company_id" reference="companies">
         <AutocompleteCompanyInput
           label="resources.deals.fields.company_id"
-          validate={required()}
           modal
         />
       </ReferenceInput>
@@ -79,24 +77,16 @@ const DealMiscInputs = () => {
         optionValue="value"
         helperText={false}
       />
-      <NumberInput
-        source="amount"
-        defaultValue={0}
-        helperText={false}
-        validate={required()}
-      />
       <DateInput
-        validate={required()}
         source="expected_closing_date"
         helperText={false}
-        defaultValue={new Date().toISOString().split("T")[0]}
       />
       <SelectInput
         source="stage"
         choices={dealStages}
         optionText="label"
         optionValue="value"
-        defaultValue="opportunity"
+        defaultValue="someday"
         helperText={false}
         validate={required()}
       />

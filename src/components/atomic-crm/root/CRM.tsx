@@ -4,8 +4,8 @@ import type {
   DashboardComponent,
   LayoutComponent,
 } from "ra-core";
-import { CustomRoutes, localStorageStore, Resource } from "ra-core";
-import { useEffect, useMemo } from "react";
+import { CustomRoutes, localStorageStore, Resource, useGetIdentity } from "ra-core";
+import { lazy, Suspense, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Route } from "react-router";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -18,22 +18,105 @@ import { OAuthConsentPage } from "@/components/supabase/oauth-consent-page";
 import companies from "../companies";
 import contacts from "../contacts";
 import { Dashboard } from "../dashboard/Dashboard";
-import { MobileDashboard } from "../dashboard/MobileDashboard";
 import deals from "../deals";
 import { Layout } from "../layout/Layout";
 import { MobileLayout } from "../layout/MobileLayout";
 import { SignupPage } from "../login/SignupPage";
 import { ConfirmationRequired } from "../login/ConfirmationRequired";
-import { ImportPage } from "../misc/ImportPage";
-import { ChangelogPage } from "../misc/ChangelogPage";
+import { ThemePicker } from "../pages/ThemePicker";
+import { sectionThemesStore } from "../layout/sectionThemesStore";
+// Custom pages are code-split: each loads on first visit instead of shipping
+// in the (previously ~2MB) main chunk. Route paths are literals below because
+// lazy components have no static .path.
+const HubPage = lazy(() => import("../hub/HubPage").then((m) => ({ default: m.HubPage })));
+const TrackPage = lazy(() => import("../track/TrackPage").then((m) => ({ default: m.TrackPage })));
+const FilesPage = lazy(() => import("../files/FilesPage").then((m) => ({ default: m.FilesPage })));
+const ListsPage = lazy(() => import("../lists/ListsPage").then((m) => ({ default: m.ListsPage })));
+const RoutinesPage = lazy(() => import("../routines/RoutinesPage").then((m) => ({ default: m.RoutinesPage })));
+const VenturesPage = lazy(() => import("../ventures/VenturesPage").then((m) => ({ default: m.VenturesPage })));
+const ApplicationsPage = lazy(() => import("../applications/ApplicationsPage").then((m) => ({ default: m.ApplicationsPage })));
+const TodosPage = lazy(() => import("../todos/TodosPage").then((m) => ({ default: m.TodosPage })));
+const FocusPage = lazy(() => import("../focus/FocusPage").then((m) => ({ default: m.FocusPage })));
+const ReviewPage = lazy(() => import("../review/ReviewPage").then((m) => ({ default: m.ReviewPage })));
+const CaptureRoute = lazy(() => import("../capture/CaptureRoute").then((m) => ({ default: m.CaptureRoute })));
+const ImportPage = lazy(() => import("../misc/ImportPage").then((m) => ({ default: m.ImportPage })));
+const ChangelogPage = lazy(() => import("../misc/ChangelogPage").then((m) => ({ default: m.ChangelogPage })));
+const PagesPage = lazy(() => import("../pages/PagesPage").then((m) => ({ default: m.PagesPage })));
+const PageDetail = lazy(() => import("../pages/PageDetail").then((m) => ({ default: m.PageDetail })));
+const TemplatesPage = lazy(() => import("../templates/TemplatesPage").then((m) => ({ default: m.TemplatesPage })));
+const MoneyPage = lazy(() => import("../money/MoneyPage").then((m) => ({ default: m.MoneyPage })));
+const GoalsPage = lazy(() => import("../goals/GoalsPage").then((m) => ({ default: m.GoalsPage })));
+const DatesPage = lazy(() => import("../dates/DatesPage").then((m) => ({ default: m.DatesPage })));
+const CalendarPage = lazy(() => import("../calendar/CalendarPage").then((m) => ({ default: m.CalendarPage })));
+const ScriptsPage = lazy(() => import("../scripts/ScriptsPage").then((m) => ({ default: m.ScriptsPage })));
+const ScriptPopOut = lazy(() => import("../scripts/ScriptPopOut").then((m) => ({ default: m.ScriptPopOut })));
+const AiPage = lazy(() => import("../ai/AiPage").then((m) => ({ default: m.AiPage })));
+
+/**
+ * Route-level suspense + per-section theme: every custom section carries an
+ * optional accent (floating palette button), synced across devices.
+ */
+const Page = ({
+  pageKey,
+  children,
+}: {
+  pageKey?: string;
+  children: React.ReactNode;
+}) => {
+  const themes = useSyncExternalStore(
+    sectionThemesStore.subscribe,
+    sectionThemesStore.get,
+  );
+  const { identity } = useGetIdentity();
+  const salesId = identity?.id ? Number(identity.id) : null;
+  useEffect(() => {
+    if (salesId) void sectionThemesStore.load(salesId);
+  }, [salesId]);
+
+  const accent = pageKey ? themes[pageKey] : undefined;
+  const setAccent = (a: string | null) => {
+    if (!pageKey) return;
+    sectionThemesStore.set(pageKey, a, salesId);
+  };
+  return (
+    <div
+      style={
+        accent
+          ? ({ "--primary": accent, "--ring": accent } as React.CSSProperties)
+          : undefined
+      }
+    >
+      <Suspense
+        fallback={
+          <div className="flex justify-center pt-24">
+            <div className="size-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          </div>
+        }
+      >
+        {children}
+      </Suspense>
+      {pageKey && (
+        <div className="fixed bottom-20 right-4 z-40 md:bottom-6 rounded-full bg-card/90 backdrop-blur border shadow-md">
+          <ThemePicker accent={accent} onChange={setAccent} label="Section theme" />
+        </div>
+      )}
+    </div>
+  );
+};
 import {
   getAuthProvider as defaultAuthProviderBuilder,
   getDataProvider as defaultDataProviderBuilder,
 } from "../providers/supabase";
 import sales from "../sales";
-import { SettingsPageMobile } from "../settings/SettingsPageMobile";
-import { ProfilePage } from "../settings/ProfilePage";
-import { SettingsPage } from "../settings/SettingsPage";
+const SettingsPageMobile = lazy(() =>
+  import("../settings/SettingsPageMobile").then((m) => ({ default: m.SettingsPageMobile })),
+);
+const ProfilePage = lazy(() =>
+  import("../settings/ProfilePage").then((m) => ({ default: m.ProfilePage })),
+);
+const SettingsPage = lazy(() =>
+  import("../settings/SettingsPage").then((m) => ({ default: m.SettingsPage })),
+);
 import {
   CONFIGURATION_STORE_KEY,
   type ConfigurationContextValue,
@@ -257,14 +340,59 @@ const DesktopAdmin = (
           element={<ForgotPasswordPage />}
         />
         <Route path={OAuthConsentPage.path} element={<OAuthConsentPage />} />
+        <Route path="/script-pop/:id" element={<Page><ScriptPopOut /></Page>} />
       </CustomRoutes>
 
       <CustomRoutes>
-        <Route path={ProfilePage.path} element={<ProfilePage />} />
-        <Route path={SettingsPage.path} element={<SettingsPage />} />
-        <Route path={ImportPage.path} element={<ImportPage />} />
-        <Route path={ChangelogPage.path} element={<ChangelogPage />} />
+        <Route path="/profile" element={<Page><ProfilePage /></Page>} />
+        <Route path="/settings" element={<Page><SettingsPage /></Page>} />
+        <Route path="/import" element={<Page><ImportPage /></Page>} />
+        <Route path="/changelog" element={<Page><ChangelogPage /></Page>} />
+        <Route path="/hub" element={<Page pageKey="hub"><HubPage /></Page>} />
+        <Route path="/track" element={<Page pageKey="track"><TrackPage /></Page>} />
+        <Route path="/files" element={<Page pageKey="files"><FilesPage /></Page>} />
+        <Route path="/lists" element={<Page pageKey="lists"><ListsPage /></Page>} />
+        <Route path="/routines" element={<Page pageKey="routines"><RoutinesPage /></Page>} />
+        <Route path="/ventures" element={<Page pageKey="ventures"><VenturesPage /></Page>} />
+        <Route path="/applications" element={<Page pageKey="jobs"><ApplicationsPage /></Page>} />
+        <Route path="/todos" element={<Page pageKey="todos"><TodosPage /></Page>} />
+        <Route path="/focus" element={<Page pageKey="focus"><FocusPage /></Page>} />
+        <Route path="/review" element={<Page pageKey="review"><ReviewPage /></Page>} />
+        <Route path="/capture" element={<Page><CaptureRoute /></Page>} />
+        <Route path="/pages" element={<Page pageKey="pages"><PagesPage /></Page>} />
+        <Route path="/pages/:id" element={<Page><PageDetail /></Page>} />
+        <Route path="/templates" element={<Page><TemplatesPage /></Page>} />
+        <Route path="/money" element={<Page pageKey="money"><MoneyPage /></Page>} />
+        <Route path="/goals" element={<Page pageKey="goals"><GoalsPage /></Page>} />
+        <Route path="/dates" element={<Page pageKey="dates"><DatesPage /></Page>} />
+        <Route path="/calendar" element={<Page pageKey="calendar"><CalendarPage /></Page>} />
+        <Route path="/scripts" element={<Page pageKey="scripts"><ScriptsPage /></Page>} />
+        <Route path="/ai" element={<Page pageKey="ai"><AiPage /></Page>} />
       </CustomRoutes>
+      <Resource name="todos" />
+      <Resource name="focus_sessions" />
+      <Resource name="hub_items" />
+      <Resource name="trackers" />
+      <Resource name="log_entries" />
+      <Resource name="lists" />
+      <Resource name="list_items" />
+      <Resource name="routines" />
+      <Resource name="routine_steps" />
+      <Resource name="routine_checks" />
+      <Resource name="ventures" />
+      <Resource name="applications" />
+      <Resource name="pages" />
+      <Resource name="transactions" />
+      <Resource name="bills" />
+      <Resource name="budgets" />
+      <Resource name="goals" />
+      <Resource name="goal_milestones" />
+      <Resource name="life_dates" />
+      <Resource name="balance_checks" />
+      <Resource name="scripts" />
+      <Resource name="call_logs" />
+      <Resource name="waiting_items" />
+      <Resource name="things" />
       <Resource name="deals" {...deals} />
       <Resource name="contacts" {...contacts} />
       <Resource name="companies" {...companies} />
@@ -283,20 +411,25 @@ const MobileAdmin = (
     layout?: LayoutComponent;
   },
 ) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        gcTime: 1000 * 60 * 60 * 24, // 24 hours
-        networkMode: "offlineFirst",
-      },
-      mutations: {
-        networkMode: "offlineFirst",
-      },
-    },
-  });
-  const asyncStoragePersister = createAsyncStoragePersister({
-    storage: localStorage,
-  });
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            gcTime: 1000 * 60 * 60 * 24, // 24 hours
+            networkMode: "offlineFirst",
+          },
+          mutations: {
+            networkMode: "offlineFirst",
+          },
+        },
+      }),
+  );
+  const [asyncStoragePersister] = useState(() =>
+    createAsyncStoragePersister({
+      storage: localStorage,
+    }),
+  );
 
   return (
     <PersistQueryClientProvider
@@ -306,7 +439,7 @@ const MobileAdmin = (
       <Admin
         queryClient={queryClient}
         layout={props.layout ?? MobileLayout}
-        dashboard={props.dashboard ?? MobileDashboard}
+        dashboard={props.dashboard ?? Dashboard}
         {...props}
       >
         <CustomRoutes noLayout>
@@ -321,14 +454,58 @@ const MobileAdmin = (
             element={<ForgotPasswordPage />}
           />
           <Route path={OAuthConsentPage.path} element={<OAuthConsentPage />} />
+          <Route path="/script-pop/:id" element={<Page><ScriptPopOut /></Page>} />
         </CustomRoutes>
         <CustomRoutes>
-          <Route
-            path={SettingsPageMobile.path}
-            element={<SettingsPageMobile />}
-          />
-          <Route path={ChangelogPage.path} element={<ChangelogPage />} />
+          <Route path="/settings" element={<Page><SettingsPageMobile /></Page>} />
+          <Route path="/changelog" element={<Page><ChangelogPage /></Page>} />
+          <Route path="/hub" element={<Page pageKey="hub"><HubPage /></Page>} />
+          <Route path="/track" element={<Page pageKey="track"><TrackPage /></Page>} />
+          <Route path="/files" element={<Page pageKey="files"><FilesPage /></Page>} />
+          <Route path="/lists" element={<Page pageKey="lists"><ListsPage /></Page>} />
+          <Route path="/routines" element={<Page pageKey="routines"><RoutinesPage /></Page>} />
+          <Route path="/ventures" element={<Page pageKey="ventures"><VenturesPage /></Page>} />
+          <Route path="/applications" element={<Page pageKey="jobs"><ApplicationsPage /></Page>} />
+          <Route path="/todos" element={<Page pageKey="todos"><TodosPage /></Page>} />
+          <Route path="/focus" element={<Page pageKey="focus"><FocusPage /></Page>} />
+          <Route path="/review" element={<Page pageKey="review"><ReviewPage /></Page>} />
+          <Route path="/capture" element={<Page><CaptureRoute /></Page>} />
+          <Route path="/pages" element={<Page pageKey="pages"><PagesPage /></Page>} />
+          <Route path="/pages/:id" element={<Page><PageDetail /></Page>} />
+          <Route path="/templates" element={<Page><TemplatesPage /></Page>} />
+          <Route path="/money" element={<Page pageKey="money"><MoneyPage /></Page>} />
+          <Route path="/goals" element={<Page pageKey="goals"><GoalsPage /></Page>} />
+          <Route path="/dates" element={<Page pageKey="dates"><DatesPage /></Page>} />
+          <Route path="/calendar" element={<Page pageKey="calendar"><CalendarPage /></Page>} />
+          <Route path="/scripts" element={<Page pageKey="scripts"><ScriptsPage /></Page>} />
+          <Route path="/ai" element={<Page pageKey="ai"><AiPage /></Page>} />
         </CustomRoutes>
+        <Resource name="deals" {...deals} />
+        <Resource name="deal_notes" />
+        <Resource name="todos" />
+        <Resource name="focus_sessions" />
+        <Resource name="hub_items" />
+        <Resource name="trackers" />
+        <Resource name="log_entries" />
+        <Resource name="lists" />
+        <Resource name="list_items" />
+        <Resource name="routines" />
+        <Resource name="routine_steps" />
+        <Resource name="routine_checks" />
+        <Resource name="ventures" />
+        <Resource name="applications" />
+        <Resource name="pages" />
+        <Resource name="transactions" />
+        <Resource name="bills" />
+        <Resource name="budgets" />
+        <Resource name="goals" />
+        <Resource name="goal_milestones" />
+        <Resource name="life_dates" />
+        <Resource name="balance_checks" />
+        <Resource name="scripts" />
+        <Resource name="call_logs" />
+        <Resource name="waiting_items" />
+        <Resource name="things" />
         <Resource
           name="contacts"
           list={ContactListMobile}
