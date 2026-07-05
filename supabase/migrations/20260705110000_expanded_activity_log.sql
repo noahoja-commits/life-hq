@@ -59,10 +59,10 @@ from public.todos t where t.done = true and t.done_at is not null
 
 union all
 -- Focus sessions
-select ('focus.' || f.id || '.created'), 'focus.completed', f.ended_at,
+select ('focus.' || f.id || '.created'), 'focus.completed', f.started_at,
   null, f.sales_id, null, null, null, null, null,
   null, null, null, null, null, null, null, null, null
-from public.focus_sessions f where f.ended_at is not null
+from public.focus_sessions f where f.completed = true
 
 union all
 -- Ventures
@@ -87,10 +87,10 @@ from public.goals g
 
 union all
 -- Routine checks (completed routines for the day)
-select ('routine.' || rc.id || '.created'), 'routine.checked', rc.checked_at,
+select ('routine.' || rc.id || '.created'), 'routine.checked', rc.checked_on,
   null, rc.sales_id, null, null, null, null, null,
   null, null, null, null, to_json(rc.*), null, null, null, null
-from public.routine_checks rc where rc.done = true
+from public.routine_checks rc
 
 union all
 -- Tracker log entries
@@ -108,7 +108,7 @@ from public.transactions txn
 
 union all
 -- Call logs
-select ('call.' || cl.id || '.created'), 'call.logged', cl.created_at,
+select ('call.' || cl.id || '.created'), 'call.logged', cl.called_at,
   null, cl.sales_id, null, null, null, null, null,
   null, null, null, null, null, null, null, to_json(cl.*), null
 from public.call_logs cl
