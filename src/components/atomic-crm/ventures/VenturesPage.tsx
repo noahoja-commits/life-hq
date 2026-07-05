@@ -122,9 +122,12 @@ export const VenturesPage = () => {
       {venturesLoading && ventures.length === 0 ? (
         <CardsSkeleton count={4} />
       ) : ventures.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          No ventures yet. Add the businesses and big projects you're running.
-        <EmptyState icon={Rocket} title="No ventures yet" description="Track your businesses, side projects, and big bets." action={{ label: "Start a venture", onClick: () => setAddOpen(true) }} />
+        <EmptyState
+          icon={Rocket}
+          title="No ventures yet"
+          description="Track your businesses, side projects, and big bets — each with its own status pipeline."
+          action={{ label: "Start a venture", onClick: () => setAddOpen(true) }}
+        />
       ) : (
         present.map((status) => (
           <section key={status} className="mb-8">
