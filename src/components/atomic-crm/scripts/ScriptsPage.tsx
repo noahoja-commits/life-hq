@@ -4,11 +4,13 @@ import {
   useGetIdentity,
   useCreate,
   useUpdate,
-  useDelete,
   useNotify,
 } from "ra-core";
-import { Plus, Trash2, Copy, ExternalLink, ChevronDown } from "lucide-react";
+import { Plus, Trash2, Copy, ExternalLink, ChevronDown, ScrollText } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,8 +49,9 @@ export const ScriptsPage = () => {
   const notify = useNotify();
   const [create] = useCreate();
   const [update] = useUpdate();
-  const [remove] = useDelete();
+  const { deleteWithUndo } = useUndoable();
   const { confirm, confirmUI } = useConfirm();
+  usePageHotkey("n", () => addScript(cat));
   const [cat, setCat] = useState("All");
   const salesId = identity?.id ? Number(identity.id) : null;
 
@@ -69,7 +72,7 @@ export const ScriptsPage = () => {
           category: category === "All" ? "General" : category,
           body: "",
           sales_id: salesId,
-          position: (data ?? []).length,
+          position: scripts.length,
         },
       },
       { onError: () => notify("Could not add script", { type: "error" }) },
@@ -111,10 +114,13 @@ export const ScriptsPage = () => {
       {isPending && scripts.length === 0 ? (
         <CardsSkeleton count={3} className="grid grid-cols-1 gap-2" />
       ) : scripts.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          No scripts yet. Add one, or ask the AI section to draft a cold-call
-          opener — its replies have a "Save as script" button.
-        </div>
+        <EmptyState
+          icon={ScrollText}
+          title="No scripts yet"
+          description="Call openers, interview answers, follow-ups — keep your best lines ready."
+          action={{ label: "Write a script", onClick: () => addScript(cat) }}
+          secondaryAction={{ label: "Ask AI to draft one", onClick: () => window.dispatchEvent(new Event("open-command-palette")) }}
+        />
       ) : (
         <div className="flex flex-col gap-2">
           {scripts.map((s) => (
@@ -134,10 +140,9 @@ export const ScriptsPage = () => {
               }
               onDelete={() =>
                 confirm(`Delete "${s.title}"?`, () =>
-                  remove(
+                  deleteWithUndo(
                     "scripts",
                     { id: s.id, previousData: s },
-                    { mutationMode: "optimistic" },
                   ),
                 )
               }

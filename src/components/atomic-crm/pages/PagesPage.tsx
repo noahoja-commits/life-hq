@@ -1,8 +1,11 @@
 import { useGetList, useGetIdentity, useCreate, useRedirect } from "ra-core";
-import { FileText, Table2, Globe, Plus, Shapes } from "lucide-react";
+import { FileText, Table2, Globe, Plus, Shapes, NotebookText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 import type { PageTheme } from "./pageThemes";
 
 export type PageKind = "doc" | "sheet" | "embed";
@@ -45,6 +48,8 @@ export const PagesPage = () => {
   const redirect = useRedirect();
   const [create] = useCreate();
 
+  const { deleteWithUndo: _deleteWithUndo } = useUndoable();
+
   const { data, isPending } = useGetList<LifePage>("pages", {
     pagination: { page: 1, perPage: 200 },
     sort: { field: "updated_at", order: "DESC" },
@@ -68,6 +73,8 @@ export const PagesPage = () => {
         onSuccess: (rec: LifePage) => redirect(`/pages/${rec.id}`),
       },
     );
+
+  usePageHotkey("n", () => newPage("doc"));
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
@@ -103,10 +110,19 @@ export const PagesPage = () => {
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
         />
       ) : pages.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-center text-[13px] text-muted-foreground">
-          No pages yet. Create a doc, a spreadsheet, or embed anything — or
-          start from a template.
-        </div>
+        <EmptyState
+          icon={NotebookText}
+          title="No pages yet"
+          description="Create a doc, a spreadsheet, or embed anything — or start from a template."
+          action={{
+            label: "New doc",
+            onClick: () => newPage("doc"),
+          }}
+          secondaryAction={{
+            label: "Templates",
+            onClick: () => redirect("/templates"),
+          }}
+        />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {pages.map((p) => {

@@ -10,6 +10,7 @@ import {
   Copy,
   Pin,
   X,
+  FolderOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getSupabaseClient } from "../providers/supabase/supabase";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
 
 const BUCKET = "attachments";
 const PREFIX = "lifehq";
@@ -56,6 +61,7 @@ export const FilesPage = () => {
   const { identity } = useGetIdentity();
   const [create] = useCreate();
   const supabase = getSupabaseClient();
+  const { deleteWithUndo: _deleteWithUndo } = useUndoable();
   const [preview, setPreview] = useState<StoredFile | null>(null);
 
   const copyLink = async (url: string) => {
@@ -95,6 +101,8 @@ export const FilesPage = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(0);
   const [query, setQuery] = useState("");
+
+  usePageHotkey("n", () => inputRef.current?.click());
 
   const load = async () => {
     setLoading(true);
@@ -147,7 +155,7 @@ export const FilesPage = () => {
     load();
   };
 
-  const remove = async (name: string) => {
+  const remove = async (name: string, file: StoredFile) => {
     const { error } = await supabase.storage
       .from(BUCKET)
       .remove([`${PREFIX}/${name}`]);
@@ -155,8 +163,15 @@ export const FilesPage = () => {
       notify("Could not delete", { type: "error" });
       return;
     }
-    notify("File removed", { type: "info" });
     setFiles((f) => f.filter((x) => x.name !== name));
+    notify("File removed. Undo?", {
+      type: "info",
+      undo: () => {
+        setFiles((prev) => [...prev, file]);
+        notify("File restored", { type: "success" });
+      },
+      autoHideDuration: 5000,
+    });
   };
 
   const shown = files.filter((f) =>
@@ -195,13 +210,25 @@ export const FilesPage = () => {
       </div>
 
       {loading ? (
-        <p className="text-[13px] text-muted-foreground">Loading…</p>
+        <CardsSkeleton count={8} className="space-y-2" />
       ) : shown.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-center text-[13px] text-muted-foreground">
-          {files.length === 0
-            ? "No files yet. Drop in your guides, docs, spreadsheets — anything."
-            : "No files match your search."}
-        </div>
+        files.length === 0 ? (
+          <EmptyState
+            icon={FolderOpen}
+            title="No files yet"
+            description="Drop in your guides, docs, spreadsheets — anything."
+            action={{
+              label: "Upload files",
+              onClick: () => inputRef.current?.click(),
+            }}
+          />
+        ) : (
+          <EmptyState
+            icon={FolderOpen}
+            title="No matches"
+            description="No files match your search."
+          />
+        )
       ) : (
         <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
           {shown.map((f) => (
@@ -252,7 +279,7 @@ export const FilesPage = () => {
                 <Download className="size-4" />
               </a>
               <button
-                onClick={() => remove(f.name)}
+                onClick={() => remove(f.name, f)}
                 className="text-muted-foreground hover:text-destructive"
                 aria-label="Delete"
               >

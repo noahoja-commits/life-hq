@@ -1,8 +1,12 @@
 import { useMemo, useState } from "react";
 import { useGetList, useRedirect } from "ra-core";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
 
 interface Todo {
   id: number;
@@ -61,31 +65,36 @@ const COLORS = {
 
 export const CalendarPage = () => {
   const redirect = useRedirect();
+  const { deleteWithUndo } = useUndoable();
+  usePageHotkey("n", () => window.dispatchEvent(new Event("open-command-palette")));
+
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth()); // 0-based
   const [selected, setSelected] = useState<string>(todayStr());
 
-  const { data: todos } = useGetList<Todo>("todos", {
+  const { data: todos, isPending: todosPending } = useGetList<Todo>("todos", {
     pagination: { page: 1, perPage: 500 },
     sort: { field: "due_date", order: "ASC" },
   });
-  const { data: bills } = useGetList<Bill>("bills", {
+  const { data: bills, isPending: billsPending } = useGetList<Bill>("bills", {
     pagination: { page: 1, perPage: 100 },
     sort: { field: "due_day", order: "ASC" },
   });
-  const { data: dates } = useGetList<LifeDate>("life_dates", {
+  const { data: dates, isPending: datesPending } = useGetList<LifeDate>("life_dates", {
     pagination: { page: 1, perPage: 200 },
     sort: { field: "on_date", order: "ASC" },
   });
-  const { data: apps } = useGetList<Application>("applications", {
+  const { data: apps, isPending: appsPending } = useGetList<Application>("applications", {
     pagination: { page: 1, perPage: 200 },
     sort: { field: "position", order: "ASC" },
   });
-  const { data: goals } = useGetList<Goal>("goals", {
+  const { data: goals, isPending: goalsPending } = useGetList<Goal>("goals", {
     pagination: { page: 1, perPage: 100 },
     sort: { field: "position", order: "ASC" },
   });
+
+  const isPending = todosPending || billsPending || datesPending || appsPending || goalsPending;
 
   // Everything in the shown month, keyed by YYYY-MM-DD.
   const byDay = useMemo(() => {
@@ -169,6 +178,15 @@ export const CalendarPage = () => {
     setSelected(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-01`);
   };
   const selectedItems = byDay.get(selected) ?? [];
+
+  if (isPending && !todos && !bills && !dates && !apps && !goals) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-6">
+        <h1 className="text-xl font-semibold tracking-tight mb-5">Calendar</h1>
+        <CardsSkeleton count={5} className="grid grid-cols-1 gap-3" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
@@ -268,9 +286,13 @@ export const CalendarPage = () => {
           })}
         </h2>
         {selectedItems.length === 0 ? (
-          <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-            Nothing scheduled — open space.
-          </Card>
+          <EmptyState
+            icon={CalendarDays}
+            title="Nothing scheduled"
+            description="Open space — nothing planned for this day."
+            action={{ label: "Add a to-do", onClick: () => redirect("/todos") }}
+            className="py-6"
+          />
         ) : (
           <Card className="divide-y divide-border overflow-hidden p-0">
             {selectedItems.map((it) => (

@@ -7,9 +7,12 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import { Plus, Check, BarChart3 } from "lucide-react";
+import { Plus, Check, BarChart3, Activity } from "lucide-react";
 import { TrackerInsights } from "./TrackerInsights";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -92,6 +95,8 @@ export const TrackPage = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [noteFor, setNoteFor] = useState<Tracker | null>(null);
   const [insightsFor, setInsightsFor] = useState<Tracker | null>(null);
+  const { deleteWithUndo } = useUndoable();
+  usePageHotkey("n", () => setAddOpen(true));
 
   const {
     data: trackers,
@@ -157,11 +162,7 @@ export const TrackPage = () => {
   };
 
   const delEntry = (id: number) =>
-    remove(
-      "log_entries",
-      { id, previousData: { id } },
-      { onSuccess: () => refetchEntries() },
-    );
+    deleteWithUndo("log_entries", { id, previousData: { id } });
 
   const todayFor = (id: number) => today.filter((e) => e.tracker_id === id);
 
@@ -177,9 +178,12 @@ export const TrackPage = () => {
       {trackersLoading && allTrackers.length === 0 ? (
         <CardsSkeleton count={6} />
       ) : allTrackers.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          No trackers yet. Add the first thing you want to track.
-        </div>
+        <EmptyState
+          icon={Activity}
+          title="No trackers yet"
+          description="Add the first thing you want to track."
+          action={{ label: "New tracker", onClick: () => setAddOpen(true) }}
+        />
       ) : (
         categories.map((cat) => {
           const large = cat === "Business";

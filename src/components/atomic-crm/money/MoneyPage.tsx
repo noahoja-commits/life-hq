@@ -14,6 +14,7 @@ import {
   Target,
   CheckCircle2,
   Zap,
+  Wallet,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,9 @@ import { cn } from "@/lib/utils";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useConfirm } from "../misc/useConfirm";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 
 interface Txn {
   id: number;
@@ -99,6 +103,11 @@ export const MoneyPage = () => {
   const [update] = useUpdate();
   const [remove] = useDelete();
   const { confirm, confirmUI } = useConfirm();
+  const { deleteWithUndo } = useUndoable();
+  usePageHotkey("n", () => {
+    const input = document.querySelector<HTMLInputElement>('input[aria-label="Amount"]');
+    input?.focus();
+  });
   const salesId = identity?.id ? Number(identity.id) : null;
 
   const { data: txns, isPending } = useGetList<Txn>("transactions", {
@@ -323,11 +332,7 @@ export const MoneyPage = () => {
         onPaid={markPaid}
         onDelete={(b) =>
           confirm(`Delete bill "${b.name}"?`, () =>
-            remove(
-              "bills",
-              { id: b.id, previousData: b },
-              { mutationMode: "optimistic" },
-            ),
+            deleteWithUndo("bills", { id: b.id, previousData: b }),
           )
         }
         salesId={salesId}
@@ -339,9 +344,18 @@ export const MoneyPage = () => {
         {isPending && (txns ?? []).length === 0 ? (
           <CardsSkeleton count={2} className="grid grid-cols-1 gap-2" />
         ) : (txns ?? []).length === 0 ? (
-          <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-            No transactions yet — log your first one above.
-          </div>
+          <EmptyState
+            icon={Wallet}
+            title="No transactions yet"
+            description="Log your first one above."
+            action={{
+              label: "Add transaction",
+              onClick: () => {
+                const input = document.querySelector<HTMLInputElement>('input[aria-label="Amount"]');
+                input?.focus();
+              },
+            }}
+          />
         ) : (
           <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
             {(txns ?? []).slice(0, 25).map((t) => (
@@ -372,11 +386,7 @@ export const MoneyPage = () => {
                 </span>
                 <button
                   onClick={() =>
-                    remove(
-                      "transactions",
-                      { id: t.id, previousData: t },
-                      { mutationMode: "optimistic" },
-                    )
+                    deleteWithUndo("transactions", { id: t.id, previousData: t })
                   }
                   className="text-muted-foreground opacity-60 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
                   aria-label="Delete transaction"
@@ -436,7 +446,7 @@ const BudgetsSection = ({
 }) => {
   const [create] = useCreate();
   const [update] = useUpdate();
-  const [remove] = useDelete();
+  const { deleteWithUndo } = useUndoable();
   const notify = useNotify();
   const [newCat, setNewCat] = useState("Food");
   const [newAmt, setNewAmt] = useState("");
@@ -499,11 +509,7 @@ const BudgetsSection = ({
               </span>
               <button
                 onClick={() =>
-                  remove(
-                    "budgets",
-                    { id: b.id, previousData: b },
-                    { mutationMode: "optimistic" },
-                  )
+                  deleteWithUndo("budgets", { id: b.id, previousData: b })
                 }
                 className="text-muted-foreground opacity-60 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
                 aria-label={`Remove ${b.category} budget`}

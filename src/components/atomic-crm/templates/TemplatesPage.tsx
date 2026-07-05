@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useGetIdentity, useNotify, useRedirect } from "ra-core";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Shapes } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getSupabaseClient } from "../providers/supabase/supabase";
 import { useHaptics } from "@/hooks/useHaptics";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
+import { usePageHotkey } from "../misc/usePageHotkey";
 import {
   TEMPLATES,
   TEMPLATE_CATEGORIES,
@@ -142,13 +145,15 @@ async function applyTemplate(t: TemplateDef, salesId: number): Promise<void> {
 }
 
 export const TemplatesPage = () => {
-  const { identity } = useGetIdentity();
+  const { identity, isLoading } = useGetIdentity();
   const notify = useNotify();
   const redirect = useRedirect();
   const haptic = useHaptics();
   const [cat, setCat] = useState<string>("All");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [usedIds, setUsedIds] = useState<Set<string>>(new Set());
+
+  usePageHotkey("n", () => redirect("/todos"));
 
   const shown = TEMPLATES.filter((t) => cat === "All" || t.category === cat);
 
@@ -199,41 +204,52 @@ export const TemplatesPage = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {shown.map((t) => (
-          <Card
-            key={t.id}
-            className="flex-col gap-2 rounded-lg border bg-card p-4"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{t.emoji}</span>
-              <span className="flex-1 truncate text-[13px] font-semibold">
-                {t.title}
-              </span>
-              <span className="u-label text-muted-foreground/60">
-                {t.category}
-              </span>
-            </div>
-            <p className="flex-1 text-[13px] text-muted-foreground">
-              {t.description}
-            </p>
-            <Button
-              size="sm"
-              variant={usedIds.has(t.id) ? "secondary" : "default"}
-              disabled={busyId === t.id}
-              onClick={() => use(t)}
-              className="gap-1.5 self-start"
+      {isLoading ? (
+        <CardsSkeleton count={6} />
+      ) : shown.length === 0 ? (
+        <EmptyState
+          icon={Shapes}
+          title="No templates found"
+          description="Try a different category or check back later."
+          action={{ label: "Show all", onClick: () => setCat("All") }}
+        />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {shown.map((t) => (
+            <Card
+              key={t.id}
+              className="flex-col gap-2 rounded-lg border bg-card p-4"
             >
-              {busyId === t.id ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : usedIds.has(t.id) ? (
-                <Check className="size-3.5" />
-              ) : null}
-              {usedIds.has(t.id) ? "Added — add again" : "Use template"}
-            </Button>
-          </Card>
-        ))}
-      </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{t.emoji}</span>
+                <span className="flex-1 truncate text-[13px] font-semibold">
+                  {t.title}
+                </span>
+                <span className="u-label text-muted-foreground/60">
+                  {t.category}
+                </span>
+              </div>
+              <p className="flex-1 text-[13px] text-muted-foreground">
+                {t.description}
+              </p>
+              <Button
+                size="sm"
+                variant={usedIds.has(t.id) ? "secondary" : "default"}
+                disabled={busyId === t.id}
+                onClick={() => use(t)}
+                className="gap-1.5 self-start"
+              >
+                {busyId === t.id ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : usedIds.has(t.id) ? (
+                  <Check className="size-3.5" />
+                ) : null}
+                {usedIds.has(t.id) ? "Added — add again" : "Use template"}
+              </Button>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

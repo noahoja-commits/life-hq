@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   useGetList,
   useGetIdentity,
   useCreate,
   useUpdate,
-  useDelete,
   useNotify,
 } from "ra-core";
-import { Plus, Trash2, Bell } from "lucide-react";
+import { Plus, Trash2, Bell, CalendarHeart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +20,9 @@ import {
 import { cn } from "@/lib/utils";
 import { useConfirm } from "../misc/useConfirm";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
+import { EmptyState } from "../misc/EmptyState";
 
 export interface LifeDate {
   id: number;
@@ -64,8 +66,13 @@ export const DatesPage = () => {
   const notify = useNotify();
   const [create] = useCreate();
   const [update] = useUpdate();
-  const [remove] = useDelete();
+  const { deleteWithUndo } = useUndoable();
   const { confirm, confirmUI } = useConfirm();
+  const titleRef = useRef<HTMLInputElement>(null);
+  usePageHotkey("n", () => {
+    titleRef.current?.focus();
+    titleRef.current?.scrollIntoView({ behavior: "smooth" });
+  });
   const salesId = identity?.id ? Number(identity.id) : null;
 
   const [title, setTitle] = useState("");
@@ -130,6 +137,7 @@ export const DatesPage = () => {
           onChange={(e) => setEmoji(e.target.value)}
         />
         <Input
+          ref={titleRef}
           className="flex-1 min-w-40"
           placeholder="Mom's birthday, lease renewal…"
           value={title}
@@ -167,9 +175,12 @@ export const DatesPage = () => {
       {isPending && dates.length === 0 ? (
         <CardsSkeleton count={3} className="grid grid-cols-1 gap-2" />
       ) : dates.length === 0 ? (
-        <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          Nothing yet. Add the dates you never want to be surprised by.
-        </Card>
+        <EmptyState
+          icon={CalendarHeart}
+          title="No dates yet"
+          description="Add the dates you never want to be surprised by."
+          action={{ label: "Add date", onClick: () => titleRef.current?.focus() }}
+        />
       ) : (
         <Card className="divide-y divide-border overflow-hidden p-0">
           {dates.map(({ d, next, days }) => (
@@ -235,11 +246,7 @@ export const DatesPage = () => {
               <button
                 onClick={() =>
                   confirm(`Delete "${d.title}"?`, () =>
-                    remove(
-                      "life_dates",
-                      { id: d.id, previousData: d },
-                      { mutationMode: "optimistic" },
-                    ),
+                    deleteWithUndo("life_dates", { id: d.id, previousData: d }),
                   )
                 }
                 className="opacity-60 md:opacity-0 md:group-hover:opacity-100 text-muted-foreground hover:text-destructive"

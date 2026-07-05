@@ -7,13 +7,16 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import { Plus, Trash2, X, Eraser } from "lucide-react";
+import { Plus, Trash2, X, Eraser, ListChecks } from "lucide-react";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useConfirm } from "../misc/useConfirm";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
+import { EmptyState } from "../misc/EmptyState";
 import { useHaptics } from "@/hooks/useHaptics";
 import { cn } from "@/lib/utils";
 import {
@@ -44,9 +47,11 @@ export const ListsPage = () => {
   const [create] = useCreate();
   const [update] = useUpdate();
   const [remove] = useDelete();
+  const { deleteWithUndo } = useUndoable();
   const [addOpen, setAddOpen] = useState(false);
-  const { confirm, confirmUI } = useConfirm();
+  const { confirmUI } = useConfirm();
   const haptic = useHaptics();
+  usePageHotkey("n", () => setAddOpen(true));
 
   const { data: lists, isPending: listsLoading } = useGetList<List>("lists", {
     pagination: { page: 1, perPage: 100 },
@@ -104,11 +109,7 @@ export const ListsPage = () => {
   };
 
   const delList = (list: List) =>
-    remove(
-      "lists",
-      { id: list.id, previousData: list },
-      { mutationMode: "optimistic" },
-    );
+    deleteWithUndo("lists", { id: list.id, previousData: list });
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-6">
@@ -125,9 +126,12 @@ export const ListsPage = () => {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         />
       ) : allLists.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          No lists yet. Make a grocery list, a to-buy list, anything.
-        </div>
+        <EmptyState
+          icon={ListChecks}
+          title="No lists yet"
+          description="Make a grocery list, a to-buy list, anything."
+          action={{ label: "New list", onClick: () => setAddOpen(true) }}
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {allLists.map((list) => (
@@ -139,11 +143,7 @@ export const ListsPage = () => {
               onToggle={toggle}
               onDelItem={delItem}
               onClear={() => clearChecked(list.id)}
-              onDelList={() =>
-                confirm(`Delete "${list.name}" and all its items?`, () =>
-                  delList(list),
-                )
-              }
+              onDelList={() => delList(list)}
             />
           ))}
         </div>

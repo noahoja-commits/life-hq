@@ -7,13 +7,16 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import { Plus, Trash2, X, Bell } from "lucide-react";
+import { Plus, Trash2, X, Bell, Repeat } from "lucide-react";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useConfirm } from "../misc/useConfirm";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
+import { EmptyState } from "../misc/EmptyState";
 import { useHaptics } from "@/hooks/useHaptics";
 import { cn } from "@/lib/utils";
 import { Heatmap } from "../track/Heatmap";
@@ -57,9 +60,11 @@ export const RoutinesPage = () => {
   const [create] = useCreate();
   const [update] = useUpdate();
   const [remove] = useDelete();
+  const { deleteWithUndo } = useUndoable();
   const [addOpen, setAddOpen] = useState(false);
   const { confirm, confirmUI } = useConfirm();
   const haptic = useHaptics();
+  usePageHotkey("n", () => setAddOpen(true));
   const today = localToday();
 
   const { data: routines, isPending: routinesLoading } = useGetList<Routine>(
@@ -122,11 +127,7 @@ export const RoutinesPage = () => {
     );
 
   const delRoutine = (r: Routine) =>
-    remove(
-      "routines",
-      { id: r.id, previousData: r },
-      { mutationMode: "optimistic" },
-    );
+    deleteWithUndo("routines", { id: r.id, previousData: r });
 
   const setRemindTime = (r: Routine, remind_time: string | null) =>
     update(
@@ -150,10 +151,12 @@ export const RoutinesPage = () => {
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
         />
       ) : allRoutines.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          No routines yet. Build a morning or wind-down flow — check off what
-          you get to, skip the rest, no guilt.
-        </div>
+        <EmptyState
+          icon={Repeat}
+          title="No routines yet"
+          description="Build a morning or wind-down flow — check off what you get to, skip the rest, no guilt."
+          action={{ label: "New routine", onClick: () => setAddOpen(true) }}
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {allRoutines.map((routine) => (

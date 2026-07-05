@@ -16,8 +16,12 @@ import {
   Bell,
   StickyNote,
   ChevronDown,
+  Briefcase,
 } from "lucide-react";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,7 +97,9 @@ export const ApplicationsPage = () => {
   const [update] = useUpdate();
   const [remove] = useDelete();
   const [addOpen, setAddOpen] = useState(false);
-  const { confirm, confirmUI } = useConfirm();
+  const { confirmUI } = useConfirm();
+  const { deleteWithUndo } = useUndoable();
+  usePageHotkey("n", () => setAddOpen(true));
 
   const { data, refetch, isPending } = useGetList<Application>("applications", {
     pagination: { page: 1, perPage: 300 },
@@ -111,7 +117,7 @@ export const ApplicationsPage = () => {
     );
 
   const del = (a: Application) =>
-    remove(
+    deleteWithUndo(
       "applications",
       { id: a.id, previousData: a },
       { onSuccess: () => refetch() },
@@ -157,10 +163,12 @@ export const ApplicationsPage = () => {
       {isPending && apps.length === 0 ? (
         <CardsSkeleton count={4} />
       ) : apps.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-center text-[13px] text-muted-foreground">
-          No applications yet. Add the jobs you're chasing — track each from
-          wishlist to offer, and never miss a follow-up.
-        </div>
+        <EmptyState
+          icon={Briefcase}
+          title="No applications yet"
+          description="Add the jobs you're chasing — track each from wishlist to offer, and never miss a follow-up."
+          action={{ label: "New application", onClick: () => setAddOpen(true) }}
+        />
       ) : (
         present.map((status) => (
           <section key={status} className="mb-8">
@@ -183,9 +191,7 @@ export const ApplicationsPage = () => {
                     a={a}
                     today={today}
                     onPatch={(d) => patch(a, d)}
-                    onDelete={() =>
-                      confirm(`Delete "${a.company}"?`, () => del(a))
-                    }
+                    onDelete={() => del(a)}
                   />
                 ))}
             </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useGetList, useGetIdentity, useCreate, useRedirect } from "ra-core";
 import {
+  CalendarCheck,
   CheckCircle2,
   Timer,
   Activity,
@@ -18,6 +19,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
+import { usePageHotkey } from "../misc/usePageHotkey";
 
 interface Todo {
   id: number;
@@ -93,7 +97,9 @@ export const ReviewPage = () => {
   const today = dstr(new Date());
   const weekAheadEnd = daysAhead(7);
 
-  const { data: todos } = useGetList<Todo>("todos", {
+  usePageHotkey("n", () => redirect("/todos"));
+
+  const { data: todos, isLoading } = useGetList<Todo>("todos", {
     pagination: { page: 1, perPage: 500 },
     sort: { field: "created_at", order: "DESC" },
   });
@@ -242,11 +248,19 @@ export const ReviewPage = () => {
         )}
       </div>
 
-      {nothingHappened && (
-        <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          A quiet week — that's allowed. Next week is a fresh page.
-        </Card>
-      )}
+      {isLoading && !todos ? (
+        <CardsSkeleton
+          count={3}
+          className="grid grid-cols-1 gap-4"
+        />
+      ) : nothingHappened ? (
+        <EmptyState
+          icon={CalendarCheck}
+          title="A quiet week"
+          description="That's allowed. Next week is a fresh page."
+          action={{ label: "Capture something", onClick: () => redirect("/todos") }}
+        />
+      ) : null}
 
       {/* Wins */}
       {doneTodos.length > 0 && (
