@@ -14,10 +14,12 @@ import {
   Maximize2,
   Plus,
   Trash2,
+  LayoutGrid,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -32,6 +34,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 
 interface HubItem {
   id: number;
@@ -70,6 +75,9 @@ export const HubPage = () => {
   });
   const [embedItem, setEmbedItem] = useState<HubItem | null>(null);
   const [addOpen, setAddOpen] = useState(false);
+  const { deleteWithUndo } = useUndoable();
+  
+  usePageHotkey("n", () => setAddOpen(true));
 
   const items = data ?? [];
   const categories = Array.from(new Set(items.map((i) => i.category)));
@@ -92,11 +100,14 @@ export const HubPage = () => {
       </div>
 
       {isLoading ? (
-        <p className="text-[13px] text-muted-foreground">Loading your tools…</p>
+        <CardsSkeleton count={6} />
       ) : items.length === 0 ? (
-        <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          No tiles yet. Add your first website, dashboard, or database.
-        </div>
+        <EmptyState
+          icon={LayoutGrid}
+          title="No tiles yet"
+          description="Pin your websites, dashboards, databases, and tools — one-click access from anywhere."
+          action={{ label: "Add first tile", onClick: () => setAddOpen(true) }}
+        />
       ) : (
         categories.map((cat) => {
           const catItems = items.filter((i) => i.category === cat);

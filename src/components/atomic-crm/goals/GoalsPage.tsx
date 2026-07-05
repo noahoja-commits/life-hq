@@ -7,7 +7,7 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import { Plus, Trash2, X, Trophy, Pause, Play } from "lucide-react";
+import { Plus, Trash2, X, Trophy, Pause, Play, Target } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,9 @@ import { cn } from "@/lib/utils";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useConfirm } from "../misc/useConfirm";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 
 export interface Goal {
   id: number;
@@ -50,8 +53,10 @@ export const GoalsPage = () => {
   const [update] = useUpdate();
   const [remove] = useDelete();
   const { confirm, confirmUI } = useConfirm();
+  const { deleteWithUndo } = useUndoable();
   const [addOpen, setAddOpen] = useState(false);
   const salesId = identity?.id ? Number(identity.id) : null;
+  usePageHotkey("n", () => setAddOpen(true));
 
   const { data: goals, isPending } = useGetList<Goal>("goals", {
     pagination: { page: 1, perPage: 100 },
@@ -87,10 +92,12 @@ export const GoalsPage = () => {
           className="grid grid-cols-1 sm:grid-cols-2 gap-4"
         />
       ) : all.length === 0 ? (
-        <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          No goals yet. Pick ONE thing future-you would thank you for, and add
-          the first tiny milestone.
-        </Card>
+        <EmptyState
+          icon={Target}
+          title="No goals yet"
+          description="Set a goal, break it into milestones, and track your progress."
+          action={{ label: "Set a goal", onClick: () => setAddOpen(true) }}
+        />
       ) : (
         groups
           .filter((g) => all.some((goal) => goal.status === g.status))
@@ -116,15 +123,10 @@ export const GoalsPage = () => {
                         )
                       }
                       onDelete={() =>
-                        confirm(
-                          `Delete goal "${goal.title}" and its milestones?`,
-                          () =>
-                            remove(
-                              "goals",
-                              { id: goal.id, previousData: goal },
-                              { mutationMode: "optimistic" },
-                            ),
-                        )
+                        deleteWithUndo("goals", {
+                          id: goal.id,
+                          previousData: goal,
+                        })
                       }
                       onToggleMilestone={(m) => {
                         haptic(m.done ? "tick" : "success");

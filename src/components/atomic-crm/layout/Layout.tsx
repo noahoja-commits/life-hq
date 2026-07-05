@@ -1,7 +1,6 @@
 import { Suspense, type ReactNode } from "react";
 import { useLocation } from "react-router";
 import { ErrorBoundary } from "react-error-boundary";
-import { useLocation } from "react-router";
 import { Notification } from "@/components/admin/notification";
 import { Error } from "@/components/admin/error";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +9,7 @@ import { useConfigurationLoader } from "../root/useConfigurationLoader";
 import { CommandPalette } from "../command/CommandPalette";
 import Header from "./Header";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
+import { ShortcutHelp } from "./ShortcutHelp";
 import { Sidebar } from "./Sidebar";
 
 /**
@@ -24,6 +24,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     <div className="flex h-dvh overflow-hidden bg-sidebar">
       <CommandPalette />
       <KeyboardShortcuts />
+      <ShortcutHelp />
       <Sidebar />
       <div className="my-2 mr-2 flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-background shadow-sm transition-shadow duration-200">
         <Header />

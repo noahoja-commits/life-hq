@@ -15,7 +15,10 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
 import { NextActions } from "../todos/NextActions";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +74,9 @@ export const VenturesPage = () => {
   const [update] = useUpdate();
   const [remove] = useDelete();
   const [addOpen, setAddOpen] = useState(false);
+  const { deleteWithUndo } = useUndoable();
+  
+  usePageHotkey("n", () => setAddOpen(true));
   const { confirm, confirmUI } = useConfirm();
 
   const {
@@ -92,11 +98,7 @@ export const VenturesPage = () => {
     );
 
   const del = (v: Venture) =>
-    remove(
-      "ventures",
-      { id: v.id, previousData: v },
-      { onSuccess: () => refetch() },
-    );
+    deleteWithUndo("ventures", { id: v.id, previousData: v });
 
   // Show active statuses first
   const order: Status[] = [
@@ -122,7 +124,7 @@ export const VenturesPage = () => {
       ) : ventures.length === 0 ? (
         <div className="rounded-lg border border-dashed px-4 py-6 text-[13px] text-muted-foreground">
           No ventures yet. Add the businesses and big projects you're running.
-        </div>
+        <EmptyState icon={Rocket} title="No ventures yet" description="Track your businesses, side projects, and big bets." action={{ label: "Start a venture", onClick: () => setAddOpen(true) }} />
       ) : (
         present.map((status) => (
           <section key={status} className="mb-8">

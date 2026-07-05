@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   useGetList,
   useGetIdentity,
   useCreate,
   useUpdate,
-  useDelete,
   useNotify,
 } from "ra-core";
+import { EmptyState } from "../misc/EmptyState";
+import { useUndoable } from "../misc/useUndoable";
+import { usePageHotkey } from "../misc/usePageHotkey";
 import {
   Plus,
   Trash2,
@@ -18,6 +20,7 @@ import {
   Repeat,
   FolderKanban,
   Clock,
+  CheckSquare,
 } from "lucide-react";
 import { useRedirect } from "ra-core";
 import {
@@ -145,8 +148,10 @@ export const TodosPage = () => {
   const notify = useNotify();
   const [create] = useCreate();
   const [update] = useUpdate();
-  const [remove] = useDelete();
+  const { deleteWithUndo } = useUndoable();
   const haptic = useHaptics();
+  const inputRef = useRef<HTMLInputElement>(null);
+  usePageHotkey("n", () => inputRef.current?.focus());
 
   const [text, setText] = useState("");
   const [due, setDue] = useState("");
@@ -255,11 +260,7 @@ export const TodosPage = () => {
   };
 
   const del = (t: Todo) =>
-    remove(
-      "todos",
-      { id: t.id, previousData: t },
-      { mutationMode: "optimistic" },
-    );
+    deleteWithUndo("todos", { id: t.id, previousData: t });
 
   const patch = (t: Todo, data: Partial<Todo>) =>
     update(
@@ -328,6 +329,7 @@ export const TodosPage = () => {
       {/* Quick add */}
       <Card className="p-3 mb-6 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
         <Input
+          ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && add()}
@@ -381,9 +383,15 @@ export const TodosPage = () => {
       </Card>
 
       {open.length === 0 ? (
-        <Card className="border-dashed px-4 py-6 text-[13px] text-muted-foreground">
-          Nothing on your plate. Add a to-do above — or enjoy the clear deck.
-        </Card>
+        <EmptyState
+          icon={CheckSquare}
+          title="No to-dos yet"
+          description="Capture tasks as they come — natural language, due dates, recurrence, all in one place."
+          action={{
+            label: "Add a to-do",
+            onClick: () => inputRef.current?.focus(),
+          }}
+        />
       ) : (
         groups
           .filter((g) => g.items.length > 0)
