@@ -29,6 +29,7 @@ import { findDealLabel } from "../deals/dealUtils";
 import { MobileContent } from "../layout/MobileContent";
 import MobileHeader from "../layout/MobileHeader";
 import { MobileBackButton } from "../misc/MobileBackButton";
+import { ConnectionPanel } from "../misc/ConnectionPanel";
 import { formatRelativeDate } from "../misc/RelativeDate";
 import { Status } from "../misc/Status";
 import { useConfigurationContext } from "../root/ConfigurationContext";
@@ -83,6 +84,7 @@ const CompanyShowContentMobile = () => {
         <AddressInfo record={record} />
         <ContextInfo record={record} />
         <AdditionalInfo record={record} />
+        <ConnectionPanel entityType="companies" entityId={record.id} className="mt-6" />
       </MobileContent>
     </>
   );
@@ -180,6 +182,7 @@ const CompanyShowContent = () => {
               </TabsContent>
             </Tabs>
           </CardContent>
+          <ConnectionPanel entityType="companies" entityId={record.id} className="mt-6" />
         </Card>
       </div>
       <CompanyAside />

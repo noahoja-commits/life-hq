@@ -32,6 +32,7 @@ import type { Contact } from "../types";
 import { Avatar } from "./Avatar";
 import { ContactAside } from "./ContactAside";
 import { MobileBackButton } from "../misc/MobileBackButton";
+import { ConnectionPanel } from "../misc/ConnectionPanel";
 
 export const ContactShow = (props: ShowBaseProps = {}) => {
   const isMobile = useIsMobile();
@@ -230,6 +231,7 @@ const ContactShowContentMobile = () => {
             </div>
           </TabsContent>
         </Tabs>
+        <ConnectionPanel entityType="contacts" entityId={record.id} className="mt-6" />
       </MobileContent>
     </>
   );
@@ -294,6 +296,7 @@ const ContactShowContent = () => {
               <NotesIterator reference="contacts" showStatus />
             </InfiniteListBase>
           </CardContent>
+          <ConnectionPanel entityType="contacts" entityId={record.id} className="mt-6" />
         </Card>
       </div>
       <ContactAside />

@@ -7,7 +7,7 @@ import {
   useDelete,
   useNotify,
 } from "ra-core";
-import { Plus, Trash2, X, Trophy, Pause, Play, Target } from "lucide-react";
+import { Plus, Trash2, X, Trophy, Pause, Play, Target, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +55,7 @@ export const GoalsPage = () => {
   const { confirm, confirmUI } = useConfirm();
   const { deleteWithUndo } = useUndoable();
   const [addOpen, setAddOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const salesId = identity?.id ? Number(identity.id) : null;
   usePageHotkey("n", () => setAddOpen(true));
 
@@ -74,6 +75,13 @@ export const GoalsPage = () => {
     { status: "achieved", label: "Achieved" },
   ];
 
+  const itemMatchesSearch = (item: Goal, q: string) => {
+    if (!q.trim()) return true;
+    const s = q.toLowerCase();
+    const fields = [item.title, item.why];
+    return fields.some((f) => f && String(f).toLowerCase().includes(s));
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-1">
@@ -86,84 +94,113 @@ export const GoalsPage = () => {
         Where you're headed — broken into steps small enough to actually take.
       </p>
 
+      {/* Search */}
+      <div className="relative w-full max-w-xs mb-4">
+        <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search..."
+          className="h-8 pl-8 text-xs"
+        />
+      </div>
+
       {isPending && all.length === 0 ? (
         <CardsSkeleton
           count={4}
           className="grid grid-cols-1 sm:grid-cols-2 gap-4"
         />
       ) : all.length === 0 ? (
-        <EmptyState
-          icon={Target}
-          title="No goals yet"
-          description="Set a goal, break it into milestones, and track your progress."
-          action={{ label: "Set a goal", onClick: () => setAddOpen(true) }}
-        />
+        search.trim() ? (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            No goals match your search.
+          </p>
+        ) : (
+          <EmptyState
+            icon={Target}
+            title="No goals yet"
+            description="Set a goal, break it into milestones, and track your progress."
+            action={{ label: "Set a goal", onClick: () => setAddOpen(true) }}
+          />
+        )
       ) : (
-        groups
-          .filter((g) => all.some((goal) => goal.status === g.status))
-          .map((g) => (
-            <section key={g.status} className="mb-8">
-              <h2 className="u-label mb-3 text-muted-foreground">{g.label}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {all
-                  .filter((goal) => goal.status === g.status)
-                  .map((goal) => (
-                    <GoalCard
-                      key={goal.id}
-                      goal={goal}
-                      milestones={(milestones ?? []).filter(
-                        (m) => m.goal_id === goal.id,
-                      )}
-                      salesId={salesId}
-                      onPatch={(d) =>
-                        update(
-                          "goals",
-                          { id: goal.id, data: d, previousData: goal },
-                          { mutationMode: "optimistic" },
-                        )
-                      }
-                      onDelete={() =>
-                        deleteWithUndo("goals", {
-                          id: goal.id,
-                          previousData: goal,
-                        })
-                      }
-                      onToggleMilestone={(m) => {
-                        haptic(m.done ? "tick" : "success");
-                        update(
-                          "goal_milestones",
-                          {
-                            id: m.id,
-                            data: { done: !m.done },
-                            previousData: m,
-                          },
-                          { mutationMode: "optimistic" },
-                        );
-                      }}
-                      onAddMilestone={(text) =>
-                        create("goal_milestones", {
-                          data: {
-                            goal_id: goal.id,
-                            text,
-                            sales_id: salesId,
-                            position: (milestones ?? []).filter(
-                              (m) => m.goal_id === goal.id,
-                            ).length,
-                          },
-                        })
-                      }
-                      onDelMilestone={(m) =>
-                        remove(
-                          "goal_milestones",
-                          { id: m.id, previousData: m },
-                          { mutationMode: "optimistic" },
-                        )
-                      }
-                    />
-                  ))}
-              </div>
-            </section>
-          ))
+        (() => {
+          const filtered = search.trim()
+            ? all.filter((g) => itemMatchesSearch(g, search))
+            : all;
+          if (filtered.length === 0) {
+            return (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No goals match your search.
+              </p>
+            );
+          }
+          return groups
+            .filter((g) => filtered.some((goal) => goal.status === g.status))
+            .map((g) => (
+              <section key={g.status} className="mb-8">
+                <h2 className="u-label mb-3 text-muted-foreground">{g.label}</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {filtered
+                    .filter((goal) => goal.status === g.status)
+                    .map((goal) => (
+                      <GoalCard
+                        key={goal.id}
+                        goal={goal}
+                        milestones={(milestones ?? []).filter(
+                          (m) => m.goal_id === goal.id,
+                        )}
+                        salesId={salesId}
+                        onPatch={(d) =>
+                          update(
+                            "goals",
+                            { id: goal.id, data: d, previousData: goal },
+                            { mutationMode: "optimistic" },
+                          )
+                        }
+                        onDelete={() =>
+                          deleteWithUndo("goals", {
+                            id: goal.id,
+                            previousData: goal,
+                          })
+                        }
+                        onToggleMilestone={(m) => {
+                          haptic(m.done ? "tick" : "success");
+                          update(
+                            "goal_milestones",
+                            {
+                              id: m.id,
+                              data: { done: !m.done },
+                              previousData: m,
+                            },
+                            { mutationMode: "optimistic" },
+                          );
+                        }}
+                        onAddMilestone={(text) =>
+                          create("goal_milestones", {
+                            data: {
+                              goal_id: goal.id,
+                              text,
+                              sales_id: salesId,
+                              position: (milestones ?? []).filter(
+                                (m) => m.goal_id === goal.id,
+                              ).length,
+                            },
+                          })
+                        }
+                        onDelMilestone={(m) =>
+                          remove(
+                            "goal_milestones",
+                            { id: m.id, previousData: m },
+                            { mutationMode: "optimistic" },
+                          )
+                        }
+                      />
+                    ))}
+                </div>
+              </section>
+            ));
+        })()
       )}
 
       {addOpen && (

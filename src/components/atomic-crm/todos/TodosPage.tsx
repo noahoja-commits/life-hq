@@ -21,6 +21,8 @@ import {
   FolderKanban,
   Clock,
   CheckSquare,
+  Search,
+  Loader2,
 } from "lucide-react";
 import { useRedirect } from "ra-core";
 import {
@@ -156,6 +158,9 @@ export const TodosPage = () => {
   const [text, setText] = useState("");
   const [due, setDue] = useState("");
   const [high, setHigh] = useState(false);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [batchLoading, setBatchLoading] = useState(false);
+  const [search, setSearch] = useState("");
 
   const { data } = useGetList<Todo>("todos", {
     pagination: { page: 1, perPage: 500 },
@@ -262,6 +267,65 @@ export const TodosPage = () => {
   const del = (t: Todo) =>
     deleteWithUndo("todos", { id: t.id, previousData: t });
 
+  const toggleSelect = (id: number) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelected(new Set());
+
+  const batchComplete = async () => {
+    setBatchLoading(true);
+    try {
+      await Promise.all(
+        [...selected].map((id) => {
+          const t = todos.find((x) => x.id === id);
+          if (!t || t.done) return Promise.resolve();
+          return update(
+            "todos",
+            {
+              id,
+              data: { done: true, done_at: new Date().toISOString() },
+              previousData: t,
+            },
+            { mutationMode: "optimistic" },
+          );
+        }),
+      );
+      notify(`${selected.size} to-do(s) completed`, { type: "success" });
+      clearSelection();
+    } finally {
+      setBatchLoading(false);
+    }
+  };
+
+  const batchDelete = async () => {
+    setBatchLoading(true);
+    try {
+      await Promise.all(
+        [...selected].map((id) => {
+          const t = todos.find((x) => x.id === id);
+          if (!t) return Promise.resolve();
+          return deleteWithUndo("todos", { id, previousData: t });
+        }),
+      );
+      clearSelection();
+    } finally {
+      setBatchLoading(false);
+    }
+  };
+
+  const itemMatchesSearch = (item: Todo, q: string) => {
+    if (!q.trim()) return true;
+    const s = q.toLowerCase();
+    const fields = [item.text, item.notes];
+    return fields.some((f) => f && String(f).toLowerCase().includes(s));
+  };
+
   const patch = (t: Todo, data: Partial<Todo>) =>
     update(
       "todos",
@@ -326,6 +390,17 @@ export const TodosPage = () => {
         )}
       </div>
 
+      {/* Search */}
+      <div className="relative w-full max-w-xs mb-4">
+        <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search..."
+          className="h-8 pl-8 text-xs"
+        />
+      </div>
+
       {/* Quick add */}
       <Card className="p-3 mb-6 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
         <Input
@@ -383,19 +458,37 @@ export const TodosPage = () => {
       </Card>
 
       {open.length === 0 ? (
-        <EmptyState
-          icon={CheckSquare}
-          title="No to-dos yet"
-          description="Capture tasks as they come — natural language, due dates, recurrence, all in one place."
-          action={{
-            label: "Add a to-do",
-            onClick: () => inputRef.current?.focus(),
-          }}
-        />
+        search.trim() ? (
+          <p className="text-sm text-muted-foreground text-center py-8">
+            No to-dos match your search.
+          </p>
+        ) : (
+          <EmptyState
+            icon={CheckSquare}
+            title="No to-dos yet"
+            description="Capture tasks as they come — natural language, due dates, recurrence, all in one place."
+            action={{
+              label: "Add a to-do",
+              onClick: () => inputRef.current?.focus(),
+            }}
+          />
+        )
       ) : (
-        groups
-          .filter((g) => g.items.length > 0)
-          .map((g) => (
+        (() => {
+          const visible = groups
+            .map((g) => ({
+              ...g,
+              items: g.items.filter((t) => itemMatchesSearch(t, search)),
+            }))
+            .filter((g) => g.items.length > 0);
+          if (visible.length === 0) {
+            return (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No to-dos match your search.
+              </p>
+            );
+          }
+          return visible.map((g) => (
             <section key={g.key} className="mb-6">
               <h2
                 className={cn(
@@ -418,37 +511,89 @@ export const TodosPage = () => {
                     onToggle={() => toggle(t)}
                     onDelete={() => del(t)}
                     onPatch={(data) => patch(t, data)}
+                    isSelected={selected.has(t.id)}
+                    onToggleSelect={() => toggleSelect(t.id)}
                   />
                 ))}
               </Card>
             </section>
-          ))
+          ));
+        })()
       )}
 
       <WaitingOnSection />
 
-      {done.length > 0 && (
-        <section className="mb-6 opacity-70">
-          <h2 className="u-label mb-2 text-muted-foreground">
-            Done
-            <span className="ml-1.5 font-medium text-muted-foreground/60">
-              {done.length}
-            </span>
-          </h2>
-          <Card className="divide-y divide-border overflow-hidden p-0">
-            {done.slice(0, 30).map((t) => (
-              <TodoRow
-                key={t.id}
-                t={t}
-                projects={projects}
-                projectName={projectName}
-                onToggle={() => toggle(t)}
-                onDelete={() => del(t)}
-                onPatch={(data) => patch(t, data)}
-              />
-            ))}
-          </Card>
-        </section>
+      {done.length > 0 &&
+        (() => {
+          const filteredDone = done.filter((t) =>
+            itemMatchesSearch(t, search),
+          );
+          if (filteredDone.length === 0) return null;
+          return (
+            <section className="mb-6 opacity-70">
+              <h2 className="u-label mb-2 text-muted-foreground">
+                Done
+                <span className="ml-1.5 font-medium text-muted-foreground/60">
+                  {filteredDone.length}
+                </span>
+              </h2>
+              <Card className="divide-y divide-border overflow-hidden p-0">
+                {filteredDone.slice(0, 30).map((t) => (
+                  <TodoRow
+                    key={t.id}
+                    t={t}
+                    projects={projects}
+                    projectName={projectName}
+                    onToggle={() => toggle(t)}
+                    onDelete={() => del(t)}
+                    onPatch={(data) => patch(t, data)}
+                    isSelected={selected.has(t.id)}
+                    onToggleSelect={() => toggleSelect(t.id)}
+                  />
+                ))}
+              </Card>
+            </section>
+          );
+        })()}
+
+      {/* Batch action bar */}
+      {selected.size > 0 && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-lg animate-in slide-in-from-bottom">
+          <span className="text-sm font-medium">
+            {selected.size} selected
+          </span>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={batchComplete}
+            disabled={batchLoading}
+          >
+            {batchLoading ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : null}
+            Complete all
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={batchDelete}
+            disabled={batchLoading}
+            className="text-destructive hover:bg-destructive/10"
+          >
+            {batchLoading ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : null}
+            Delete all
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={clearSelection}
+            disabled={batchLoading}
+          >
+            Clear
+          </Button>
+        </div>
       )}
     </div>
   );
@@ -463,6 +608,8 @@ const TodoRow = ({
   onToggle,
   onDelete,
   onPatch,
+  isSelected,
+  onToggleSelect,
 }: {
   t: Todo;
   projects: { id: number; name: string }[];
@@ -470,6 +617,8 @@ const TodoRow = ({
   onToggle: () => void;
   onDelete: () => void;
   onPatch: (data: Partial<Todo>) => void;
+  isSelected?: boolean;
+  onToggleSelect?: () => void;
 }) => {
   const redirect = useRedirect();
   const [expanded, setExpanded] = useState(false);
@@ -486,6 +635,12 @@ const TodoRow = ({
   return (
     <div className="group">
       <div className="flex items-center gap-3 px-4 py-2.5">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={onToggleSelect}
+          aria-label={`Select ${t.text}`}
+          className="transition-transform active:scale-90"
+        />
         <Checkbox
           checked={t.done}
           onCheckedChange={onToggle}

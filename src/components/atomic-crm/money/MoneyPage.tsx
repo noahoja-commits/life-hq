@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Zap,
   Wallet,
+  Search,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -129,6 +130,7 @@ export const MoneyPage = () => {
   const [cat, setCat] = useState("Food");
   const [note, setNote] = useState("");
   const [txnDate, setTxnDate] = useState("");
+  const [search, setSearch] = useState("");
 
   const mk = monthKey();
   const monthTxns = (txns ?? []).filter((t) => t.occurred_on.startsWith(mk));
@@ -148,6 +150,13 @@ export const MoneyPage = () => {
   }
   const activeBills = (bills ?? []).filter((b) => b.active);
   const billsMoTotal = activeBills.reduce((s, b) => s + Number(b.amount), 0);
+
+  const itemMatchesSearch = (item: any, q: string) => {
+    if (!q.trim()) return true;
+    const s = q.toLowerCase();
+    const fields = [item.name, item.note, item.category];
+    return fields.some((f) => f && String(f).toLowerCase().includes(s));
+  };
 
   const addTxn = () => {
     const val = Number(amount);
@@ -215,6 +224,17 @@ export const MoneyPage = () => {
             year: "numeric",
           })}
         </span>
+      </div>
+
+      {/* Search */}
+      <div className="relative w-full max-w-xs">
+        <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search..."
+          className="h-8 pl-8 text-xs"
+        />
       </div>
 
       {/* Month summary */}
@@ -321,14 +341,16 @@ export const MoneyPage = () => {
 
       {/* Budgets */}
       <BudgetsSection
-        budgets={budgets ?? []}
+        budgets={(budgets ?? []).filter((b) =>
+          itemMatchesSearch(b, search),
+        )}
         spentByCat={spentByCat}
         salesId={salesId}
       />
 
       {/* Bills */}
       <BillsSection
-        bills={activeBills}
+        bills={activeBills.filter((b) => itemMatchesSearch(b, search))}
         onPaid={markPaid}
         onDelete={(b) =>
           confirm(`Delete bill "${b.name}"?`, () =>
@@ -344,58 +366,85 @@ export const MoneyPage = () => {
         {isPending && (txns ?? []).length === 0 ? (
           <CardsSkeleton count={2} className="grid grid-cols-1 gap-2" />
         ) : (txns ?? []).length === 0 ? (
-          <EmptyState
-            icon={Wallet}
-            title="No transactions yet"
-            description="Log your first one above."
-            action={{
-              label: "Add transaction",
-              onClick: () => {
-                const input = document.querySelector<HTMLInputElement>('input[aria-label="Amount"]');
-                input?.focus();
-              },
-            }}
-          />
+          search.trim() ? (
+            <p className="text-sm text-muted-foreground text-center py-8">
+              No transactions match your search.
+            </p>
+          ) : (
+            <EmptyState
+              icon={Wallet}
+              title="No transactions yet"
+              description="Log your first one above."
+              action={{
+                label: "Add transaction",
+                onClick: () => {
+                  const input = document.querySelector<HTMLInputElement>('input[aria-label="Amount"]');
+                  input?.focus();
+                },
+              }}
+            />
+          )
         ) : (
-          <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
-            {(txns ?? []).slice(0, 25).map((t) => (
-              <div
-                key={t.id}
-                className="group flex items-center gap-3 px-4 py-2.5 text-[13px] hover:bg-accent/50"
-              >
-                <span
-                  className={cn(
-                    "w-20 font-medium tabular-nums",
-                    t.kind === "income" ? "text-success" : "text-destructive",
-                  )}
-                >
-                  {t.kind === "income" ? "+" : "−"}
-                  {fmt$(Number(t.amount))}
-                </span>
-                <span className="rounded-md border bg-card px-2.5 py-1 text-xs">
-                  {t.category}
-                </span>
-                <span className="flex-1 truncate text-muted-foreground">
-                  {t.note}
-                </span>
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  {new Date(t.occurred_on + "T00:00:00").toLocaleDateString(
-                    undefined,
-                    { month: "short", day: "numeric" },
-                  )}
-                </span>
-                <button
-                  onClick={() =>
-                    deleteWithUndo("transactions", { id: t.id, previousData: t })
-                  }
-                  className="text-muted-foreground opacity-60 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
-                  aria-label="Delete transaction"
-                >
-                  <Trash2 className="size-4" />
-                </button>
+          (() => {
+            const filtered = (txns ?? [])
+              .filter((t) => itemMatchesSearch(t, search))
+              .slice(0, 25);
+            if (filtered.length === 0) {
+              return (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No transactions match your search.
+                </p>
+              );
+            }
+            return (
+              <div className="divide-y divide-border overflow-hidden rounded-lg border bg-card">
+                {filtered.map((t) => (
+                  <div
+                    key={t.id}
+                    className="group flex items-center gap-3 px-4 py-2.5 text-[13px] hover:bg-accent/50"
+                  >
+                    <span
+                      className={cn(
+                        "w-20 font-medium tabular-nums",
+                        t.kind === "income"
+                          ? "text-success"
+                          : "text-destructive",
+                      )}
+                    >
+                      {t.kind === "income" ? "+" : "−"}
+                      {fmt$(Number(t.amount))}
+                    </span>
+                    <span className="rounded-md border bg-card px-2.5 py-1 text-xs">
+                      {t.category}
+                    </span>
+                    <span className="flex-1 truncate text-muted-foreground">
+                      {t.note}
+                    </span>
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {new Date(
+                        t.occurred_on + "T00:00:00",
+                      ).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                    <button
+                      onClick={() =>
+                        deleteWithUndo("transactions", {
+                          id: t.id,
+                          previousData: t,
+                        })
+                      }
+                      className="text-muted-foreground opacity-60 hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
+                      aria-label="Delete transaction"
+                    >
+                      <Trash2 className="size-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            );
+          })()
         )}
       </section>
       {confirmUI}
