@@ -26,6 +26,9 @@ import {
   Inbox,
   Sparkles,
   Loader2,
+  Timer,
+  Wallet,
+  CalendarCheck,
 } from "lucide-react";
 import { applyNavPrefs, navPrefsStore } from "../layout/navPrefsStore";
 import { parseNaturalTask } from "../misc/parseNaturalTask";
@@ -390,13 +393,13 @@ const PaletteBody = ({ query, close }: { query: string; close: () => void }) => 
           <div className="flex gap-2">
             <button
               onClick={executePending}
-              className="rounded-full bg-primary text-primary-foreground px-3.5 py-1 text-xs font-medium"
+              className="rounded-md bg-primary text-primary-foreground px-3 py-1 text-xs font-medium"
             >
-              ✓ Confirm
+              Confirm
             </button>
             <button
               onClick={() => setPending(null)}
-              className="rounded-full border px-3.5 py-1 text-xs text-muted-foreground"
+              className="rounded-md border px-3 py-1 text-xs text-muted-foreground"
             >
               Cancel
             </button>
@@ -432,12 +435,12 @@ const PaletteBody = ({ query, close }: { query: string; close: () => void }) => 
             <span>
               Add to-do: <span className="font-medium">{parsed.text}</span>
               {dueChip && (
-                <span className="ml-2 text-xs rounded-full bg-primary/15 text-primary px-2 py-0.5">
+                <span className="ml-2 text-xs rounded-md bg-primary/15 text-primary px-1.5 py-0.5">
                   {dueChip}
                 </span>
               )}
               {parsed.priority === 2 && (
-                <span className="ml-1 text-xs text-red-500">!</span>
+                <span className="ml-1 text-xs text-destructive">!</span>
               )}
             </span>
           </CommandItem>
@@ -450,11 +453,45 @@ const PaletteBody = ({ query, close }: { query: string; close: () => void }) => 
         </CommandGroup>
       )}
 
+      <CommandGroup heading="Actions">
+        <CommandItem
+          value="action quick capture jot"
+          onSelect={() => {
+            close();
+            window.dispatchEvent(new Event("open-quick-capture"));
+          }}
+        >
+          <Plus className="size-4" />
+          Quick capture
+        </CommandItem>
+        <CommandItem value="action start focus session timer" onSelect={() => go("/focus")}>
+          <Timer className="size-4" />
+          Start a focus session
+        </CommandItem>
+        <CommandItem value="action new person contact" onSelect={() => go("/contacts/create")}>
+          <Users className="size-4" />
+          New person
+        </CommandItem>
+        <CommandItem value="action add transaction expense income" onSelect={() => go("/money")}>
+          <Wallet className="size-4" />
+          Add a transaction
+        </CommandItem>
+        <CommandItem value="action weekly review check in" onSelect={() => go("/review")}>
+          <CalendarCheck className="size-4" />
+          Weekly review
+        </CommandItem>
+      </CommandGroup>
+
       <CommandGroup heading="Go to">
         {NAV().map((n) => (
           <CommandItem key={n.to} value={`go ${n.label}`} onSelect={() => go(n.to)}>
             <n.icon className="size-4" />
             {n.label}
+            {n.shortcut && (
+              <kbd className="ml-auto rounded border bg-muted px-1 font-sans text-[0.65rem] text-muted-foreground">
+                g {n.shortcut}
+              </kbd>
+            )}
           </CommandItem>
         ))}
       </CommandGroup>

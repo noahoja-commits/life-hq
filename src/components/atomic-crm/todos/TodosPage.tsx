@@ -17,6 +17,7 @@ import {
   Bell,
   Repeat,
   FolderKanban,
+  Clock,
 } from "lucide-react";
 import { useRedirect } from "ra-core";
 import {
@@ -31,6 +32,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { parseNaturalTask } from "../misc/parseNaturalTask";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -48,6 +55,7 @@ interface Todo {
   due_date?: string | null;
   priority: number;
   done: boolean;
+  done_at?: string | null;
   position: number;
   notes?: string | null;
   remind_at?: string | null;
@@ -73,18 +81,53 @@ const prettyTime = (iso: string) =>
     minute: "2-digit",
   });
 
-const localToday = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate(),
-  ).padStart(2, "0")}`;
-};
+const formatLocalDate = (d: Date) =>
+  `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const localToday = () => formatLocalDate(new Date());
 const addDays = (n: number) => {
   const d = new Date();
   d.setDate(d.getDate() + n);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate(),
-  ).padStart(2, "0")}`;
+  return formatLocalDate(d);
+};
+// Next Saturday. If today already IS Saturday, jump to the following one
+// (not today) — same rule falls out for Sunday since it lands 6 days out.
+const nextSaturday = () => {
+  const d = new Date();
+  const day = d.getDay();
+  let diff = (6 - day + 7) % 7;
+  if (diff === 0) diff = 7;
+  d.setDate(d.getDate() + diff);
+  return formatLocalDate(d);
+};
+// Next Monday, always strictly in the future (never today).
+const nextMonday = () => {
+  const d = new Date();
+  const day = d.getDay();
+  let diff = (1 - day + 7) % 7;
+  if (diff === 0) diff = 7;
+  d.setDate(d.getDate() + diff);
+  return formatLocalDate(d);
+};
+// Snooze helper: move due_date, and if a reminder time was set, carry its
+// time-of-day onto the new day (clearing the date clears the reminder too).
+const withDateKeepingTime = (
+  t: Pick<Todo, "remind_at">,
+  newDate: string | null,
+): Partial<Pick<Todo, "due_date" | "remind_at">> => {
+  if (!newDate) return { due_date: null, remind_at: null };
+  if (!t.remind_at) return { due_date: newDate };
+  const prev = new Date(t.remind_at);
+  const [y, m, d] = newDate.split("-").map(Number);
+  const remind_at = new Date(
+    y,
+    m - 1,
+    d,
+    prev.getHours(),
+    prev.getMinutes(),
+    0,
+    0,
+  ).toISOString();
+  return { due_date: newDate, remind_at };
 };
 const prettyDate = (iso: string) => {
   const today = localToday();
@@ -231,6 +274,15 @@ export const TodosPage = () => {
   const upcoming = open.filter((t) => t.due_date && t.due_date > today);
   const anytime = open.filter((t) => !t.due_date);
   const done = todos.filter((t) => t.done);
+  const doneToday = done.filter(
+    (t) =>
+      t.done_at &&
+      new Date(t.done_at).toDateString() === new Date().toDateString(),
+  ).length;
+
+  const moveOverdueToToday = () => {
+    overdue.forEach((t) => patch(t, { due_date: today }));
+  };
 
   const byPriorityThenDate = (a: Todo, b: Todo) =>
     b.priority - a.priority ||
@@ -242,7 +294,7 @@ export const TodosPage = () => {
         key: "overdue",
         label: "Overdue",
         items: [...overdue].sort(byPriorityThenDate),
-        tone: "text-destructive",
+        tone: "text-warning",
       },
       {
         key: "today",
@@ -264,7 +316,14 @@ export const TodosPage = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <h1 className="mb-6 text-xl font-semibold tracking-tight">To-Dos</h1>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold tracking-tight">To-Dos</h1>
+        {doneToday > 0 && (
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {doneToday} done today
+          </p>
+        )}
+      </div>
 
       {/* Quick add */}
       <Card className="p-3 mb-6 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">

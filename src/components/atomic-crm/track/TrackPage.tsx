@@ -10,6 +10,7 @@ import {
 import { Plus, Check, BarChart3 } from "lucide-react";
 import { TrackerInsights } from "./TrackerInsights";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,34 @@ interface LogEntry {
 
 const isToday = (iso: string) =>
   new Date(iso).toDateString() === new Date().toDateString();
+
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const localDateStr = (d: Date) =>
+  `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+
+// Monday-start week, local time.
+const startOfWeekMonday = (d: Date) => {
+  const date = new Date(d);
+  date.setHours(0, 0, 0, 0);
+  const day = date.getDay(); // 0 = Sun ... 6 = Sat
+  const diffToMonday = day === 0 ? 6 : day - 1;
+  date.setDate(date.getDate() - diffToMonday);
+  return date;
+};
+
+const SPARK_DAYS = 14;
+/** Last N local calendar days (oldest first, today last) as "YYYY-MM-DD". */
+const lastNLocalDates = (n: number): string[] => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const out: string[] = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    out.push(localDateStr(d));
+  }
+  return out;
+};
 
 export const TrackPage = () => {
   const { identity } = useGetIdentity();

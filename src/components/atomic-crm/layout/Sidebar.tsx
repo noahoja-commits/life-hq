@@ -27,6 +27,12 @@ export const Sidebar = () => {
   useEffect(() => {
     if (salesId) void navPrefsStore.load(salesId);
   }, [salesId]);
+  // "c" shortcut and palette action both open capture through this event.
+  useEffect(() => {
+    const onOpen = () => setCaptureOpen(true);
+    window.addEventListener("open-quick-capture", onOpen);
+    return () => window.removeEventListener("open-quick-capture", onOpen);
+  }, []);
 
   const activePath = NAV_ITEMS.find((n) =>
     n.to === "/"
@@ -136,7 +142,7 @@ const SidebarItem = ({
   return (
     <Link
       to={item.to}
-      title={item.label}
+      title={item.shortcut ? `${item.label} (g ${item.shortcut})` : item.label}
       className={cn(
         "group flex h-8 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium no-underline transition-colors",
         active
