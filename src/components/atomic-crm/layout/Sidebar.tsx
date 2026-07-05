@@ -1,4 +1,4 @@
-import { Plus, Search, Settings, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Plus, Search, Settings, SlidersHorizontal } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useGetIdentity } from "ra-core";
 import { useEffect, useState, useSyncExternalStore } from "react";
@@ -22,6 +22,7 @@ export const Sidebar = () => {
   const { identity } = useGetIdentity();
   const [customizeOpen, setCustomizeOpen] = useState(false);
   const [captureOpen, setCaptureOpen] = useState(false);
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const prefs = useSyncExternalStore(navPrefsStore.subscribe, navPrefsStore.get);
   const salesId = identity?.id ? Number(identity.id) : null;
   useEffect(() => {
@@ -33,6 +34,18 @@ export const Sidebar = () => {
     window.addEventListener("open-quick-capture", onOpen);
     return () => window.removeEventListener("open-quick-capture", onOpen);
   }, []);
+
+  const toggleGroup = (group: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(group)) {
+        next.delete(group);
+      } else {
+        next.add(group);
+      }
+      return next;
+    });
+  };
 
   const activePath = NAV_ITEMS.find((n) =>
     n.to === "/"
@@ -89,16 +102,36 @@ export const Sidebar = () => {
           {ungrouped.map((n) => (
             <SidebarItem key={n.key} item={n} active={activePath === n.to} />
           ))}
-          {groups.map((g) => (
-            <div key={g.group}>
-              <div className="u-label px-2.5 pt-5 pb-1.5 text-sidebar-foreground/45">
-                {g.group}
+          {groups.map((g) => {
+            const collapsed = collapsedGroups.has(g.group);
+            return (
+              <div key={g.group}>
+                <button
+                  onClick={() => toggleGroup(g.group)}
+                  className="sidebar-group-header flex w-full items-center gap-1.5 px-2.5 pt-5 pb-1.5 text-sidebar-foreground/45"
+                  aria-expanded={!collapsed}
+                >
+                  <span className="u-label flex-1 text-left">{g.group}</span>
+                  <ChevronDown
+                    className={cn(
+                      "size-3.5 transition-transform duration-200",
+                      collapsed && "-rotate-90",
+                    )}
+                  />
+                </button>
+                <div
+                  className={cn(
+                    "sidebar-group-content",
+                    collapsed && "collapsed",
+                  )}
+                >
+                  {g.items.map((n) => (
+                    <SidebarItem key={n.key} item={n} active={activePath === n.to} />
+                  ))}
+                </div>
               </div>
-              {g.items.map((n) => (
-                <SidebarItem key={n.key} item={n} active={activePath === n.to} />
-              ))}
-            </div>
-          ))}
+            );
+          })}
         </nav>
 
         <div className="flex shrink-0 items-center gap-1 border-t border-sidebar-border px-3 py-2">
@@ -143,6 +176,7 @@ const SidebarItem = ({
     <Link
       to={item.to}
       title={item.shortcut ? `${item.label} (g ${item.shortcut})` : item.label}
+      data-active={active ? "true" : undefined}
       className={cn(
         "group flex h-8 items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium no-underline transition-colors",
         active
@@ -152,7 +186,7 @@ const SidebarItem = ({
     >
       <Icon
         className={cn(
-          "size-4 shrink-0",
+          "size-4 shrink-0 transition-all duration-150",
           active
             ? "text-primary"
             : "text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70",

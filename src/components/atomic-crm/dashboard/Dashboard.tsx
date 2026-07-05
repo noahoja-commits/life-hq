@@ -91,7 +91,7 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-7 py-2">
+    <div className="mx-auto flex max-w-5xl flex-col gap-7 py-2 page-enter stagger">
       {/* Operations header: greeting left, capture right */}
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <div className="min-w-0">
@@ -119,21 +119,11 @@ export const Dashboard = () => {
       </div>
 
       {/* KPI strip */}
-      <div className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Kpi value={active.length} label="In motion" dotClass="bg-warning" />
-        <Kpi value={soon.length} label="Soon" dotClass="bg-primary" className="border-l" />
-        <Kpi
-          value={someday.length}
-          label="Someday"
-          dotClass="bg-muted-foreground/50"
-          className="max-sm:border-t sm:border-l"
-        />
-        <Kpi
-          value={all.length}
-          label="Projects total"
-          dotClass="bg-success"
-          className="border-l max-sm:border-t"
-        />
+        <Kpi value={soon.length} label="Soon" dotClass="bg-primary" />
+        <Kpi value={someday.length} label="Someday" dotClass="bg-muted-foreground/50" />
+        <Kpi value={all.length} label="Projects total" dotClass="bg-success" />
       </div>
 
       <PushReminders />
@@ -162,7 +152,7 @@ export const Dashboard = () => {
               <button
                 key={p.id}
                 onClick={() => redirect(`/deals/${p.id}/show`)}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-accent/50"
+                className="card-interactive flex w-full items-center gap-3 px-4 py-2.5 text-left"
               >
                 <span className="size-1.5 shrink-0 rounded-full bg-warning" />
                 <span className="shrink-0 text-[13px] font-medium">{p.name}</span>
@@ -185,14 +175,14 @@ export const Dashboard = () => {
           action={() => redirect("/hub")}
           actionLabel="Command Center"
         >
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 glass-card p-3">
             {hub.slice(0, 8).map((t) => (
               <a
                 key={t.id}
                 href={t.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex h-9 items-center gap-2 rounded-md border bg-card px-2.5 transition-colors hover:bg-accent/50"
+                className="card-interactive group flex h-9 items-center gap-2 rounded-md border bg-card/70 px-2.5"
               >
                 <span
                   className="size-1.5 shrink-0 rounded-full"
@@ -221,7 +211,7 @@ export const Dashboard = () => {
               <button
                 key={p.id}
                 onClick={() => redirect(`/deals/${p.id}/show`)}
-                className="rounded-md border bg-card px-2.5 py-1 text-xs transition-colors hover:bg-accent/50"
+                className="card-interactive rounded-md border bg-card px-2.5 py-1 text-xs"
               >
                 {p.name}
               </button>
@@ -249,10 +239,10 @@ const Kpi = ({
   dotClass: string;
   className?: string;
 }) => (
-  <div className={cn("flex flex-col gap-1.5 px-4 py-3", className)}>
-    <span className="text-lg leading-none font-semibold">{value}</span>
-    <span className="u-label flex items-center gap-1.5 text-muted-foreground/80">
-      <span className={cn("size-1.5 rounded-full", dotClass)} />
+  <div className={cn("metric-tile", className)}>
+    <span className="metric-value">{value}</span>
+    <span className="metric-label flex items-center gap-1.5">
+      <span className={cn("size-1.5 rounded-full inline-block shrink-0", dotClass)} />
       {label}
     </span>
   </div>
@@ -284,7 +274,7 @@ const Section = ({
       {action && actionLabel && (
         <button
           onClick={action}
-          className="text-xs font-medium text-primary hover:underline"
+          className="btn-press text-xs font-medium text-primary hover:underline"
         >
           {actionLabel}
         </button>
@@ -353,10 +343,10 @@ const QuickLogStrip = () => {
               });
             }}
             className={cn(
-              "flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-[13px] transition-colors active:scale-[0.98]",
+              "btn-press card-interactive flex h-8 items-center gap-1.5 rounded-md border px-2.5 text-[13px]",
               done || hitTarget
                 ? "border-success/40 bg-success/10 text-success"
-                : "bg-card hover:bg-accent/50",
+                : "bg-card",
             )}
           >
             <span>{t.emoji}</span>
@@ -405,7 +395,7 @@ const CompassStrip = () => {
             <button
               key={g.id}
               onClick={() => redirect("/goals")}
-              className="flex flex-col gap-2 rounded-lg border bg-card px-3 py-2.5 text-left transition-colors hover:bg-accent/50"
+              className="card-interactive flex flex-col gap-2 rounded-lg border bg-card px-3 py-2.5 text-left"
             >
               <span className="flex w-full items-center gap-2">
                 <span className="text-sm leading-none">{g.emoji || "🎯"}</span>
