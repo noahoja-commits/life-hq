@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   ListChecks,
   MapPin,
+  Network,
   NotebookText,
   Wallet,
   Target,
@@ -65,5 +66,6 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "templates", label: "Templates", to: "/templates", icon: Shapes, inHeader: false, group: "Notes" },
   { key: "files", label: "Files", to: "/files", icon: FolderOpen, inHeader: true, group: "Notes", shortcut: "i" },
   { key: "hub", label: "Hub", to: "/hub", icon: LayoutGrid, inHeader: true, group: "Notes", shortcut: "h" },
+  { key: "network", label: "Network", to: "/network", icon: Network, inHeader: true, primary: true, group: "Track", shortcut: "w" },
   { key: "settings", label: "Settings", to: "/settings", icon: Settings, inHeader: false, shortcut: "s" },
 ];
