@@ -1,59 +1,34 @@
-// view.mjs — Open Life HQ in browser, take screenshots, extract text
-// Usage: node view.mjs [/path] [/todos|/goals|/dashboard|etc]
+// view.mjs — Reliable viewer with auth across page changes
 import { chromium } from "playwright";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync, mkdirSync } from "fs";
 
-const token = JSON.stringify({
-  access_token: readFileSync(".auth-token", "utf8").trim(),
-  refresh_token: "",
-  expires_at: 1783337672,
-});
+const token = readFileSync(".auth-token", "utf8").trim();
+const auth = JSON.stringify({ access_token: token, refresh_token: "", expires_at: 9999999999 });
 
-const page = process.argv[2] || "/";
-const url = page.startsWith("http")
-  ? page
-  : "https://atomic-crm-umber.vercel.app" + (page.startsWith("/") ? page : "/" + page);
+const browser = await chromium.launch();
+const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+const page = await context.newPage();
 
-const b = await chromium.launch();
-const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
-
-// Auth
-await p.goto("https://atomic-crm-umber.vercel.app", { waitUntil: "networkidle" });
-await p.evaluate((t) => {
+// Intercept ALL page loads to inject auth
+await context.addInitScript((t) => {
   localStorage.setItem("sb-ckmyquqccaridnloctgc-auth-token", t);
-}, token);
-await p.waitForTimeout(500);
+}, auth);
 
-// Navigate
-await p.goto(url, { waitUntil: "networkidle", timeout: 15000 });
-await p.waitForTimeout(3000);
+// Navigate to requested page
+const path = process.argv[2] || "/";
+const url = "https://atomic-crm-umber.vercel.app" + (path.startsWith("/") ? path : "/" + path);
+await page.goto(url, { waitUntil: "networkidle", timeout: 15000 });
+await page.waitForTimeout(3000);
 
-// Gather info
-const info = await p.evaluate(() => {
+const info = await page.evaluate(() => {
   const ds = document.querySelector("[data-section]");
-  const errors = [];
-  // Check for console-like issues
-  if (document.querySelector(".error")) errors.push("error class found");
-
   return {
     title: document.title,
-    url: location.href,
     section: ds?.getAttribute("data-section") || "none",
     bg: ds ? getComputedStyle(ds).backgroundColor : getComputedStyle(document.body).backgroundColor,
-    bodyText: document.body.innerText.slice(0, 500).replace(/\n\n+/g, "\n").trim(),
-    mainScroll: document.querySelector("main")
-      ? `scrollH=${document.querySelector("main").scrollHeight} clientH=${document.querySelector("main").clientHeight}`
-      : "no main",
-    errors,
+    scroll: (() => { const m = document.querySelector("main"); return m ? `scrollH=${m.scrollHeight} clientH=${m.clientHeight}` : "no main"; })(),
   };
 });
 
 console.log(JSON.stringify(info, null, 2));
-
-// Screenshot
-const safeName = page.replace(/\//g, "_").replace(/[^a-zA-Z0-9_]/g, "") || "home";
-const shotPath = `view_${safeName}.png`;
-await p.screenshot({ path: shotPath, fullPage: false });
-console.log(`Screenshot: ${shotPath}`);
-
-await b.close();
+process.exit(0);
