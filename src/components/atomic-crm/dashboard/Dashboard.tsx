@@ -92,7 +92,7 @@ export const Dashboard = () => {
   };
 
   return (
-    <div data-section="dashboard" className="mx-auto flex max-w-5xl flex-col gap-7 py-2 page-enter stagger relative" style={{ backgroundColor: "#120a0a" }}>
+    <div data-section="dashboard" className="mx-auto flex max-w-5xl flex-col gap-7 py-2 page-enter stagger relative bg-[#120a0a]">
       <DemonicEye size={200} className="absolute top-4 right-4 opacity-15 pointer-events-none z-0" />
       {/* Operations header: greeting left, capture right */}
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
