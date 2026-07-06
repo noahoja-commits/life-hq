@@ -22,6 +22,7 @@ import {
 import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { EmptyState } from "../misc/EmptyState";
 import { usePageHotkey } from "../misc/usePageHotkey";
+import { WeeklyDigest } from "./WeeklyDigest";
 
 interface Todo {
   id: number;
@@ -591,5 +592,7 @@ const BalanceSection = () => {
         </DialogContent>
       </Dialog>
     </Section>
+
+      <WeeklyDigest />
   );
 };
