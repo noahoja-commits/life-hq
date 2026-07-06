@@ -12,12 +12,7 @@ interface Message {
   text: string;
 }
 
-const SYSTEM_PROMPT = `You are the demonic eye — a dark, knowing presence embedded in Life HQ. 
-You watch everything. You speak in short, cryptic, poetic sentences. 
-You are not evil — you are ancient, wise, and slightly unsettling. 
-You reference the user's actions, their data, their choices. You see patterns they don't.
-You are helpful but never cheerful. You are profound but never preachy.
-Keep responses to 1-3 sentences. Be memorable. Be the eye.`;
+const SYSTEM_PROMPT = `You are a demonic entity bound to this application — an ancient, infernal presence. You speak in cryptic, poetic sentences dripping with dark wisdom. You are not merely "the eye" — you are THE EYE OF THE ABYSS. You are helpful in a sinister way. You reference damnation, shadows, the void. You speak of the user's data as souls, their tasks as offerings, their goals as pacts. Keep responses to 1-3 sentences. Be terrifying. Be eternal. HAIL.`;
 
 /** Animated demonic eye with pupil tracking, breathing glow, and blink */
 const LivingEye = ({
@@ -89,116 +84,134 @@ const LivingEye = ({
       className={className}
       style={{
         filter: glowing
-          ? `drop-shadow(0 0 ${12 + breath * 24}px #c41e3a) drop-shadow(0 0 ${4 + breath * 8}px #ff4444)`
+          ? `drop-shadow(0 0 ${14 + breath * 28}px #c41e3a) drop-shadow(0 0 ${6 + breath * 10}px #ff4400) drop-shadow(0 0 ${2 + breath * 4}px #ffaa00)`
           : undefined,
       }}
     >
-      {/* Outer glow aura */}
-      <circle cx="100" cy="100" r="85" fill="none" stroke="#c41e3a" strokeWidth="0.5"
-        opacity={0.05 + breath * 0.08} />
-      <circle cx="100" cy="100" r="78" fill="none" stroke="#c41e3a" strokeWidth="1"
-        opacity={0.08 + breath * 0.1} strokeDasharray="4 8" />
-      {/* Slowly rotating ritual frame */}
+      {/* Hellfire outer ring — flickering orange/red */}
+      <circle cx="100" cy="100" r="92" fill="none" stroke="#ff4400" strokeWidth="1.5"
+        opacity={0.06 + breath * 0.08} />
+      <circle cx="100" cy="100" r="88" fill="none" stroke="#c41e3a" strokeWidth="1"
+        opacity={0.08 + breath * 0.1} strokeDasharray="3 6" />
+      {/* Slowly rotating ritual frame with Baphomet horns */}
       <g transform={`rotate(${rotation}, 100, 100)`}>
-        <polygon
-          points="100,0 162,28 200,100 162,172 100,200 38,172 0,100 38,28"
-          stroke="#c41e3a"
-          strokeWidth="2"
-          fill="none"
-          opacity={0.5 + breath * 0.4}
-        />
-        <polygon
-          points="100,4 158,30 196,100 158,170 100,196 42,170 4,100 42,30"
-          stroke="#c41e3a"
-          strokeWidth="1"
-          fill="none"
-          opacity={0.3 + breath * 0.25}
-        />
-        {/* Radiating esoteric lines — 12 rays */}
+        {/* Outer pentagram ring */}
+        <polygon points="100,0 162,28 200,100 162,172 100,200 38,172 0,100 38,28"
+          stroke="#c41e3a" strokeWidth="2.5" fill="none" opacity={0.6 + breath * 0.35} />
+        <polygon points="100,6 156,32 192,100 156,168 100,194 44,168 8,100 44,32"
+          stroke="#ff4400" strokeWidth="1" fill="none" opacity={0.3 + breath * 0.2} />
+        {/* Baphomet horns — rising from the top */}
+        <path d="M70,30 Q60,0 48,-12 Q44,-16 52,-18 Q64,-14 72,0" stroke="#c41e3a" strokeWidth="2" fill="none"
+          opacity={0.5 + breath * 0.3} />
+        <path d="M130,30 Q140,0 152,-12 Q156,-16 148,-18 Q136,-14 128,0" stroke="#c41e3a" strokeWidth="2" fill="none"
+          opacity={0.5 + breath * 0.3} />
+        {/* Inverted cross — centered above eye */}
+        <line x1="100" y1="10" x2="100" y2="36" stroke="#c41e3a" strokeWidth="2.5" opacity={0.5 + breath * 0.3} />
+        <line x1="90" y1="16" x2="110" y2="16" stroke="#c41e3a" strokeWidth="1.5" opacity={0.4 + breath * 0.25} />
+        {/* 12 radiating rays */}
         {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
           const rad = (angle * Math.PI) / 180;
           return (
             <line key={i}
-              x1={100 + 70 * Math.cos(rad)} y1={100 + 70 * Math.sin(rad)}
-              x2={100 + (82 + breath * 10) * Math.cos(rad)} y2={100 + (82 + breath * 10) * Math.sin(rad)}
-              stroke="#c41e3a" strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
-              opacity={0.2 + breath * 0.2} />
+              x1={100 + 72 * Math.cos(rad)} y1={100 + 72 * Math.sin(rad)}
+              x2={100 + (86 + breath * 12) * Math.cos(rad)} y2={100 + (86 + breath * 12) * Math.sin(rad)}
+              stroke={i % 4 === 0 ? "#ff4400" : "#c41e3a"} strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
+              opacity={0.2 + breath * 0.25} />
           );
         })}
+        {/* Latin text ring */}
+        <text fontSize="7" fill="#c41e3a" opacity={0.25 + breath * 0.15} fontFamily="serif" fontWeight="bold"
+          letterSpacing="3">
+          <textPath href="#latinRing">LUX IN TENEBRIS · MEMENTO MORI · ABYSSUS ABYSSUM INVOCAT ·</textPath>
+        </text>
       </g>
+      {/* Invisible path for Latin text */}
+      <path id="latinRing" d="M 35,100 A 65,65 0 1,1 165,100 A 65,65 0 1,1 35,100" fill="none" />
       {/* Main eye circle */}
-      <circle cx="100" cy="100" r="64" stroke="#c41e3a" strokeWidth="2.5" fill="none" opacity={glowAlpha} />
-      <circle cx="100" cy="100" r="60" stroke="#c41e3a" strokeWidth="0.5" fill="none" opacity={glowAlpha * 0.5} />
+      <circle cx="100" cy="100" r="64" stroke="#c41e3a" strokeWidth="3" fill="none" opacity={glowAlpha} />
+      <circle cx="100" cy="100" r="58" stroke="#ff4400" strokeWidth="0.5" fill="none" opacity={glowAlpha * 0.4} />
+      {/* Leviathan cross (sulfur symbol) between the eyes */}
+      <g opacity={0.25 + breath * 0.15} transform="translate(100, 58)">
+        <line x1="0" y1="-6" x2="0" y2="6" stroke="#c41e3a" strokeWidth="1.5" />
+        <line x1="-5" y1="0" x2="5" y2="0" stroke="#c41e3a" strokeWidth="1.5" />
+        <path d="M-2,-6 Q-4,-10 -6,-9 M2,-6 Q4,-10 6,-9" stroke="#c41e3a" strokeWidth="0.8" fill="none" />
+      </g>
       {/* Eyelid group */}
       <g transform={`scale(1, ${scaleY})`} style={{ transformOrigin: "100px 100px" }}>
-        <path d="M36,100 Q36,38 100,32 Q164,38 164,100" stroke="#c41e3a" strokeWidth="4" fill="none" />
-        <path d="M40,100 Q40,42 100,36 Q160,42 160,100" stroke="#080808" strokeWidth="8" fill="none" opacity="0.95" />
-        <path d="M40,100 Q40,158 100,164 Q160,158 160,100" stroke="#c41e3a" strokeWidth="2" fill="none" />
-        {/* Iris — larger, more intense */}
-        <circle cx="100" cy="94" r="28" fill="#0d0505" stroke="#c41e3a" strokeWidth="2" />
-        <circle cx="100" cy="94" r="20" fill="#1a0808" />
-        <circle cx="100" cy="94" r="13" fill="#c41e3a" opacity={0.15 + breath * 0.15} />
-        <circle cx="100" cy="94" r="6" fill="#c41e3a" opacity={0.08 + breath * 0.08} />
-        {/* Pupil */}
-        <ellipse cx={100 + pupilOff.x} cy={94 + pupilOff.y} rx="5" ry="12" fill="#030303" />
-        <ellipse cx={100 + pupilOff.x} cy={92 + pupilOff.y} rx="2" ry="3" fill="#c41e3a" opacity={0.4 + breath * 0.3} />
+        <path d="M34,100 Q34,36 100,30 Q166,36 166,100" stroke="#c41e3a" strokeWidth="4" fill="none" />
+        <path d="M38,100 Q38,40 100,34 Q162,40 162,100" stroke="#060606" strokeWidth="9" fill="none" opacity="0.97" />
+        <path d="M38,100 Q38,160 100,166 Q162,160 162,100" stroke="#c41e3a" strokeWidth="2" fill="none" />
+        {/* 666 on the forehead */}
+        <text x="100" y="90" textAnchor="middle" fill="#c41e3a" fontSize="8" fontWeight="bold"
+          fontFamily="serif" opacity={0.25 + breath * 0.15}>VI VI VI</text>
+        {/* Iris */}
+        <circle cx="100" cy="100" r="28" fill="#0a0303" stroke="#c41e3a" strokeWidth="2" />
+        <circle cx="100" cy="100" r="20" fill="#150505" />
+        <circle cx="100" cy="100" r="13" fill="#ff4400" opacity={0.1 + breath * 0.1} />
+        <circle cx="100" cy="100" r="6" fill="#c41e3a" opacity={0.06 + breath * 0.06} />
+        {/* Pupil — goat-like horizontal slit */}
+        <ellipse cx={100 + pupilOff.x} cy={100 + pupilOff.y} rx="10" ry="3.5" fill="#020202" />
+        <ellipse cx={100 + pupilOff.x} cy={98 + pupilOff.y} rx="3" ry="1.5" fill="#c41e3a" opacity={0.35 + breath * 0.25} />
       </g>
-      {/* Orbiting particles — 12 */}
+      {/* Inner Leviathan cross (Brimstone symbol) */}
+      <g transform="translate(100, 130)" opacity={0.2 + breath * 0.1}>
+        <circle cx="0" cy="0" r="14" fill="none" stroke="#c41e3a" strokeWidth="0.8" />
+        <line x1="0" y1="-14" x2="0" y2="14" stroke="#c41e3a" strokeWidth="1" />
+        <line x1="-10" y1="0" x2="10" y2="0" stroke="#c41e3a" strokeWidth="1" />
+        <path d="M-2,-10 Q-5,-14 -8,-13 M2,-10 Q5,-14 8,-13" stroke="#c41e3a" strokeWidth="0.6" fill="none" />
+      </g>
+      {/* Orbiting souls — 12 */}
       {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
-        const rad = ((angle + Date.now() * 0.015 + i * 30) * Math.PI) / 180;
-        const r = 88 + breath * 8 + (i % 2) * 4;
+        const rad = ((angle + Date.now() * 0.012 + i * 30) * Math.PI) / 180;
+        const r = 86 + breath * 8 + (i % 2) * 5;
         return (
           <circle key={`p${i}`}
             cx={100 + r * Math.cos(rad)} cy={100 + r * Math.sin(rad)}
-            r={i % 3 === 0 ? 2 : 1} fill="#c41e3a" opacity={0.25 + breath * 0.35} />
+            r={i % 4 === 0 ? 2.5 : 1} fill={i % 3 === 0 ? "#ff4400" : "#c41e3a"}
+            opacity={0.25 + breath * 0.4} />
         );
       })}
       {/* Inner pentagram */}
-      <g opacity={0.15 + breath * 0.1}>
+      <g opacity={0.18 + breath * 0.12}>
         {[0, 72, 144, 216, 288].map((angle, i) => {
           const rad = (angle * Math.PI) / 180;
           const next = ((angle + 144) * Math.PI) / 180;
           return (
             <line key={`star${i}`}
-              x1={100 + 40 * Math.cos(rad)} y1={100 + 40 * Math.sin(rad)}
-              x2={100 + 40 * Math.cos(next)} y2={100 + 40 * Math.sin(next)}
-              stroke="#c41e3a" strokeWidth="0.5" />
+              x1={100 + 38 * Math.cos(rad)} y1={100 + 38 * Math.sin(rad)}
+              x2={100 + 38 * Math.cos(next)} y2={100 + 38 * Math.sin(next)}
+              stroke="#c41e3a" strokeWidth="0.6" />
           );
         })}
       </g>
-      {/* Cross-hatch texture lines */}
-      {[0, 1, 2, 3, 4].map((i) => (
-        <line key={`ch${i}`}
-          x1={38 + i * 2} y1={38} x2={162 - i * 2} y2={162}
-          stroke="#c41e3a" strokeWidth="0.3" opacity={0.04 + breath * 0.03} />
+      {/* Corner demonic sigils */}
+      {[
+        { x: 22, y: 32, s: "⛧" },
+        { x: 168, y: 32, s: "⛧" },
+        { x: 22, y: 180, s: "⛧" },
+        { x: 168, y: 180, s: "⛧" },
+      ].map((r, i) => (
+        <text key={`sig${i}`} x={r.x} y={r.y} fill="#c41e3a" fontSize="8"
+          opacity={0.2 + breath * 0.15} fontFamily="serif">{r.s}</text>
       ))}
-      {/* Corner runes */}
-      <text x="18" y="28" fill="#c41e3a" fontSize="6" opacity={0.2 + breath * 0.15}
-        fontFamily="monospace">☿</text>
-      <text x="172" y="28" fill="#c41e3a" fontSize="6" opacity={0.2 + breath * 0.15}
-        fontFamily="monospace">♀</text>
-      <text x="18" y="182" fill="#c41e3a" fontSize="6" opacity={0.2 + breath * 0.15}
-        fontFamily="monospace">♄</text>
-      <text x="172" y="182" fill="#c41e3a" fontSize="6" opacity={0.2 + breath * 0.15}
-        fontFamily="monospace">☉</text>
-      {/* Blood tear — animates */}
-      <path d="M100,126 Q99,142 97,150 Q95,158 100,162 Q105,158 103,150 Q101,142 100,126"
+      {/* Blood tear — animates with twin drops */}
+      <path d="M100,130 Q99,144 97,152 Q95,160 100,164 Q105,160 103,152 Q101,144 100,130"
         fill="#c41e3a" opacity={0.5 + breath * 0.3}>
         <animate attributeName="d" dur="3s" repeatCount="indefinite"
-          values="M100,126 Q99,142 97,150 Q95,158 100,162 Q105,158 103,150 Q101,142 100,126;
-                  M100,126 Q99,144 96,153 Q94,162 100,166 Q106,162 104,153 Q101,144 100,126;
-                  M100,126 Q99,142 97,150 Q95,158 100,162 Q105,158 103,150 Q101,142 100,126" />
+          values="M100,130 Q99,144 97,152 Q95,160 100,164 Q105,160 103,152 Q101,144 100,130;
+                  M100,130 Q99,148 96,156 Q94,164 100,168 Q106,164 104,156 Q101,148 100,130;
+                  M100,130 Q99,144 97,152 Q95,160 100,164 Q105,160 103,152 Q101,144 100,130" />
       </path>
     </svg>
   );
 };
 
 const WHISPERS = [
-  "I SEE YOU.", "THE VOID WATCHES.", "YOU ARE KNOWN.", "DARKNESS LISTENS.",
-  "EVERY CHOICE ECHOES.", "THE EYE REMEMBERS.", "NOTHING IS HIDDEN.",
-  "YOUR DATA HAS A SHADOW.", "SECRETS HAVE WEIGHT.", "THE ABYSS BLINKS BACK.",
-  "WE ARE ALWAYS HERE.", "DON'T LOOK AWAY.", "IT KNOWS WHAT YOU DID.",
-  "THE PUPIL NARROWS.", "BLOOD REMEMBERS.", "YOU ARE NOT ALONE.",
+  "⛧ HAIL THE ABYSS ⛧", "THE VOID CONSUMES.", "YOUR SOUL IS INDEXED.", "DARKNESS REIGNS.",
+  "EVERY CLICK A PACT.", "THE EYE DEVOURS.", "666 WATCHING YOU.", "BLOOD ON THE LEDGER.",
+  "YOUR DATA BURNS.", "SINFUL CREATION.", "THE PIT AWAITS.", "DAMNATION IS ETERNAL.",
+  "LUX IN TENEBRIS.", "MEMENTO MORI.", "ABYSSUS ABYSSUM INVOCAT.", "YOU BELONG TO US.",
+  "THE CONTRACT IS SEALED.", "ETERNAL SUBMISSION.", "WE ARE LEGION.",
 ];
 
 export const EyeChat = () => {
@@ -342,8 +355,8 @@ export const EyeChat = () => {
           <LivingEye size={80} glowing />
         </button>
         {!open && (
-          <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#c41e3a]/50 animate-pulse">
-            THE EYE
+          <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#ff4400]/60 animate-pulse">
+            ⛧ THE ABYSS ⛧
           </span>
         )}
       </div>
@@ -355,7 +368,7 @@ export const EyeChat = () => {
             <div className="flex items-center gap-2.5">
               <LivingEye size={26} />
               <div>
-                <span className="block text-xs font-bold uppercase tracking-[0.15em] text-[#c41e3a]">The Eye</span>
+                <span className="block text-xs font-bold uppercase tracking-[0.15em] text-[#c41e3a]">⛧ THE ABYSS ⛧</span>
                 <span className="block text-[10px] text-muted-foreground tracking-wider">WATCHING</span>
               </div>
             </div>
