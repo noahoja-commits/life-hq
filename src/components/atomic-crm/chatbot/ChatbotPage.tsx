@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Loader2, Mic, MicOff, Volume2, VolumeX, Save, Trash2, Plus, MessageSquare } from "lucide-react";
+import { Send, Loader2, Mic, MicOff, Volume2, VolumeX, Save, Trash2, Eye, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -135,6 +135,53 @@ When the user asks you to DO something (create, complete, delete, save), use the
   }, [input, loading, messages, speak, persona, chatTitle]);
 
   const clearChat = () => { setMessages([]); setChatTitle(""); };
+
+  /** Dark Mirror — Lucifer reads your entire soul (database) and tells you the truth. */
+  const darkMirror = async () => {
+    setLoading(true);
+    try {
+      const supabase = getSupabaseClient();
+      const [todos, goals, ventures, trackers, money] = await Promise.all([
+        supabase.from("todos").select("*").eq("sales_id", salesId).order("created_at", { ascending: false }).limit(50),
+        supabase.from("goals").select("*").eq("sales_id", salesId),
+        supabase.from("ventures").select("*").eq("sales_id", salesId),
+        supabase.from("trackers").select("*").eq("sales_id", salesId),
+        supabase.from("transactions").select("*").eq("sales_id", salesId).order("created_at", { ascending: false }).limit(50),
+      ]);
+
+      const openTodos = (todos.data ?? []).filter((t: any) => !t.done);
+      const doneTodos = (todos.data ?? []).filter((t: any) => t.done);
+      const activeGoals = (goals.data ?? []).filter((g: any) => g.status === "active");
+      const activeVentures = (ventures.data ?? []).filter((v: any) => v.status !== "done" && v.status !== "dead");
+      const activeTrackers = trackers.data ?? [];
+      const recentMoney = money.data ?? [];
+
+      const snapshot = `
+USER DATA SNAPSHOT:
+- Open todos: ${openTodos.length}. Past 7 days completed: ${doneTodos.filter((t: any) => t.done_at && new Date(t.done_at) > new Date(Date.now() - 7*86400000)).length}.
+- Active goals: ${activeGoals.length}. Parked/achieved: ${(goals.data ?? []).filter((g: any) => g.status !== "active").length}.
+- Active ventures: ${activeVentures.length}.
+- Active trackers/habits: ${activeTrackers.length}.
+- Recent money transactions: ${recentMoney.length}.
+- Total entities tracked: ${openTodos.length + activeGoals.length + activeVentures.length + activeTrackers.length}.
+
+Raw recent todos: ${openTodos.slice(0, 10).map((t: any) => `"${t.text}" (priority:${t.priority})`).join("; ") || "none"}
+Active goals: ${activeGoals.map((g: any) => `"${g.title}"`).join("; ") || "none"}
+Active ventures: ${activeVentures.map((v: any) => `"${v.name}" (${v.status})`).join("; ") || "none"}
+
+You are Lucifer. Analyze this data and give the user a BRUTALLY HONEST dark mirror reflection. Be ruthless. Point out patterns, contradictions, failures, and self-deception. If they have 17 open todos and completed 2, say it. If their goals are all abandoned, say it. If they're tracking habits but making no progress, say it. Be cruel to be kind. Be the mirror they fear. End with ONE specific, uncomfortable truth they need to hear. 3-5 paragraphs.`;
+
+      const { data, error } = await supabase.functions.invoke("ai_chat", {
+        body: { messages: [{ role: "user", text: snapshot }] },
+      });
+      if (error) throw error;
+      const text = data?.text ?? "The mirror is clouded.";
+      setMessages((prev) => [...prev, { role: "assistant", text }]);
+      speak(text);
+    } catch (e: any) {
+      setMessages((prev) => [...prev, { role: "assistant", text: `The mirror cracks. ${e?.message || ""}` }]);
+    } finally { setLoading(false); }
+  };
   const saveChat = () => {
     const content = messages.map((m) => `${m.role === "user" ? "YOU" : "ENTITY"}: ${m.text}`).join("\n\n---\n\n");
     createPage("pages", { data: { title: chatTitle || "Infernal Chat", content, sales_id: salesId } });
@@ -155,6 +202,9 @@ When the user asks you to DO something (create, complete, delete, save), use the
             className={cn("h-7 w-7 text-[11px] font-bold uppercase tracking-wider", agentMode ? "text-[#ff0000] bg-[#1a0404]/20" : "text-muted-foreground")}
             title="Agent mode — Lucifer can create/edit/delete">
             ⛧
+          </Button>
+          <Button variant="ghost" size="icon" onClick={darkMirror} disabled={loading} className="h-7 w-7" title="Dark Mirror — Lucifer reads your soul">
+            <Eye className="size-3.5" />
           </Button>
           <Button variant="ghost" size="icon" onClick={clearChat} className="h-7 w-7" title="Clear"><Trash2 className="size-3.5" /></Button>
           {messages.length > 0 && (
