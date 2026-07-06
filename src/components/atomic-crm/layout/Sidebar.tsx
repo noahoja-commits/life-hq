@@ -10,6 +10,7 @@ import { NAV_ITEMS, type NavItem } from "./navConfig";
 import { applyNavPrefs, navPrefsStore } from "./navPrefsStore";
 import { NavCustomizer } from "./NavCustomizer";
 import { QuickCaptureSheet } from "./QuickCaptureSheet";
+import { DemonicEye } from "../misc/DemonicEye";
 
 /**
  * Desktop navigation rail. Groups come from navConfig; the user's
@@ -157,6 +158,7 @@ export const Sidebar = () => {
             <SlidersHorizontal className="size-3.5" />
           </button>
         </div>
+        <DemonicEye size={52} className="mx-auto mt-auto mb-2 opacity-20" />
       </aside>
       <NavCustomizer open={customizeOpen} onOpenChange={setCustomizeOpen} />
       <QuickCaptureSheet open={captureOpen} onOpenChange={setCaptureOpen} />
