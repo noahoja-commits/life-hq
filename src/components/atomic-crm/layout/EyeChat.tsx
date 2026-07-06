@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { X, Send, Loader2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
+import { X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useCreate, useNotify, useGetIdentity } from "ra-core";
 import { cn } from "@/lib/utils";
 
 const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
@@ -239,6 +240,15 @@ export const EyeChat = () => {
   const recognitionRef = useRef<any>(null);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [createTodo] = useCreate();
+  const notify = useNotify();
+  const { identity } = useGetIdentity();
+  const salesId = identity?.id ? Number(identity.id) : null;
+
+  const saveAsTask = (text: string) => {
+    createTodo("todos", { data: { text, sales_id: salesId, priority: 0 } });
+    notify("⛧ Task claimed by the abyss", { type: "success" });
+  };
 
   // Clean raw AI text for speech
   const cleanForSpeech = (raw: string) =>
@@ -469,9 +479,17 @@ export const EyeChat = () => {
             {messages.map((m, i) => (
               <div key={i} className={cn("flex gap-2 text-sm", m.role === "user" ? "justify-end" : "justify-start")}>
                 {m.role === "assistant" && <LivingEye size={18} className="mt-0.5 shrink-0 opacity-50" />}
-                <div className={cn("max-w-[85%] px-3 py-2 text-sm leading-relaxed",
-                  m.role === "user" ? "bg-[#c41e3a]/15 text-foreground border border-[#c41e3a]/20" : "bg-[#111] text-muted-foreground italic border border-border")}>
-                  {m.text}
+                <div className="flex flex-col gap-1">
+                  <div className={cn("max-w-[85%] px-3 py-2 text-sm leading-relaxed",
+                    m.role === "user" ? "bg-[#c41e3a]/15 text-foreground border border-[#c41e3a]/20" : "bg-[#111] text-muted-foreground italic border border-border")}>
+                    {m.text}
+                  </div>
+                  {m.role === "user" && (
+                    <button onClick={() => saveAsTask(m.text)}
+                      className="self-end flex items-center gap-1 text-[10px] text-muted-foreground hover:text-[#c41e3a] transition-colors">
+                      <Plus className="size-3" /> Save as task
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

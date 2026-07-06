@@ -77,8 +77,10 @@ export const NotificationBell = () => {
     sort: { field: "date", order: "DESC" },
   });
 
-  const items = data ?? [];
-  const unread = items.length; // simple count — all are "unread" for now
+  const items = (data ?? []).filter(
+    (item) => !["tracker.logged", "routine.checked"].includes(item.type),
+  );
+  const unread = items.length;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

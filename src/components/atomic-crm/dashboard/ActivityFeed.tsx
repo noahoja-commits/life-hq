@@ -87,7 +87,8 @@ export function ActivityFeed() {
     sort: { field: "date", order: "DESC" },
   });
 
-  const items = (data ?? []) as Record<string, unknown>[];
+  const items = ((data ?? []) as Record<string, unknown>[])
+    .filter((item: any) => !["tracker.logged", "routine.checked"].includes(item.type));
 
   if (isPending) {
     return (
