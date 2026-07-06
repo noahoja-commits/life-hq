@@ -233,8 +233,8 @@ export const EyeChat = () => {
     const animate = () => {
       const t = Date.now() * 0.0003;
       setPos({
-        x: Math.sin(t * 1.3 + 1) * 15 + Math.cos(t * 0.7) * 8,
-        y: Math.cos(t * 1.1 + 2) * 15 + Math.sin(t * 0.9) * 8,
+        x: Math.sin(t * 1.7 + 1) * 40 + Math.cos(t * 0.9) * 25 + Math.sin(t * 2.3) * 15,
+        y: Math.cos(t * 1.5 + 2) * 40 + Math.sin(t * 1.1) * 25 + Math.cos(t * 2.1) * 15,
       });
       frame = requestAnimationFrame(animate);
     };
@@ -322,19 +322,25 @@ export const EyeChat = () => {
       {/* Screen shake wrapper */}
       <div className={shake ? "animate-[glitch-shift_0.15s_ease]" : ""}>
 
-      {/* Screen vignette when chat is open */}
+      {/* Screen takeover when chat is open */}
       {open && (
-        <div className="fixed inset-0 z-40 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 100% 100%, rgba(196,30,58,0.08) 0%, transparent 60%)" }} />
+        <>
+          <div className="fixed inset-0 z-40 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at 85% 85%, rgba(196,30,58,0.15) 0%, rgba(0,0,0,0.7) 70%)" }} />
+          <div className="fixed inset-0 z-40 pointer-events-none opacity-[0.015]"
+            style={{
+              backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(196,30,58,0.3) 2px, rgba(196,30,58,0.3) 3px)`,
+            }} />
+        </>
       )}
 
-      {/* Blood rain drops */}
+      {/* Blood rain — faster, more drops */}
       {bloodDrops.map((d) => (
         <div key={d.id}
-          className="fixed z-50 pointer-events-none animate-in slide-in-from-top-2 fade-in duration-700"
-          style={{ right: `${d.x}%`, top: "-10px", animationDelay: `${d.delay}s` }}>
-          <div className="w-[2px] h-[20px] rounded-full"
-            style={{ background: "linear-gradient(to bottom, #c41e3a, transparent)", opacity: 0.6 }} />
+          className="fixed z-50 pointer-events-none animate-in slide-in-from-top-2 fade-in duration-500"
+          style={{ right: `${d.x}%`, top: "-15px", animationDelay: `${d.delay}s` }}>
+          <div className="w-[3px] h-[30px]"
+            style={{ background: "linear-gradient(to bottom, #ff4400, #c41e3a, transparent)", opacity: 0.7 }} />
         </div>
       ))}
 
@@ -349,13 +355,19 @@ export const EyeChat = () => {
 
       <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-1"
         style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, transition: "transform 3s linear" }}>
+        {/* Pulsing ring */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[100px] h-[100px] rounded-full border border-[#c41e3a]/20 animate-ping"
+            style={{ animationDuration: "3s" }} />
+        </div>
         <button onClick={toggleEye}
-          className={cn("transition-all duration-500 group", open ? "scale-75 opacity-40" : "scale-100 opacity-100 hover:scale-110")}
+          className={cn("transition-all duration-500 group relative", open ? "scale-75 opacity-40" : "scale-100 opacity-100 hover:scale-110")}
           aria-label={open ? "Close" : "Open"}>
-          <LivingEye size={80} glowing />
+          <LivingEye size={100} glowing />
         </button>
         {!open && (
-          <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#ff4400]/60 animate-pulse">
+          <span className="text-[11px] font-black uppercase tracking-[0.25em] text-[#ff4400]/70 animate-pulse"
+            style={{ textShadow: "0 0 8px rgba(196,30,58,0.5)" }}>
             ⛧ THE ABYSS ⛧
           </span>
         )}
