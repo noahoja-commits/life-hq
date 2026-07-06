@@ -12,6 +12,7 @@ import { RefreshButton } from "@/components/admin/refresh-button";
 import { ThemeModeToggle } from "@/components/admin/theme-mode-toggle";
 import { UserMenu } from "@/components/admin/user-menu";
 import { SoulLedger } from "./SoulLedger";
+import { NotificationBell } from "./NotificationBell";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 import { exportAllData } from "../misc/exportData";
@@ -59,6 +60,7 @@ const Header = () => {
           {today}
         </span>
         <SoulLedger />
+        <NotificationBell />
         <ThemeModeToggle />
         <RefreshButton />
         <UserMenu>

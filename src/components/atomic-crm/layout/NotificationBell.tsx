@@ -77,10 +77,13 @@ export const NotificationBell = () => {
     sort: { field: "date", order: "DESC" },
   });
 
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const items = (data ?? []).filter(
-    (item) => !["tracker.logged", "routine.checked"].includes(item.type),
+    (item) => !["tracker.logged", "routine.checked", "page.created"].includes(item.type)
+      && !dismissed.has(item.id),
   );
   const unread = items.length;
+  const clearAll = () => { const ids = new Set((data ?? []).map((i) => i.id)); setDismissed(ids); };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -97,6 +100,9 @@ export const NotificationBell = () => {
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
           <h4 className="text-sm font-semibold">Recent Activity</h4>
+          {items.length > 0 && (
+            <button onClick={clearAll} className="text-[10px] text-muted-foreground hover:text-[#c41e3a]">Clear</button>
+          )}
         </div>
         <div className="max-h-80 overflow-y-auto">
           {isPending ? (
