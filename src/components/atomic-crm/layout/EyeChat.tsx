@@ -57,13 +57,11 @@ export const EyeChat = () => {
     setLoading(true);
 
     try {
-      const history = [...messages, userMsg]
+      if (!GEMINI_KEY) throw new Error("API key not configured");
+
+      const conversationText = [...messages, userMsg]
         .map((m) => `${m.role === "user" ? "Human" : "Eye"}: ${m.text}`)
         .join("\n");
-
-      const prompt = `${SYSTEM_PROMPT}\n\nConversation:\n${history}\n\nEye:`;
-
-      if (!GEMINI_KEY) throw new Error("API key not configured");
 
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
@@ -72,7 +70,7 @@ export const EyeChat = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents: [{ role: "user", parts: [{ text: prompt.split("\n\nConversation:\n")[0] }] }],
+            contents: [{ role: "user", parts: [{ text: conversationText }] }],
             generationConfig: { temperature: 0.9, maxOutputTokens: 150 },
           }),
         },
@@ -80,17 +78,17 @@ export const EyeChat = () => {
 
       if (!res.ok) {
         const err = await res.text();
-        throw new Error(`API error ${res.status}: ${err.slice(0, 100)}`);
+        throw new Error(`${res.status}: ${err.slice(0, 150)}`);
       }
 
       const json = await res.json();
       const reply = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "…";
 
       setMessages((prev) => [...prev, { role: "assistant", text: reply.trim() }]);
-    } catch {
+    } catch (e: any) {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", text: "The eye is clouded. Try again." },
+        { role: "assistant", text: `The eye is clouded. ${e?.message || ""}` },
       ]);
     } finally {
       setLoading(false);
