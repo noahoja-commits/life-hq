@@ -1,33 +1,67 @@
-/** Lucifer's avatar — a detailed Baphomet/demonic visage for the chatbot */
+/** Baphomet — a proper demonic goat avatar for Lucifer */
+export const LuciferAvatar = ({ size = 72 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="bg${size}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#1a0808" />
+        <stop offset="100%" stopColor="#040000" />
+      </radialGradient>
+      <radialGradient id="eyeGlow${size}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#cc0000" />
+        <stop offset="60%" stopColor="#660000" />
+        <stop offset="100%" stopColor="#110000" />
+      </radialGradient>
+      <filter id="glow${size}">
+        <feGaussianBlur stdDeviation="2" result="blur" />
+        <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+    </defs>
 
-export const LuciferAvatar = ({ size = 40, className }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-    {/* Outer pentagram ring */}
-    <polygon points="60,4 92,28 112,60 92,92 60,116 28,92 8,60 28,28" fill="none" stroke="#c41e3a" strokeWidth="1.5" opacity="0.4" />
-    {/* Face — angular, gaunt */}
-    <ellipse cx="60" cy="58" rx="30" ry="38" fill="#0d0505" stroke="#3a1010" strokeWidth="1" />
-    {/* Cheekbones — sharp */}
-    <path d="M30,55 L22,50 Q18,48 20,52 L28,60" fill="#0a0202" stroke="#2a0808" strokeWidth="0.5" />
-    <path d="M90,55 L98,50 Q102,48 100,52 L92,60" fill="#0a0202" stroke="#2a0808" strokeWidth="0.5" />
-    {/* Eyes — deep set, glowing */}
-    <ellipse cx="48" cy="52" rx="8" ry="5" fill="#020101" stroke="#5a1010" strokeWidth="1" />
-    <ellipse cx="72" cy="52" rx="8" ry="5" fill="#020101" stroke="#5a1010" strokeWidth="1" />
-    <ellipse cx="48" cy="52" rx="3" ry="5" fill="#c41e3a" opacity="0.6" />
-    <ellipse cx="72" cy="52" rx="3" ry="5" fill="#c41e3a" opacity="0.6" />
-    <circle cx="47" cy="50" r="1" fill="#fff" opacity="0.15" />
-    <circle cx="71" cy="50" r="1" fill="#fff" opacity="0.15" />
-    {/* Baphomet horns */}
-    <path d="M38,30 Q30,10 22,-2 Q20,-6 26,-8 Q38,-2 42,16" fill="#0d0505" stroke="#5a1010" strokeWidth="1.5" />
-    <path d="M82,30 Q90,10 98,-2 Q100,-6 94,-8 Q82,-2 78,16" fill="#0d0505" stroke="#5a1010" strokeWidth="1.5" />
-    {/* Nose — angular */}
-    <path d="M56,62 L60,68 L64,62" fill="none" stroke="#2a0808" strokeWidth="1" />
-    {/* Mouth — cruel smile */}
-    <path d="M42,82 Q50,88 60,86 Q70,88 78,82" fill="none" stroke="#3a1010" strokeWidth="1.5" />
-    <path d="M44,82 Q60,90 76,82" fill="none" stroke="#1a0404" strokeWidth="0.5" />
+    {/* Background circle */}
+    <circle cx="50" cy="50" r="48" fill="#040404" stroke="#1a0404" strokeWidth="1.5" />
+
+    {/* Horns — curved, goat-like */}
+    <path d="M30,35 Q15,5 8,10 Q2,14 10,25" stroke="#1a1a1a" strokeWidth="3" fill="none" />
+    <path d="M30,35 Q15,5 8,10 Q2,14 10,25" stroke="#080808" strokeWidth="1" fill="none" />
+    <path d="M70,35 Q85,5 92,10 Q98,14 90,25" stroke="#1a1a1a" strokeWidth="3" fill="none" />
+    <path d="M70,35 Q85,5 92,10 Q98,14 90,25" stroke="#080808" strokeWidth="1" fill="none" />
+
+    {/* Goat head — angular, menacing */}
+    <path d="M30,35 Q28,55 35,70 Q40,78 50,80 Q60,78 65,70 Q72,55 70,35" fill="#0a0606" stroke="#1a0404" strokeWidth="1.5" />
+    {/* Snout */}
+    <path d="M38,68 Q42,82 50,84 Q58,82 62,68" fill="#060404" stroke="#1a0404" strokeWidth="1" />
+
+    {/* Eyes — glowing goat slits */}
+    <ellipse cx="38" cy="50" rx="10" ry="6" fill="url(#eyeGlow${size})" opacity="0.9" />
+    <ellipse cx="62" cy="50" rx="10" ry="6" fill="url(#eyeGlow${size})" opacity="0.9" />
+    {/* Pupils — vertical slits */}
+    <rect x="36" y="46" width="4" height="8" rx="2" fill="#000" />
+    <rect x="60" y="46" width="4" height="8" rx="2" fill="#000" />
+    {/* Eye glow */}
+    <ellipse cx="38" cy="50" rx="12" ry="8" fill="none" stroke="#cc0000" strokeWidth="1" opacity="0.3" filter="url(#glow${size})" />
+    <ellipse cx="62" cy="50" rx="12" ry="8" fill="none" stroke="#cc0000" strokeWidth="1" opacity="0.3" filter="url(#glow${size})" />
+
+    {/* Goat ears — pointed, swept back */}
+    <path d="M28,42 Q18,32 14,38 Q18,44 28,45" fill="#0a0606" stroke="#1a0404" strokeWidth="0.5" />
+    <path d="M72,42 Q82,32 86,38 Q82,44 72,45" fill="#0a0606" stroke="#1a0404" strokeWidth="0.5" />
+
     {/* Inverted cross on forehead */}
-    <line x1="60" y1="16" x2="60" y2="24" stroke="#c41e3a" strokeWidth="1" opacity="0.5" />
-    <line x1="56" y1="18" x2="64" y2="18" stroke="#c41e3a" strokeWidth="1" opacity="0.4" />
-    {/* Soul glow aura */}
-    <circle cx="60" cy="58" r="50" fill="none" stroke="#c41e3a" strokeWidth="0.3" opacity="0.15" />
+    <line x1="50" y1="38" x2="50" y2="48" stroke="#c41e3a" strokeWidth="1.5" opacity="0.6" />
+    <line x1="46" y1="42" x2="54" y2="42" stroke="#c41e3a" strokeWidth="1.5" opacity="0.6" />
+
+    {/* Beard — wispy, malevolent */}
+    <path d="M40,78 Q44,92 48,90 M50,80 Q50,94 50,92 M60,78 Q56,92 52,90" stroke="#1a0404" strokeWidth="0.8" fill="none" opacity="0.5" />
+
+    {/* Mouth line */}
+    <path d="M42,72 Q50,76 58,72" stroke="#1a0404" strokeWidth="0.8" fill="none" />
+
+    {/* Pentagram frame ring */}
+    <circle cx="50" cy="50" r="46" fill="none" stroke="#1a0404" strokeWidth="0.5" opacity="0.4" />
+    {/* Pentagram points */}
+    {[0, 72, 144, 216, 288].map((a, i) => {
+      const rad = (a * Math.PI) / 180;
+      const rad2 = ((a + 144) * Math.PI) / 180;
+      return <line key={i} x1={50 + 44 * Math.cos(rad)} y1={50 + 44 * Math.sin(rad)} x2={50 + 44 * Math.cos(rad2)} y2={50 + 44 * Math.sin(rad2)} stroke="#1a0404" strokeWidth="0.3" opacity="0.3" />;
+    })}
   </svg>
 );
