@@ -58,7 +58,9 @@ const LivingEye = ({ size, className }: { size: number; className?: string }) =>
   return (
     <svg ref={svgRef} width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: `drop-shadow(0 0 ${4 + breath * 4}px rgba(180,0,0,0.4))` }}>
+      style={{ filter: `drop-shadow(0 0 ${6 + breath * 8}px rgba(180,0,0,0.5)) drop-shadow(0 0 2px rgba(180,0,0,0.6))` }}>
+      {/* Outer crimson ring */}
+      <ellipse cx="100" cy="100" rx="66" ry="62" fill="none" stroke="#8b0000" strokeWidth="0.5" opacity="0.25" />
       {/* Eye shape — organic almond */}
       <ellipse cx="100" cy="100" rx="62" ry="58" fill="#0a0a0a" stroke="#1a0808" strokeWidth="1" />
       {/* Inner shadow ring */}
@@ -72,10 +74,10 @@ const LivingEye = ({ size, className }: { size: number; className?: string }) =>
         <path d="M38,100 Q38,160 100,164 Q162,160 162,100" stroke="#0d0303" strokeWidth="1.5" fill="none" opacity="0.6" />
         {/* Iris — deep blood red, realistic radial */}
         <circle cx="100" cy="98" r="26" fill="url(#irisGrad)" stroke="#1a0404" strokeWidth="1.5" />
-        {/* Pupil — round, deep black */}
-        <circle cx={100 + pupilOff.x} cy={98 + pupilOff.y} r="9" fill="#010101" />
-        {/* Pupil highlight — tiny reflection */}
-        <circle cx={103 + pupilOff.x} cy={94 + pupilOff.y} r="2.5" fill="#fff" opacity="0.06" />
+         {/* Pupil — goat-slit, unsettling */}
+         <ellipse cx={100 + pupilOff.x} cy={98 + pupilOff.y} rx="9" ry="3.5" fill="#010101" />
+         {/* Pupil glow */}
+         <ellipse cx={100 + pupilOff.x} cy={96 + pupilOff.y} rx="2.5" ry="1" fill="#8b0000" opacity="0.3" />
       </g>
       {/* Iris gradient definition */}
       <defs>
@@ -116,16 +118,17 @@ export const EyeChat = () => {
     notify("⛧ Task claimed", { type: "success" });
   };
 
-  // Barely perceptible drift
+  // Step-based movement — like an old game sprite
   useEffect(() => {
-    let frame: number;
-    const animate = () => {
-      const t = Date.now() * 0.0001;
-      setPos({ x: Math.sin(t * 1.3 + 1) * 8 + Math.cos(t * 0.5) * 4, y: Math.cos(t * 1.1 + 2) * 8 + Math.sin(t * 0.6) * 4 });
-      frame = requestAnimationFrame(animate);
+    const step = () => {
+      setPos({
+        x: (Math.random() - 0.5) * 60,
+        y: (Math.random() - 0.5) * 40,
+      });
     };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
+    step();
+    const interval = setInterval(step, 2000 + Math.random() * 3000);
+    return () => clearInterval(interval);
   }, []);
 
   const speak = useCallback((text: string) => {
