@@ -1124,3 +1124,85 @@ tr:hover td { background: rgba(180,0,0,0.03) !important; }
 
 /* Active route / breadcrumb */
 [aria-current="page"] { color: var(--ring) !important; font-weight: 600; }
+
+/*
+ * ⛧⛧⛧ TOTAL FUCKING HELL ⛧⛧⛧
+ * Nuclear-level infernal visual assault.
+ * All functional elements preserved. Just... more.
+ */
+
+/* ── Hellfire sidebar edge ────────────────────────────── */
+@keyframes hellfire-flicker {
+  0%,100% { opacity: 0.3; box-shadow: 0 0 8px #c41e3a, 0 0 16px #8b0000; }
+  30% { opacity: 0.5; box-shadow: 0 0 12px #ff0000, 0 0 24px #c41e3a; }
+  60% { opacity: 0.2; box-shadow: 0 0 6px #8b0000, 0 0 12px #4a0000; }
+}
+.hellfire-edge::after {
+  content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 1px;
+  background: linear-gradient(to bottom, transparent, #c41e3a, #ff0000, #c41e3a, transparent);
+  animation: hellfire-flicker 1.5s ease-in-out infinite;
+  pointer-events: none; z-index: 0;
+}
+
+/* ── Burning button hover ─────────────────────────────── */
+[data-slot="button"]:not([data-variant="ghost"]):not([data-variant="link"]):hover {
+  box-shadow: 0 0 16px rgba(200,0,0,0.5), 0 0 32px rgba(200,0,0,0.2), inset 0 0 8px rgba(200,0,0,0.1) !important;
+  border-color: #c41e3a !important;
+}
+
+/* ── Card hellfire pulse ──────────────────────────────── */
+@keyframes card-hellpulse {
+  0%,100% { box-shadow: 0 0 0 1px rgba(180,0,0,0.08); }
+  50% { box-shadow: 0 0 0 1px rgba(180,0,0,0.2), 0 0 8px rgba(180,0,0,0.1); }
+}
+[data-section] [data-slot="card"] { animation: card-hellpulse 4s ease-in-out infinite; }
+
+/* ── Blood text shadow on interactive ─────────────────── */
+a:hover, button:hover, [role="button"]:hover {
+  text-shadow: 0 0 6px rgba(200,0,0,0.3);
+}
+
+/* ── Heavy chromatic aberration on headings ───────────── */
+@keyframes heavy-chroma {
+  0%,100% { text-shadow: 1px 0 #c41e3a, -1px 0 rgba(255,255,255,0.05); }
+  50% { text-shadow: -1px 0 #c41e3a, 1px 0 rgba(255,255,255,0.05); }
+}
+[data-section] h1 { animation: heavy-chroma 4s ease-in-out infinite; }
+
+/* ── Hellfire scrollbar ───────────────────────────────── */
+::-webkit-scrollbar-thumb { background: #4a0000 !important; }
+::-webkit-scrollbar-thumb:hover { background: #8b0000 !important; }
+::-webkit-scrollbar-track { background: #0a0000 !important; }
+
+/* ── Sidebar nav active blood glow ────────────────────── */
+.nav-item[data-active="true"] {
+  text-shadow: 0 0 8px rgba(200,0,0,0.4);
+  background: linear-gradient(90deg, rgba(180,0,0,0.12) 0%, transparent 60%) !important;
+}
+
+/* ── Metric tiles burn ────────────────────────────────── */
+.metric-value { text-shadow: 0 0 10px color-mix(in srgb, var(--ring) 40%, transparent); }
+
+/* ── Loading spinner — pentagram of fire ──────────────── */
+@keyframes pentagram-spin {
+  0% { transform: rotate(0deg); filter: drop-shadow(0 0 4px #c41e3a); }
+  50% { filter: drop-shadow(0 0 12px #ff0000); }
+  100% { transform: rotate(360deg); filter: drop-shadow(0 0 4px #c41e3a); }
+}
+.animate-spin {
+  animation: pentagram-spin 1s linear infinite !important;
+  border-color: #c41e3a !important;
+  border-top-color: transparent !important;
+}
+
+/* ── Everything burns on focus ────────────────────────── */
+:focus-visible {
+  outline-color: #c41e3a !important;
+  box-shadow: 0 0 12px rgba(200,0,0,0.3) !important;
+}
+
+/* ── Input text glow ──────────────────────────────────── */
+input:focus, textarea:focus {
+  caret-color: #c41e3a;
+  text-shadow: 0 0 2px rgba(255,200,200,0.1);
+}

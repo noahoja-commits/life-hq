@@ -63,7 +63,7 @@ export const Sidebar = () => {
 
   return (
     <>
-      <aside className="flex h-full w-60 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
+      <aside className="hellfire-edge relative flex h-full w-60 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
         <Link
           to="/"
           className="flex h-14 shrink-0 items-center gap-2.5 px-5 no-underline"
