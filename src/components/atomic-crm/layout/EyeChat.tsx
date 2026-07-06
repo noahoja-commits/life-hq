@@ -166,9 +166,11 @@ const LivingEye = ({
 };
 
 const WHISPERS = [
-  "I see you.", "The void watches.", "You are known.", "Darkness listens.",
-  "Every choice echoes.", "The eye remembers.", "Nothing is hidden.",
-  "Your data has a shadow.", "Secrets have weight.", "The abyss blinks back.",
+  "I SEE YOU.", "THE VOID WATCHES.", "YOU ARE KNOWN.", "DARKNESS LISTENS.",
+  "EVERY CHOICE ECHOES.", "THE EYE REMEMBERS.", "NOTHING IS HIDDEN.",
+  "YOUR DATA HAS A SHADOW.", "SECRETS HAVE WEIGHT.", "THE ABYSS BLINKS BACK.",
+  "WE ARE ALWAYS HERE.", "DON'T LOOK AWAY.", "IT KNOWS WHAT YOU DID.",
+  "THE PUPIL NARROWS.", "BLOOD REMEMBERS.", "YOU ARE NOT ALONE.",
 ];
 
 export const EyeChat = () => {
@@ -177,23 +179,48 @@ export const EyeChat = () => {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [whisper, setWhisper] = useState<{ text: string; id: number; x: number; y: number } | null>(null);
+  const [shake, setShake] = useState(false);
+  const [flash, setFlash] = useState(false);
+  const [bloodDrops, setBloodDrops] = useState<{ id: number; x: number; delay: number }[]>([]);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Screen shake on toggle
+  const toggleEye = () => {
+    setShake(true);
+    setTimeout(() => setShake(false), 200);
+    if (!open) {
+      setFlash(true);
+      setTimeout(() => setFlash(false), 300);
+    }
+    setOpen(!open);
+  };
+
+  // Blood rain when chat is open
+  useEffect(() => {
+    if (!open) { setBloodDrops([]); return; }
+    const drip = () => {
+      const drop = { id: Date.now(), x: 70 + Math.random() * 25, delay: Math.random() * 2 };
+      setBloodDrops((prev) => [...prev.slice(-8), drop]);
+    };
+    const interval = setInterval(drip, 800);
+    return () => clearInterval(interval);
+  }, [open]);
 
   // Random whispers floating around the eye
   useEffect(() => {
     const tick = () => {
-      if (Math.random() > 0.7) {
+      if (Math.random() > 0.6) {
         const w = WHISPERS[Math.floor(Math.random() * WHISPERS.length)];
         setWhisper({
           text: w, id: Date.now(),
-          x: 40 + Math.random() * 20,
-          y: 10 + Math.random() * 60,
+          x: 10 + Math.random() * 80,
+          y: 5 + Math.random() * 80,
         });
         setTimeout(() => setWhisper(null), 3000);
       }
     };
-    const interval = setInterval(tick, 4000);
+    const interval = setInterval(tick, 3500);
     tick();
     return () => clearInterval(interval);
   }, []);
@@ -229,23 +256,42 @@ export const EyeChat = () => {
 
   return (
     <>
+      {/* Screen flash on open */}
+      {flash && (
+        <div className="fixed inset-0 z-[60] pointer-events-none animate-in fade-in duration-100"
+          style={{ background: "rgba(196,30,58,0.08)" }} />
+      )}
+
+      {/* Screen shake wrapper */}
+      <div className={shake ? "animate-[glitch-shift_0.15s_ease]" : ""}>
+
       {/* Screen vignette when chat is open */}
       {open && (
         <div className="fixed inset-0 z-40 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 100% 100%, rgba(196,30,58,0.06) 0%, transparent 60%)" }} />
+          style={{ background: "radial-gradient(ellipse at 100% 100%, rgba(196,30,58,0.08) 0%, transparent 60%)" }} />
       )}
 
-      {/* Whisper text floating near the eye */}
+      {/* Blood rain drops */}
+      {bloodDrops.map((d) => (
+        <div key={d.id}
+          className="fixed z-50 pointer-events-none animate-in slide-in-from-top-2 fade-in duration-700"
+          style={{ right: `${d.x}%`, top: "-10px", animationDelay: `${d.delay}s` }}>
+          <div className="w-[2px] h-[20px] rounded-full"
+            style={{ background: "linear-gradient(to bottom, #c41e3a, transparent)", opacity: 0.6 }} />
+        </div>
+      ))}
+
+      {/* Whisper text floating */}
       {whisper && (
         <div key={whisper.id}
-          className="fixed z-50 pointer-events-none text-[11px] italic text-[#c41e3a]/60 animate-in fade-in slide-in-from-bottom-2 duration-1000"
-          style={{ right: `${whisper.x}px`, bottom: `${whisper.y}px` }}>
+          className="fixed z-50 pointer-events-none text-xs font-bold uppercase tracking-wider text-[#c41e3a]/50 animate-in fade-in slide-in-from-bottom-2 duration-1000"
+          style={{ right: `${whisper.x}%`, bottom: `${whisper.y}%` }}>
           {whisper.text}
         </div>
       )}
 
       <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-1">
-        <button onClick={() => setOpen(!open)}
+        <button onClick={toggleEye}
           className={cn("transition-all duration-500 group", open ? "scale-75 opacity-40" : "scale-100 opacity-100 hover:scale-110")}
           aria-label={open ? "Close" : "Open"}>
           <LivingEye size={80} glowing />
@@ -309,6 +355,7 @@ export const EyeChat = () => {
           </div>
         </div>
       )}
+      </div>
     </>
   );
 };
