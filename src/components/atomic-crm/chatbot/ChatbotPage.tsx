@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useCreate, useUpdate, useDelete, useNotify, useGetIdentity } from "ra-core";
 import { getSupabaseClient } from "../providers/supabase/supabase";
 import { EmptyState } from "../misc/EmptyState";
+import { LuciferAvatar } from "./LuciferAvatar";
 import { buildMemoryContext, saveMemory } from "./memory";
 import { cn } from "@/lib/utils";
 
@@ -369,9 +370,7 @@ You are Lucifer. Based on their completion rate, predict when each active goal w
             {messages.map((m, i) => (
               <div key={i} className={cn("flex gap-3", m.role === "user" ? "justify-end" : "justify-start")}>
                 {m.role === "assistant" && (
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#1a0404]/30 border border-[#1a0404]/20">
-                    <span className="text-[10px]">⛧</span>
-                  </div>
+                  <LuciferAvatar size={28} />
                 )}
                 <Card className={cn("max-w-[80%] px-4 py-3 text-sm leading-relaxed",
                   m.role === "user" ? "bg-[#1a0404]/10 border-[#1a0404]/20" : "bg-card border-border")}>
@@ -381,9 +380,7 @@ You are Lucifer. Based on their completion rate, predict when each active goal w
             ))}
             {loading && (
               <div className="flex gap-3">
-                <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#1a0404]/30 border border-[#1a0404]/20">
-                  <Loader2 className="size-3 animate-spin text-[#8b0000]" />
-                </div>
+                <LuciferAvatar size={28} />
                 <Card className="bg-card border-border px-4 py-3 text-sm text-muted-foreground italic">
                   The void contemplates…
                 </Card>
