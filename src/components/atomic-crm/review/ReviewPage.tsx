@@ -383,6 +383,8 @@ export const ReviewPage = () => {
           </Card>
         </Section>
       )}
+
+      <WeeklyDigest />
     </div>
   );
 };
@@ -592,7 +594,5 @@ const BalanceSection = () => {
         </DialogContent>
       </Dialog>
     </Section>
-
-      <WeeklyDigest />
   );
 };
