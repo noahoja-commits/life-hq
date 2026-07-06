@@ -54,23 +54,23 @@
 :root {
   --radius: 0px;
 
-  /* sidebar — abyss black */
-  --sidebar: #080808;
-  --sidebar-foreground: #c4bfb0;
+  /* sidebar — void black cathedral */
+  --sidebar: #040404;
+  --sidebar-foreground: #bfbab0;
   --sidebar-primary: #c41e3a;
   --sidebar-primary-foreground: #f5f0e8;
-  --sidebar-accent: #1a1a1a;
+  --sidebar-accent: #141414;
   --sidebar-accent-foreground: #e8e3d8;
-  --sidebar-border: rgba(255,255,255,0.05);
+  --sidebar-border: rgba(255,255,255,0.04);
   --sidebar-ring: #c41e3a;
 
-  /* working sheet — near-black */
-  --background: #0a0a0a;
-  --foreground: #d4d0c8;
-  --card: #111111;
-  --card-foreground: #d4d0c8;
-  --popover: #161616;
-  --popover-foreground: #d4d0c8;
+  /* working sheet — deeper void */
+  --background: #060606;
+  --foreground: #cfcbc3;
+  --card: #0c0c0c;
+  --card-foreground: #cfcbc3;
+  --popover: #111111;
+  --popover-foreground: #cfcbc3;
 
   /* accent — blood crimson */
   --primary: #c41e3a;
@@ -394,6 +394,23 @@ body {
   font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Global vignette — dark edges pulling inward */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 9997; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%);
+}
+
+/* H1 decorative crimson bar */
+[data-section] h1::after {
+  content: ""; display: block; width: 40px; height: 2px;
+  background: var(--ring); margin-top: 4px; opacity: 0.5;
+}
+
+/* Card stone texture — subtle depth */
+[data-slot="card"] {
+  background: linear-gradient(180deg, var(--card) 0%, color-mix(in srgb, var(--ring) 3%, var(--card)) 100%) !important;
+}
+
 /* Noise grain overlay — brutalist texture */
 body::after {
   content: "";
@@ -401,7 +418,7 @@ body::after {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.035;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
