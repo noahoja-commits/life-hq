@@ -1280,3 +1280,23 @@ body.overdue-severe::after {
   );
   animation: overdue-pulse-intense 2s ease-in-out infinite;
 }
+
+/* Visible section background tints — immediate visual differentiation */
+[data-section="dashboard"] { background: linear-gradient(180deg, rgba(196,30,58,0.06) 0%, transparent 40%) !important; }
+[data-section="todos"] { background: linear-gradient(180deg, rgba(220,38,38,0.06) 0%, transparent 40%) !important; }
+[data-section="goals"] { background: linear-gradient(180deg, rgba(217,119,6,0.06) 0%, transparent 40%) !important; }
+[data-section="ventures"] { background: linear-gradient(180deg, rgba(153,27,27,0.07) 0%, transparent 40%) !important; }
+[data-section="money"] { background: linear-gradient(180deg, rgba(180,83,9,0.05) 0%, transparent 40%) !important; }
+[data-section="track"] { background: linear-gradient(180deg, rgba(100,116,139,0.05) 0%, transparent 40%) !important; }
+[data-section="calendar"] { background: linear-gradient(180deg, rgba(219,39,119,0.05) 0%, transparent 40%) !important; }
+[data-section="contacts"] { background: linear-gradient(180deg, rgba(126,34,206,0.05) 0%, transparent 40%) !important; }
+[data-section="hub"] { background: linear-gradient(180deg, rgba(71,85,105,0.05) 0%, transparent 40%) !important; }
+[data-section="pages"] { background: linear-gradient(180deg, rgba(146,64,14,0.05) 0%, transparent 40%) !important; }
+[data-section="routines"] { background: linear-gradient(180deg, rgba(3,105,161,0.05) 0%, transparent 40%) !important; }
+[data-section="focus"] { background: linear-gradient(180deg, rgba(107,33,168,0.06) 0%, transparent 40%) !important; }
+[data-section="review"] { background: linear-gradient(180deg, rgba(190,18,60,0.05) 0%, transparent 40%) !important; }
+[data-section="dates"] { background: linear-gradient(180deg, rgba(190,24,93,0.05) 0%, transparent 40%) !important; }
+[data-section="scripts"] { background: linear-gradient(180deg, rgba(180,83,9,0.05) 0%, transparent 40%) !important; }
+[data-section="files"] { background: linear-gradient(180deg, rgba(51,65,85,0.05) 0%, transparent 40%) !important; }
+[data-section="network"] { background: linear-gradient(180deg, rgba(29,78,216,0.05) 0%, transparent 40%) !important; }
+[data-section="ai"] { background: linear-gradient(180deg, rgba(185,28,28,0.08) 0%, transparent 40%) !important; }
