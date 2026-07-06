@@ -25,6 +25,7 @@ import { SignupPage } from "../login/SignupPage";
 import { ConfirmationRequired } from "../login/ConfirmationRequired";
 import { ThemePicker } from "../pages/ThemePicker";
 import { sectionThemesStore } from "../layout/sectionThemesStore";
+import { SectionArt } from "../misc/SectionArt";
 // Custom pages are code-split: each loads on first visit instead of shipping
 // in the (previously ~2MB) main chunk. Route paths are literals below because
 // lazy components have no static .path.
@@ -89,6 +90,11 @@ const Page = ({
           : undefined
       }
     >
+      {pageKey && (
+        <div className="absolute top-0 right-0 w-64 h-32 opacity-20 pointer-events-none z-0 overflow-hidden">
+          <SectionArt section={pageKey} />
+        </div>
+      )}
       <Suspense
         fallback={
           <div className="flex justify-center pt-24">
