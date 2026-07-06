@@ -1,5 +1,6 @@
 import {
   Activity,
+  Bot,
   Brain,
   Briefcase,
   CalendarCheck,
@@ -71,5 +72,6 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "network", label: "Network", to: "/network", icon: Network, inHeader: true, primary: true, group: "Track", shortcut: "w" },
   { key: "chatbot", label: " Lucifer", to: "/chatbot", icon: MessageSquare, inHeader: true, primary: true, group: "Notes", shortcut: "b" },
   { key: "openclaw", label: "OpenClaw", to: "/openclaw", icon: Radio, inHeader: true, group: "Notes" },
+  { key: "agenthub", label: "Agent Hub", to: "/agenthub", icon: Bot, inHeader: true, primary: true, group: "Track" },
   { key: "settings", label: "Settings", to: "/settings", icon: Settings, inHeader: false, shortcut: "s" },
 ];

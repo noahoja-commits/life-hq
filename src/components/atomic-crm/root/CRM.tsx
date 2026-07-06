@@ -55,6 +55,7 @@ const AiPage = lazy(() => import("../ai/AiPage").then((m) => ({ default: m.AiPag
 const NetworkPage = lazy(() => import("../network/NetworkPage").then((m) => ({ default: m.NetworkPage })));
 const ChatbotPage = lazy(() => import("../chatbot/ChatbotPage").then((m) => ({ default: m.ChatbotPage })));
 const OpenClawPage = lazy(() => import("../openclaw/OpenClawPage").then((m) => ({ default: m.OpenClawPage })));
+const AgentHubPage = lazy(() => import("../agenthub/AgentHubPage").then((m) => ({ default: m.AgentHubPage })));
 
 /**
  * Route-level suspense + per-section theme: every custom section carries an
@@ -382,6 +383,7 @@ const DesktopAdmin = (
         <Route path="/network" element={<Page pageKey="network"><NetworkPage /></Page>} />
         <Route path="/chatbot" element={<Page pageKey="chatbot"><ChatbotPage /></Page>} />
         <Route path="/openclaw" element={<Page pageKey="openclaw"><OpenClawPage /></Page>} />
+        <Route path="/agenthub" element={<Page pageKey="agenthub"><AgentHubPage /></Page>} />
       </CustomRoutes>
       <Resource name="links" />
       <Resource name="todos" />
