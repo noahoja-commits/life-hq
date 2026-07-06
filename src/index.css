@@ -376,7 +376,7 @@ input[type="time"] {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans overflow-hidden;
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -418,7 +418,7 @@ body::after {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.15;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -429,7 +429,7 @@ body::before {
   inset: 0;
   z-index: 9998;
   pointer-events: none;
-  opacity: 0.14;
+  opacity: 0.04;
   background: repeating-linear-gradient(
     0deg,
     transparent,
@@ -751,7 +751,7 @@ body::before {
 [data-section="chatbot"] hr, [data-section="chatbot"] [role="separator"] { border-color: rgba(220,38,38,0.12); }
 [data-section="chatbot"] .u-label { color: rgba(220,38,38,0.45); }
 [data-section="chatbot"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.14;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
   background: radial-gradient(ellipse 300px 200px at 50% 40%, rgba(220,38,38,0.2) 0%, transparent 70%);
 }
 
@@ -780,7 +780,7 @@ body::before {
 
 /* ⛧ THE GATES — "Through me the way into the suffering city." Gothic arch, inscription lines. */
 [data-section="dashboard"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.16;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.06;
   background:
     radial-gradient(ellipse 300px 400px at 50% 0%, rgba(196,30,58,0.3) 0%, transparent 100%),
     linear-gradient(90deg, transparent 48%, rgba(196,30,58,0.1) 49%, rgba(196,30,58,0.1) 51%, transparent 52%) no-repeat 50% 0% / 100% 100%;
@@ -788,7 +788,7 @@ body::before {
 
 /* ⛧ CIRCLE I — LIMBO. The virtuous pagans. Wispy fog, suspended in grey timelessness. */
 [data-section="track"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.05;
   background:
     radial-gradient(ellipse 200px 100px at 20% 80%, rgba(100,116,139,0.3), transparent),
     radial-gradient(ellipse 150px 80px at 70% 30%, rgba(100,116,139,0.2), transparent),
@@ -797,7 +797,7 @@ body::before {
 
 /* ⛧ CIRCLE II — LUST. Whirlwind of souls. Spiraling pink-crimson vortex. */
 [data-section="calendar"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.05;
   background:
     repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(219,39,119,0.08) 5deg, transparent 10deg);
   mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black 30%, transparent 70%);
@@ -806,7 +806,7 @@ body::before {
 
 /* ⛧ CIRCLE III — GLUTTONY. Cerberus, putrid mud, rotting rain. Sick amber circles. */
 [data-section="goals"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.05;
   background:
     radial-gradient(circle 40px at 15% 45%, rgba(217,119,6,0.25), transparent),
     radial-gradient(circle 55px at 45% 70%, rgba(217,119,6,0.2), transparent),
@@ -817,7 +817,7 @@ body::before {
 
 /* ⛧ CIRCLE IV — GREED. Crushing weight of gold and stone. Heavy angular masses. */
 [data-section="money"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.14;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
   background:
     linear-gradient(135deg, transparent 70%, rgba(180,83,9,0.15) 100%),
     linear-gradient(45deg, transparent 60%, rgba(180,83,9,0.1) 100%);
@@ -825,7 +825,7 @@ body::before {
 
 /* ⛧ CIRCLE V — ANGER. River Styx. Boiling blood, turbulent waves. Crimson turbulence. */
 [data-section="todos"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.16;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.06;
   background:
     repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(220,38,38,0.08) 8px, rgba(220,38,38,0.08) 10px),
     radial-gradient(ellipse 60% 40% at 50% 100%, rgba(220,38,38,0.15), transparent);
@@ -833,7 +833,7 @@ body::before {
 
 /* ⛧ CIRCLE VI — HERESY. Burning tombs. Flames rising from open sepulchers. Purple-red fire. */
 [data-section="contacts"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.05;
   background:
     repeating-conic-gradient(from 0deg at 50% 110%, transparent 0deg, rgba(126,34,206,0.06) 3deg, transparent 6deg);
   mask-image: linear-gradient(to top, black 20%, transparent 80%);
@@ -842,7 +842,7 @@ body::before {
 
 /* ⛧ CIRCLE VII — VIOLENCE. Boiling blood river Phlegethon. Darkest crimson flow. */
 [data-section="ventures"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.16;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.06;
   background:
     repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(153,27,27,0.06) 30px, rgba(153,27,27,0.06) 32px),
     linear-gradient(to bottom, transparent 50%, rgba(153,27,27,0.1) 100%);
@@ -850,7 +850,7 @@ body::before {
 
 /* ⛧ CIRCLE VIII — FRAUD. Malabranche demons. Jagged crystalline deceit. Metallic edges. */
 [data-section="hub"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.14;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
   background:
     repeating-conic-gradient(from 30deg at 50% 50%, transparent 0deg, rgba(71,85,105,0.06) 15deg, transparent 30deg),
     repeating-conic-gradient(from 60deg at 50% 50%, transparent 0deg, rgba(71,85,105,0.04) 15deg, transparent 30deg);
@@ -858,7 +858,7 @@ body::before {
 
 /* ⛧ CIRCLE IX — TREACHERY. Lake Cocytus. Frozen ice fractals. Diamond-cold patterns. */
 [data-section="routines"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.05;
   background:
     repeating-conic-gradient(from 0deg at 30% 30%, transparent 0deg, rgba(3,105,161,0.06) 10deg, transparent 20deg),
     repeating-conic-gradient(from 45deg at 70% 70%, transparent 0deg, rgba(3,105,161,0.04) 10deg, transparent 20deg);
@@ -866,20 +866,20 @@ body::before {
 
 /* ⛧ THE CENTER — Focus. Absolute center of Hell. Single point of infernal light in void. */
 [data-section="focus"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.16;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.06;
   background: radial-gradient(circle 80px at 50% 50%, rgba(107,33,168,0.2) 0%, rgba(107,33,168,0.05) 40%, transparent 100%);
 }
 
 /* ⛧ THE VESTIBULE — Review. Liminal space between worlds. Grey-crimson threshold. */
 [data-section="review"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.14;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
   background:
     linear-gradient(180deg, transparent 0%, rgba(190,18,60,0.04) 50%, transparent 100%);
 }
 
 /* ⛧ LUST'S HOURGLASS — Dates. Fleeting sand. Pink-crimson particles falling. */
 [data-section="dates"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.14;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
   background:
     radial-gradient(1px 1px at 30% 20%, rgba(190,24,93,0.3), transparent),
     radial-gradient(1px 1px at 50% 40%, rgba(190,24,93,0.2), transparent),
@@ -891,7 +891,7 @@ body::before {
 
 /* ⛧ FRAUD'S THEATER — Scripts. Stage lights piercing darkness. Dramatic amber beams. */
 [data-section="scripts"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.14;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
   background:
     conic-gradient(from -30deg at 50% -20%, transparent 40deg, rgba(180,83,9,0.08) 42deg, transparent 44deg),
     conic-gradient(from 150deg at 50% -20%, transparent 40deg, rgba(180,83,9,0.06) 42deg, transparent 44deg);
@@ -899,7 +899,7 @@ body::before {
 
 /* ⛧ TREACHERY'S VAULT — Files. Frozen archives. Crystalline ice-blue preservation. */
 [data-section="files"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.14;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
   background:
     linear-gradient(45deg, transparent 40%, rgba(51,65,85,0.06) 50%, transparent 60%),
     linear-gradient(-45deg, transparent 40%, rgba(51,65,85,0.04) 50%, transparent 60%);
@@ -907,7 +907,7 @@ body::before {
 
 /* ⛧ THE RIVER STYX — Network. Dark water connecting all circles. Flowing cosmic currents. */
 [data-section="network"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.15;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.05;
   background:
     radial-gradient(2px 2px at 15% 25%, rgba(29,78,216,0.4), transparent),
     radial-gradient(1px 1px at 35% 55%, rgba(29,78,216,0.3), transparent),
@@ -920,20 +920,20 @@ body::before {
 
 /* ⛧ THE ABYSS — AI. The deepest void. Pure crimson darkness. The eye's domain. */
 [data-section="ai"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.16;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.06;
   background: radial-gradient(ellipse 400px 300px at 50% 30%, rgba(185,28,28,0.15) 0%, rgba(185,28,28,0.04) 50%, transparent 100%);
 }
 
 /* ⛧ LIMBO'S LIBRARY — Pages. Ancient parchment, sepia half-light. Knowledge suspended. */
 [data-section="pages"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.14;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
   background:
     linear-gradient(90deg, transparent 30%, rgba(146,64,14,0.06) 50%, transparent 70%);
 }
 
 /* ⛧ GREED'S OFFICE — Applications. Corporate cold with gold trim. Ambition's cage. */
 [data-section="applications"]::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.13;
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.03;
   background:
     repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(15,118,110,0.04) 40px, rgba(15,118,110,0.04) 41px);
 }
@@ -977,7 +977,7 @@ body::before {
 [data-section] .empty-state::before,
 [data-section] [data-empty]::before {
   content: "⛧"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  font-size: 120px; opacity: 0.13; pointer-events: none; z-index: 0;
+  font-size: 120px; opacity: 0.03; pointer-events: none; z-index: 0;
   color: var(--ring);
 }
 
@@ -1280,23 +1280,3 @@ body.overdue-severe::after {
   );
   animation: overdue-pulse-intense 2s ease-in-out infinite;
 }
-
-/* Visible section background tints � immediate visual differentiation */
-[data-section="dashboard"] { background: linear-gradient(180deg, rgba(196,30,58,0.06) 0%, transparent 40%) !important; }
-[data-section="todos"] { background: linear-gradient(180deg, rgba(220,38,38,0.06) 0%, transparent 40%) !important; }
-[data-section="goals"] { background: linear-gradient(180deg, rgba(217,119,6,0.06) 0%, transparent 40%) !important; }
-[data-section="ventures"] { background: linear-gradient(180deg, rgba(153,27,27,0.07) 0%, transparent 40%) !important; }
-[data-section="money"] { background: linear-gradient(180deg, rgba(180,83,9,0.05) 0%, transparent 40%) !important; }
-[data-section="track"] { background: linear-gradient(180deg, rgba(100,116,139,0.05) 0%, transparent 40%) !important; }
-[data-section="calendar"] { background: linear-gradient(180deg, rgba(219,39,119,0.05) 0%, transparent 40%) !important; }
-[data-section="contacts"] { background: linear-gradient(180deg, rgba(126,34,206,0.05) 0%, transparent 40%) !important; }
-[data-section="hub"] { background: linear-gradient(180deg, rgba(71,85,105,0.05) 0%, transparent 40%) !important; }
-[data-section="pages"] { background: linear-gradient(180deg, rgba(146,64,14,0.05) 0%, transparent 40%) !important; }
-[data-section="routines"] { background: linear-gradient(180deg, rgba(3,105,161,0.05) 0%, transparent 40%) !important; }
-[data-section="focus"] { background: linear-gradient(180deg, rgba(107,33,168,0.06) 0%, transparent 40%) !important; }
-[data-section="review"] { background: linear-gradient(180deg, rgba(190,18,60,0.05) 0%, transparent 40%) !important; }
-[data-section="dates"] { background: linear-gradient(180deg, rgba(190,24,93,0.05) 0%, transparent 40%) !important; }
-[data-section="scripts"] { background: linear-gradient(180deg, rgba(180,83,9,0.05) 0%, transparent 40%) !important; }
-[data-section="files"] { background: linear-gradient(180deg, rgba(51,65,85,0.05) 0%, transparent 40%) !important; }
-[data-section="network"] { background: linear-gradient(180deg, rgba(29,78,216,0.05) 0%, transparent 40%) !important; }
-[data-section="ai"] { background: linear-gradient(180deg, rgba(185,28,28,0.08) 0%, transparent 40%) !important; }
