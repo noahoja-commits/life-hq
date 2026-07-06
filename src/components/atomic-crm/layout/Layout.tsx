@@ -1,5 +1,4 @@
 import { Suspense, type ReactNode } from "react";
-import { useLocation } from "react-router";
 import { ErrorBoundary } from "react-error-boundary";
 import { Notification } from "@/components/admin/notification";
 import { Error } from "@/components/admin/error";
@@ -17,19 +16,17 @@ import { usePossession, useSummoning } from "../misc/rituals";
 import { useNotify } from "ra-core";
 
 /**
- * Desktop shell: deep indigo canvas, raised working sheet with page
- * transitions. Navigation rail on the left, content scrolls independently.
- * Each route triggers a fade-in-up animation via the page-enter CSS class.
+ * Desktop shell: black canvas, raised working sheet.
+ * Navigation rail on the left, content scrolls independently.
  */
 export const Layout = ({ children }: { children: ReactNode }) => {
   useConfigurationLoader();
-  const location = useLocation();
   const notify = useNotify();
   
   // Lucifer randomly interjects
   usePossession();
   
-  // ⬆⬆⬇⬇⬅➡⬅➡ — Konami summoning
+  // Konami summoning
   useSummoning(() => {
     notify("⛧ YOU HAVE AWAKENED THE ABYSS ⛧", { type: "error" });
   });
@@ -43,11 +40,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       <Sidebar />
       <div className="my-2 mr-2 flex min-w-0 flex-1 flex-col rounded-lg border border-border shadow-sm transition-shadow duration-200">
         <Header />
-        <main
-          className="u-scroll flex-1 overflow-y-auto"
-          id="main-content"
-
-        >
+        <main className="u-scroll flex-1 overflow-y-auto" id="main-content">
           <div className="mx-auto max-w-screen-xl px-4 py-4 md:px-6">
             <ErrorBoundary FallbackComponent={Error}>
               <Suspense fallback={<Skeleton className="skeleton-shimmer h-12 w-12 rounded-full" />}>

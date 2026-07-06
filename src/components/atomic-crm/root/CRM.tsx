@@ -95,7 +95,7 @@ const Page = ({
   return (
     <div
       data-section={pageKey}
-      className={pageKey ? "relative" : undefined}
+      className={pageKey ? "relative min-h-full" : undefined}
       style={
         {
           ...(accent && { "--primary": accent, "--ring": accent }),
