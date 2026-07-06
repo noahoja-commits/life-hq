@@ -93,7 +93,7 @@ export const Dashboard = () => {
   };
 
   return (
-    <div data-section="dashboard" className="mx-auto flex max-w-5xl flex-col gap-7 py-2 stagger relative bg-[#120a0a]">
+    <div className="mx-auto flex max-w-5xl flex-col gap-7 py-2 stagger relative" style={{ backgroundColor: "#120a0a" }}>
       <SectionArt section="dashboard" />
       <DemonicEye size={300} className="absolute top-0 right-0 opacity-20 pointer-events-none z-0" />
       {/* Operations header: greeting left, capture right */}
