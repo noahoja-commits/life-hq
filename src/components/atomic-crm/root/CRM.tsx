@@ -91,7 +91,7 @@ const Page = ({
       }
     >
       {pageKey && (
-        <div className="absolute top-0 right-0 w-64 h-32 opacity-20 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-0 right-0 w-full sm:w-96 h-36 sm:h-44 opacity-25 pointer-events-none z-0 overflow-hidden">
           <SectionArt section={pageKey} />
         </div>
       )}
