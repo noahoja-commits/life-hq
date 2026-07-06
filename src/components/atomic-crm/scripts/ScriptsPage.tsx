@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { useConfirm } from "../misc/useConfirm";
 import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { ConnectionPanel } from "../misc/ConnectionPanel";
 
 export interface Script {
   id: number;
@@ -263,6 +264,7 @@ const ScriptCard = ({
             placeholder="Write the script — saves when you click away."
             className="min-h-40 resize-y text-[13px] leading-6"
           />
+          <ConnectionPanel entityType="scripts" entityId={script.id} className="mt-2" />
         </div>
       )}
     </Card>

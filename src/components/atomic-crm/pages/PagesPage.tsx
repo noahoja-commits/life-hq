@@ -6,6 +6,7 @@ import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { EmptyState } from "../misc/EmptyState";
 import { useUndoable } from "../misc/useUndoable";
 import { usePageHotkey } from "../misc/usePageHotkey";
+import { ConnectionPanel } from "../misc/ConnectionPanel";
 import type { PageTheme } from "./pageThemes";
 
 export type PageKind = "doc" | "sheet" | "embed";
@@ -142,6 +143,7 @@ export const PagesPage = () => {
                   <Icon className="size-3" />{" "}
                   {KIND_META[p.kind]?.label ?? p.kind}
                 </span>
+                <ConnectionPanel entityType="pages" entityId={p.id} className="mt-2" />
               </Card>
             );
           })}

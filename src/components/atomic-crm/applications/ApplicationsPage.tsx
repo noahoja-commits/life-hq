@@ -43,6 +43,7 @@ import { useConfirm } from "../misc/useConfirm";
 import { NextActions } from "../todos/NextActions";
 import { CallLogSection, LogCallChips } from "./CallLog";
 import { cn } from "@/lib/utils";
+import { ConnectionPanel } from "../misc/ConnectionPanel";
 
 const STATUSES = [
   "wishlist",
@@ -365,6 +366,7 @@ const AppCard = ({
           </div>
           <LogCallChips applicationId={a.id} company={a.company} />
           <NextActions filterField="application_id" refId={a.id} compact />
+          <ConnectionPanel entityType="applications" entityId={a.id} className="mt-2" />
         </div>
       )}
     </Card>

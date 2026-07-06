@@ -29,6 +29,7 @@ import type { Deal } from "../types";
 import { ContactList } from "./ContactList";
 import { LinkedTodos } from "./LinkedTodos";
 import { findDealLabel, formatISODateString } from "./dealUtils";
+import { ConnectionPanel } from "../misc/ConnectionPanel";
 
 export const DealShow = ({ open, id }: { open: boolean; id?: string }) => {
   const redirect = useRedirect();
@@ -172,6 +173,8 @@ const DealShowContent = () => {
           )}
 
           <LinkedTodos />
+
+          <ConnectionPanel entityType="deals" entityId={record.id} className="m-4 mt-2" />
 
           <div className="m-4">
             <Separator className="mb-4" />

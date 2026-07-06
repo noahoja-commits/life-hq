@@ -11,6 +11,7 @@ import { Link, matchPath, useLocation } from "react-router";
 import { RefreshButton } from "@/components/admin/refresh-button";
 import { ThemeModeToggle } from "@/components/admin/theme-mode-toggle";
 import { UserMenu } from "@/components/admin/user-menu";
+import { NotificationBell } from "./NotificationBell";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 import { exportAllData } from "../misc/exportData";
@@ -57,6 +58,7 @@ const Header = () => {
         <span className="mr-2 hidden text-xs text-muted-foreground lg:block">
           {today}
         </span>
+        <NotificationBell />
         <ThemeModeToggle />
         <RefreshButton />
         <UserMenu>

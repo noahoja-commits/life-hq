@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { PushReminders } from "../push/PushReminders";
 import { TodayView } from "./TodayView";
+import { ActivityFeed } from "./ActivityFeed";
 import type { Deal } from "../types";
 
 interface HubItem {
@@ -136,6 +137,9 @@ export const Dashboard = () => {
 
       {/* Compass — active goals at a glance */}
       <CompassStrip />
+
+      {/* Activity Feed — recent actions across all entities */}
+      <ActivityFeed />
 
       {/* In motion */}
       <Section
