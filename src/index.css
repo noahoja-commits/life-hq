@@ -1262,6 +1262,32 @@ body.overdue-severe::after {
   animation: overdue-pulse-intense 2s ease-in-out infinite;
 }
 
+/* SECTION IDENTITY */
+[data-section="dashboard"]{background:#120606!important}
+[data-section="todos"]{background:#140606!important}
+[data-section="goals"]{background:#140c04!important}
+[data-section="ventures"]{background:#120404!important}
+[data-section="money"]{background:#140c04!important}
+[data-section="track"]{background:#060810!important}
+[data-section="calendar"]{background:#14060a!important}
+[data-section="contacts"]{background:#0a0612!important}
+[data-section="hub"]{background:#070810!important}
+[data-section="pages"]{background:#140c06!important}
+[data-section="applications"]{background:#061010!important}
+[data-section="routines"]{background:#060a12!important}
+[data-section="focus"]{background:#0a0612!important}
+[data-section="review"]{background:#140606!important}
+[data-section="dates"]{background:#14060a!important}
+[data-section="scripts"]{background:#140c04!important}
+[data-section="files"]{background:#070810!important}
+[data-section="network"]{background:#060a12!important}
+[data-section="ai"]{background:#120404!important}
+[data-section="lists"]{background:#080808!important}
+[data-section="chatbot"]{background:#120404!important}
+[data-section="openclaw"]{background:#140c02!important}
+[data-section="agenthub"]{background:#140c02!important}
+}
+
 /* SECTION IDENTITY — solid visible backgrounds per circle */
 [data-section="dashboard"]{background:#0c0808!important}
 [data-section="todos"]{background:#0d0808!important}
