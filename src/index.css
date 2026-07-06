@@ -100,12 +100,12 @@
   --chart-4: #dc2626;
   --chart-5: #a855f7;
 
-  /* shadows — hard, not soft */
-  --shadow-xs: 0 0 0 1px rgba(255,255,255,0.03);
-  --shadow-sm: 0 0 0 1px rgba(255,255,255,0.05);
-  --shadow-md: 0 0 0 1px rgba(255,255,255,0.06);
-  --shadow-lg: 0 0 0 1px rgba(255,255,255,0.08);
-  --shadow-xl: 0 0 0 1px rgba(255,255,255,0.10);
+  /* shadows — brutalist outline + depth */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.10);
+  --shadow-xl: 0 12px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.12);
 }
 
 .dark {
@@ -142,6 +142,11 @@
   --chart-3: #c4943a;
   --chart-4: #dc2626;
   --chart-5: #a855f7;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.10);
+  --shadow-xl: 0 12px 32px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.12);
 }
 
 /*
@@ -212,11 +217,16 @@
  */
 
 [data-slot="card"] {
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 [data-slot="card"]:hover {
   border-color: var(--ring);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06);
 }
+
+/* Floating UI elements keep a small radius for affordance */
+.keep-radius { --radius: 0.25rem; }
 
 .card-interactive {
   transition: border-color 0.15s ease;
