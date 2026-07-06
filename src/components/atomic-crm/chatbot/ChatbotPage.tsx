@@ -28,6 +28,8 @@ export const ChatbotPage = () => {
   const [listening, setListening] = useState(false);
   const [voiceOn, setVoiceOn] = useState(true);
   const [chatTitle, setChatTitle] = useState("");
+  const [dealTimer, setDealTimer] = useState<{active: boolean, deadline: number, task: string} | null>(null);
+  const [tick, setTick] = useState(0);
   const recognitionRef = useRef<any>(null);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -98,9 +100,45 @@ export const ChatbotPage = () => {
     setListening(true);
   }, [listening]);
 
+  /** Parse a deal from Lucifer's response — extract time limit and task name. */
+  const parseDeal = (text: string): { minutes: number, task: string } | null => {
+    const timeMatch = text.match(/(\d+)\s*(?:minute|min)s?\b/i);
+    if (!timeMatch) return null;
+    const minutes = parseInt(timeMatch[1]);
+    let task = "the task";
+    const completeMatch = text.match(/complete\s+["\u201C]?([^"\u201D,.\n]+?)["\u201D]?\s+in\b/i);
+    if (completeMatch) { task = completeMatch[1].trim(); }
+    else {
+      const quoted = text.match(/["\u201C]([^"\u201D]+)["\u201D]|'([^']+)'/);
+      if (quoted) { task = (quoted[1] || quoted[2] || "the task").trim(); }
+    }
+    return { minutes, task };
+  };
+
   const send = useCallback(async () => {
     const text = input.trim();
     if (!text || loading) return;
+
+    // Deal with the Devil — detect acceptance of a proposed deal
+    const lowerInput = text.toLowerCase();
+    if ((lowerInput === "deal" || lowerInput === "i accept") && messages.length > 0) {
+      const lastAssistant = [...messages].reverse().find(m => m.role === "assistant");
+      if (lastAssistant) {
+        const parsed = parseDeal(lastAssistant.text);
+        if (parsed) {
+          const userMsg: Message = { role: "user", text };
+          setMessages((prev) => [...prev, userMsg, {
+            role: "assistant",
+            text: `⏱ The deal is struck. ${parsed.minutes} minutes for "${parsed.task}". Your soul hangs in the balance.`,
+          }]);
+          setInput("");
+          setDealTimer({ active: true, deadline: Date.now() + parsed.minutes * 60000, task: parsed.task });
+          speak(`The deal is struck. ${parsed.minutes} minutes. Your soul hangs in the balance.`);
+          return;
+        }
+      }
+    }
+
     const userMsg: Message = { role: "user", text };
     setMessages((prev) => [...prev, userMsg]);
     setInput(""); setLoading(true);
@@ -189,6 +227,82 @@ Be clinical. Be precise. Reference specific numbers. Make this genuinely useful 
       setMessages((prev) => [...prev, { role: "assistant", text: `The mirror cracks. ${e?.message || ""}` }]);
     } finally { setLoading(false); }
   };
+
+  /** Deal with the Devil — Lucifer sets a timed challenge. */
+  const dealWithDevil = async () => {
+    setLoading(true);
+    try {
+      const supabase = getSupabaseClient();
+      const prompt = "Set me a deal. Give me a timer for a task and tell me the stakes.";
+      const { data, error } = await supabase.functions.invoke("ai_chat", {
+        body: { messages: [{ role: "user", text: `${PERSONAS[persona]}\n\nHuman: ${prompt}` }] },
+      });
+      if (error) throw error;
+      const text = data?.text ?? "No deal today.";
+      setMessages((prev) => [...prev, { role: "user", text: prompt }, { role: "assistant", text }]);
+      speak(text);
+    } catch (e: any) {
+      setMessages((prev) => [...prev, { role: "assistant", text: `The contract burns. ${e?.message || ""}` }]);
+    } finally { setLoading(false); }
+  };
+
+  /** Prophecy Engine — Lucifer predicts goal completion dates based on current pace. */
+  const prophecy = async () => {
+    setLoading(true);
+    try {
+      const supabase = getSupabaseClient();
+      const [todos, goals, ventures, trackers] = await Promise.all([
+        supabase.from("todos").select("*").eq("sales_id", salesId).order("created_at", { ascending: false }).limit(100),
+        supabase.from("goals").select("*").eq("sales_id", salesId),
+        supabase.from("ventures").select("*").eq("sales_id", salesId),
+        supabase.from("trackers").select("*").eq("sales_id", salesId),
+      ]);
+
+      const openTodos = (todos.data ?? []).filter((t: any) => !t.done);
+      const doneTodos = (todos.data ?? []).filter((t: any) => t.done);
+      const activeGoals = (goals.data ?? []).filter((g: any) => g.status === "active");
+      const activeVentures = (ventures.data ?? []).filter((v: any) => v.status !== "done" && v.status !== "dead");
+      const activeTrackers = trackers.data ?? [];
+
+      const snapshot = `
+USER DATA SNAPSHOT:
+- Open todos: ${openTodos.length}. Past 7 days completed: ${doneTodos.filter((t: any) => t.done_at && new Date(t.done_at) > new Date(Date.now() - 7*86400000)).length}.
+- Active goals: ${activeGoals.length}. Parked/achieved: ${(goals.data ?? []).filter((g: any) => g.status !== "active").length}.
+- Active ventures: ${activeVentures.length}.
+- Active trackers/habits: ${activeTrackers.length}.
+
+Raw recent todos: ${openTodos.slice(0, 10).map((t: any) => `"${t.text}" (priority:${t.priority})`).join("; ") || "none"}
+Active goals: ${activeGoals.map((g: any) => `"${g.title}"`).join("; ") || "none"}
+Active ventures: ${activeVentures.map((v: any) => `"${v.name}" (${v.status})`).join("; ") || "none"}
+
+You are Lucifer. Based on their completion rate, predict when each active goal will actually be achieved. Be brutally realistic. If their pace suggests a goal will take 3 years, say so. Include specific dates.`;
+
+      const { data, error } = await supabase.functions.invoke("ai_chat", {
+        body: { messages: [{ role: "user", text: snapshot }] },
+      });
+      if (error) throw error;
+      const text = data?.text ?? "The prophecy is clouded.";
+      setMessages((prev) => [...prev, { role: "assistant", text }]);
+      speak(text);
+    } catch (e: any) {
+      setMessages((prev) => [...prev, { role: "assistant", text: `The prophecy burns. ${e?.message || ""}` }]);
+    } finally { setLoading(false); }
+  };
+
+  /** Countdown timer effect for active deals. */
+  useEffect(() => {
+    if (!dealTimer?.active) return;
+    const interval = setInterval(() => {
+      setTick(t => t + 1);
+      if (Date.now() >= dealTimer.deadline) {
+        setDealTimer(null);
+        setMessages((prev) => [...prev, { role: "assistant", text: "⏱ The deal is broken. A soul is lost." }]);
+        speak("The deal is broken. A soul is lost.");
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [dealTimer]);
+
   const saveChat = () => {
     const content = messages.map((m) => `${m.role === "user" ? "YOU" : "ENTITY"}: ${m.text}`).join("\n\n---\n\n");
     createPage("pages", { data: { title: chatTitle || "Infernal Chat", content, sales_id: salesId } });
