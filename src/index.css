@@ -49,141 +49,99 @@
 }
 
 /*
- * Life HQ — refined premium palette.
- * Warm indigo foundation with amber accent. Glass panels. Depth through layered shadows.
- * Easy to retheme: swap the oklch values below. Structure stays.
+ * BRUTALIST — dark, high-contrast, psychological.
+ * Black canvas, crimson accent, raw typography, noise texture.
+ * No rounded corners. No glass. Just grit.
  */
 :root {
-  --radius: 0.625rem;
+  --radius: 0px;
 
-  /* chrome (sidebar canvas) — deep indigo */
-  --sidebar: oklch(0.16 0.025 265);
-  --sidebar-foreground: oklch(0.88 0.01 265);
-  --sidebar-primary: oklch(0.72 0.12 75);
-  --sidebar-primary-foreground: oklch(0.15 0.03 265);
-  --sidebar-accent: oklch(0.22 0.025 265);
-  --sidebar-accent-foreground: oklch(0.94 0.005 265);
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.72 0.12 75);
+  /* sidebar — abyss black */
+  --sidebar: #080808;
+  --sidebar-foreground: #c4bfb0;
+  --sidebar-primary: #c41e3a;
+  --sidebar-primary-foreground: #f5f0e8;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #e8e3d8;
+  --sidebar-border: rgba(255,255,255,0.05);
+  --sidebar-ring: #c41e3a;
 
-  /* working sheet — warm cream */
-  --background: oklch(0.975 0.005 85);
-  --foreground: oklch(0.18 0.02 265);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 265);
+  /* working sheet — near-black */
+  --background: #0a0a0a;
+  --foreground: #d4d0c8;
+  --card: #111111;
+  --card-foreground: #d4d0c8;
+  --popover: #161616;
+  --popover-foreground: #d4d0c8;
 
-  /* accent — warm amber */
-  --primary: oklch(0.62 0.15 70);
-  --primary-foreground: oklch(0.985 0.005 85);
-  --secondary: oklch(0.94 0.01 265);
-  --secondary-foreground: oklch(0.28 0.025 265);
-  --muted: oklch(0.955 0.005 265);
-  --muted-foreground: oklch(0.48 0.02 265);
-  --accent: oklch(0.93 0.03 75);
-  --accent-foreground: oklch(0.25 0.06 75);
+  /* accent — blood crimson */
+  --primary: #c41e3a;
+  --primary-foreground: #f5f0e8;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #c4bfb0;
+  --muted: #141414;
+  --muted-foreground: #706c64;
+  --accent: #2a1a1a;
+  --accent-foreground: #c41e3a;
 
   /* status */
-  --destructive: oklch(0.55 0.21 25);
-  --success: oklch(0.55 0.13 152);
-  --warning: oklch(0.66 0.14 75);
+  --destructive: #dc2626;
+  --success: #4d7c4d;
+  --warning: #c4943a;
 
-  /* glass — frosted panels */
-  --glass: oklch(1 0 0 / 72%);
-  --glass-border: oklch(1 0 0 / 50%);
-
-  --border: oklch(0.89 0.01 265);
-  --input: oklch(0.87 0.01 265);
-  --ring: oklch(0.62 0.15 70);
+  --border: rgba(255,255,255,0.06);
+  --input: rgba(255,255,255,0.08);
+  --ring: #c41e3a;
 
   /* charts */
-  --chart-1: oklch(0.62 0.15 70);
-  --chart-2: oklch(0.62 0.11 180);
-  --chart-3: oklch(0.7 0.13 75);
-  --chart-4: oklch(0.58 0.16 25);
-  --chart-5: oklch(0.56 0.14 320);
+  --chart-1: #c41e3a;
+  --chart-2: #3b82f6;
+  --chart-3: #c4943a;
+  --chart-4: #dc2626;
+  --chart-5: #a855f7;
 
-  /* avatars */
-  --avatar-0: oklch(0.85 0.08 240);
-  --avatar-1: oklch(0.88 0.1 340);
-  --avatar-2: oklch(0.85 0.07 180);
-  --avatar-3: oklch(0.9 0.09 40);
-  --avatar-4: oklch(0.87 0.08 300);
-  --avatar-5: oklch(0.85 0.08 150);
-  --avatar-6: oklch(0.87 0.08 200);
-  --avatar-7: oklch(0.88 0.09 10);
-  --avatar-8: oklch(0.92 0.08 80);
-  --avatar-9: oklch(0.86 0.09 270);
-
-  /* elevation shadows */
-  --shadow-xs: 0 1px 2px oklch(0 0 0 / 4%);
-  --shadow-sm: 0 1px 3px oklch(0 0 0 / 6%), 0 1px 2px oklch(0 0 0 / 4%);
-  --shadow-md: 0 4px 6px oklch(0 0 0 / 6%), 0 2px 4px oklch(0 0 0 / 4%);
-  --shadow-lg: 0 10px 15px oklch(0 0 0 / 6%), 0 4px 6px oklch(0 0 0 / 4%);
-  --shadow-xl: 0 20px 25px oklch(0 0 0 / 7%), 0 8px 10px oklch(0 0 0 / 4%);
+  /* shadows — hard, not soft */
+  --shadow-xs: 0 0 0 1px rgba(255,255,255,0.03);
+  --shadow-sm: 0 0 0 1px rgba(255,255,255,0.05);
+  --shadow-md: 0 0 0 1px rgba(255,255,255,0.06);
+  --shadow-lg: 0 0 0 1px rgba(255,255,255,0.08);
+  --shadow-xl: 0 0 0 1px rgba(255,255,255,0.10);
 }
 
 .dark {
-  /* chrome — deeper, richer navy */
-  --sidebar: oklch(0.13 0.015 260);
-  --sidebar-foreground: oklch(0.82 0.01 260);
-  --sidebar-primary: oklch(0.72 0.12 75);
-  --sidebar-primary-foreground: oklch(0.12 0.02 260);
-  --sidebar-accent: oklch(0.2 0.02 260);
-  --sidebar-accent-foreground: oklch(0.92 0.005 260);
-  --sidebar-border: oklch(1 0 0 / 6%);
-  --sidebar-ring: oklch(0.72 0.12 75);
-
-  /* working sheet — deep navy, not pure black */
-  --background: oklch(0.16 0.012 260);
-  --foreground: oklch(0.9 0.008 260);
-  --card: oklch(0.19 0.015 260);
-  --card-foreground: oklch(0.9 0.008 260);
-  --popover: oklch(0.21 0.015 260);
-  --popover-foreground: oklch(0.9 0.008 260);
-
-  /* accent — warm amber, slightly brighter for dark */
-  --primary: oklch(0.72 0.12 75);
-  --primary-foreground: oklch(0.13 0.02 260);
-  --secondary: oklch(0.22 0.015 260);
-  --secondary-foreground: oklch(0.88 0.008 260);
-  --muted: oklch(0.22 0.015 260);
-  --muted-foreground: oklch(0.62 0.015 260);
-  --accent: oklch(0.28 0.06 75);
-  --accent-foreground: oklch(0.94 0.02 75);
-
-  /* status */
-  --destructive: oklch(0.66 0.19 25);
-  --success: oklch(0.68 0.13 152);
-  --warning: oklch(0.75 0.14 80);
-
-  /* glass — frosted dark */
-  --glass: oklch(0.22 0.015 260 / 72%);
-  --glass-border: oklch(1 0 0 / 10%);
-
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.72 0.12 75);
-
-  /* charts */
-  --chart-1: oklch(0.72 0.12 75);
-  --chart-2: oklch(0.7 0.11 180);
-  --chart-3: oklch(0.77 0.13 75);
-  --chart-4: oklch(0.68 0.15 25);
-  --chart-5: oklch(0.68 0.13 320);
-
-  /* avatars */
-  --avatar-0: oklch(0.35 0.12 240);
-  --avatar-1: oklch(0.38 0.14 340);
-  --avatar-2: oklch(0.35 0.11 180);
-  --avatar-3: oklch(0.38 0.13 40);
-  --avatar-4: oklch(0.36 0.12 300);
-  --avatar-5: oklch(0.35 0.11 150);
-  --avatar-6: oklch(0.37 0.12 200);
-  --avatar-7: oklch(0.38 0.14 10);
-  --avatar-8: oklch(0.4 0.11 80);
-  --avatar-9: oklch(0.36 0.13 270);
+  --sidebar: #080808;
+  --sidebar-foreground: #c4bfb0;
+  --sidebar-primary: #c41e3a;
+  --sidebar-primary-foreground: #f5f0e8;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #e8e3d8;
+  --sidebar-border: rgba(255,255,255,0.05);
+  --sidebar-ring: #c41e3a;
+  --background: #0a0a0a;
+  --foreground: #d4d0c8;
+  --card: #111111;
+  --card-foreground: #d4d0c8;
+  --popover: #161616;
+  --popover-foreground: #d4d0c8;
+  --primary: #c41e3a;
+  --primary-foreground: #f5f0e8;
+  --secondary: #1a1a1a;
+  --secondary-foreground: #c4bfb0;
+  --muted: #141414;
+  --muted-foreground: #706c64;
+  --accent: #2a1a1a;
+  --accent-foreground: #c41e3a;
+  --destructive: #dc2626;
+  --success: #4d7c4d;
+  --warning: #c4943a;
+  --border: rgba(255,255,255,0.06);
+  --input: rgba(255,255,255,0.08);
+  --ring: #c41e3a;
+  --chart-1: #c41e3a;
+  --chart-2: #3b82f6;
+  --chart-3: #c4943a;
+  --chart-4: #dc2626;
+  --chart-5: #a855f7;
 }
 
 /*
@@ -237,29 +195,16 @@
 .stagger > *:nth-child(6) { animation-delay: 0.25s; }
 
 /*
- * ── Glass morphism ──────────────────────────────────────
+ * ── Brutalist cards ─────────────────────────────────────
  */
 
-.glass {
-  background: var(--glass);
-  backdrop-filter: blur(16px) saturate(130%);
-  -webkit-backdrop-filter: blur(16px) saturate(130%);
-  border: 1px solid var(--glass-border);
+.brutal-card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  transition: border-color 0.15s ease;
 }
-
-.glass-card {
-  background: var(--glass);
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
-}
-.glass-card:hover {
-  box-shadow: var(--shadow-md);
+.brutal-card:hover {
   border-color: var(--ring);
-  transform: translateY(-1px);
 }
 
 /*
@@ -267,23 +212,18 @@
  */
 
 [data-slot="card"] {
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 [data-slot="card"]:hover {
-  border-color: var(--border);
+  border-color: var(--ring);
 }
 
-/* Interactive card — lifts on hover */
 .card-interactive {
-  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease;
   cursor: pointer;
 }
 .card-interactive:hover {
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-.card-interactive:active {
-  transform: translateY(0);
+  border-color: var(--ring);
 }
 
 /*
@@ -306,13 +246,11 @@
   flex-direction: column;
   gap: 0.25rem;
   padding: 1.25rem;
-  border-radius: var(--radius);
   background: var(--card);
   border: 1px solid var(--border);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: border-color 0.15s ease;
 }
 .metric-tile:hover {
-  box-shadow: var(--shadow-md);
   border-color: var(--ring);
 }
 .metric-value {
@@ -461,15 +399,27 @@ input[type="time"] {
     -moz-osx-font-smoothing: grayscale;
   }
   h1, h2, h3, h4 {
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
   }
-  h1 { font-size: 1.5rem; font-weight: 700; line-height: 1.2; }
-  h2 { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
-  h3 { font-size: 1.05rem; font-weight: 600; line-height: 1.4; }
+  h1 { font-size: 1.5rem; font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; }
+  h2 { font-size: 1.15rem; font-weight: 700; line-height: 1.2; }
+  h3 { font-size: 0.95rem; font-weight: 700; line-height: 1.3; }
 }
 
 body {
   font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Noise grain overlay — brutalist texture */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Micro-label */
