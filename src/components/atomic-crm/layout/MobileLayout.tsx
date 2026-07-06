@@ -7,6 +7,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useConfigurationLoader } from "../root/useConfigurationLoader";
 import { CommandPalette } from "../command/CommandPalette";
 import { MobileNavigation } from "./MobileNavigation";
+import { EyeChat } from "./EyeChat";
 
 export const MobileLayout = ({ children }: { children: ReactNode }) => {
   useConfigurationLoader();
@@ -22,6 +23,7 @@ export const MobileLayout = ({ children }: { children: ReactNode }) => {
         </ErrorBoundary>
       </div>
       <MobileNavigation />
+      <EyeChat />
       <Notification mobileOffset={{ bottom: "72px" }} />
     </>
   );
