@@ -12,6 +12,8 @@ import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { ShortcutHelp } from "./ShortcutHelp";
 import { Sidebar } from "./Sidebar";
 import { EyeChat } from "./EyeChat";
+import { usePossession, useSummoning } from "../misc/rituals";
+import { useNotify } from "ra-core";
 
 /**
  * Desktop shell: deep indigo canvas, raised working sheet with page
@@ -21,6 +23,16 @@ import { EyeChat } from "./EyeChat";
 export const Layout = ({ children }: { children: ReactNode }) => {
   useConfigurationLoader();
   const location = useLocation();
+  const notify = useNotify();
+  
+  // Lucifer randomly interjects
+  usePossession();
+  
+  // ⬆⬆⬇⬇⬅➡⬅➡ — Konami summoning
+  useSummoning(() => {
+    notify("⛧ YOU HAVE AWAKENED THE ABYSS ⛧", { type: "error" });
+  });
+  
   return (
     <div className="flex h-dvh overflow-hidden bg-sidebar">
       <CommandPalette />
