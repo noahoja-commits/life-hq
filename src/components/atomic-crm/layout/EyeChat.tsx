@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { X, Send, Loader2 } from "lucide-react";
+import { X, Send, Loader2, Mic, MicOff, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -234,8 +234,61 @@ export const EyeChat = () => {
   const [flash, setFlash] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [bloodDrops, setBloodDrops] = useState<{ id: number; x: number; delay: number }[]>([]);
+  const [listening, setListening] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(true);
+  const recognitionRef = useRef<any>(null);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Clean raw AI text for speech
+  const cleanForSpeech = (raw: string) =>
+    raw.replace(/[*_~`#>\-\[\]()]/g, "").replace(/\n+/g, ". ").replace(/\s+/g, " ").trim();
+
+  // Demonic voice — speak the eye's response
+  const speak = useCallback((text: string) => {
+    if (!voiceOn || typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const clean = cleanForSpeech(text);
+    const utter = new SpeechSynthesisUtterance(clean);
+    utter.rate = 0.75;
+    utter.pitch = 0.3;
+    utter.volume = 0.9;
+    // Find a deep voice
+    const voices = window.speechSynthesis.getVoices();
+    const deep = voices.find((v) => v.name.includes("Daniel") || v.name.includes("Google UK English Male") || v.name.includes("Male") || v.lang.startsWith("en") && v.name.includes("Deep")) 
+      || voices.find((v) => v.lang.startsWith("en-GB"))
+      || voices[0];
+    if (deep) utter.voice = deep;
+    window.speechSynthesis.speak(utter);
+  }, [voiceOn]);
+
+  // Speech-to-text
+  const toggleListen = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
+      return;
+    }
+
+    const rec = new SpeechRecognition();
+    rec.continuous = false;
+    rec.interimResults = false;
+    rec.lang = "en-US";
+    rec.onresult = (e: any) => {
+      const text = e.results[0][0].transcript;
+      setInput((prev) => prev + " " + text);
+      setListening(false);
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    recognitionRef.current = rec;
+    rec.start();
+    setListening(true);
+  }, [listening]);
 
   // Drifting movement — the eye roams the screen
   useEffect(() => {
@@ -315,7 +368,9 @@ export const EyeChat = () => {
       if (!res.ok) { const err = await res.text(); throw new Error(`${res.status}: ${err.slice(0, 100)}`); }
       const json = await res.json();
       const reply = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "…";
-      setMessages((prev) => [...prev, { role: "assistant", text: reply.trim() }]);
+      const clean = reply.trim();
+      setMessages((prev) => [...prev, { role: "assistant", text: clean }]);
+      speak(clean);
     } catch (e: any) {
       setMessages((prev) => [...prev, { role: "assistant", text: `The eye is clouded. ${e?.message || ""}` }]);
     } finally { setLoading(false); }
@@ -396,6 +451,9 @@ export const EyeChat = () => {
                 <span className="block text-[10px] text-muted-foreground tracking-wider">WATCHING</span>
               </div>
             </div>
+            <button onClick={() => setVoiceOn(!voiceOn)} className="p-1 text-muted-foreground hover:text-[#c41e3a] transition-colors" title={voiceOn ? "Mute voice" : "Unmute voice"}>
+                {voiceOn ? <Volume2 className="size-3.5" /> : <VolumeX className="size-3.5" />}
+              </button>
             <button onClick={() => setOpen(false)} className="p-1 text-muted-foreground hover:text-[#c41e3a] transition-colors"><X className="size-4" /></button>
           </div>
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
@@ -427,10 +485,14 @@ export const EyeChat = () => {
             )}
             <div ref={messagesEnd} />
           </div>
-          <div className="flex shrink-0 items-center gap-2 border-t border-border px-3 py-2.5">
+          <div className="flex shrink-0 items-center gap-1 border-t border-border px-2 py-2.5">
+            <Button size="icon" variant="ghost" onClick={toggleListen}
+              className={cn("h-8 w-8", listening ? "text-[#ff4400] bg-[#c41e3a]/10" : "text-muted-foreground hover:text-[#c41e3a]")}>
+              {listening ? <MicOff className="size-3.5" /> : <Mic className="size-3.5" />}
+            </Button>
             <Input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder="Whisper to the eye…"
+              placeholder={listening ? "Listening…" : "Whisper to the eye…"}
               className="h-9 border-0 bg-transparent text-xs focus-visible:ring-0 placeholder:text-muted-foreground/40" />
             <Button size="icon" variant="ghost" onClick={send} disabled={loading || !input.trim()}
               className="h-8 w-8 text-[#c41e3a] hover:bg-[#c41e3a]/10"><Send className="size-3.5" /></Button>
