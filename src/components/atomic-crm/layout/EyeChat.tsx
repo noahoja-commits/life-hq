@@ -143,16 +143,44 @@ const LivingEye = ({
         <ellipse cx={100 + pupilOff.x} cy={94 + pupilOff.y} rx="5" ry="12" fill="#030303" />
         <ellipse cx={100 + pupilOff.x} cy={92 + pupilOff.y} rx="2" ry="3" fill="#c41e3a" opacity={0.4 + breath * 0.3} />
       </g>
-      {/* Orbiting particles */}
-      {[0, 72, 144, 216, 288].map((angle, i) => {
-        const rad = ((angle + Date.now() * 0.02) * Math.PI) / 180;
-        const r = 90 + breath * 6;
+      {/* Orbiting particles — 12 */}
+      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
+        const rad = ((angle + Date.now() * 0.015 + i * 30) * Math.PI) / 180;
+        const r = 88 + breath * 8 + (i % 2) * 4;
         return (
           <circle key={`p${i}`}
             cx={100 + r * Math.cos(rad)} cy={100 + r * Math.sin(rad)}
-            r={1.5} fill="#c41e3a" opacity={0.3 + breath * 0.4} />
+            r={i % 3 === 0 ? 2 : 1} fill="#c41e3a" opacity={0.25 + breath * 0.35} />
         );
       })}
+      {/* Inner pentagram */}
+      <g opacity={0.15 + breath * 0.1}>
+        {[0, 72, 144, 216, 288].map((angle, i) => {
+          const rad = (angle * Math.PI) / 180;
+          const next = ((angle + 144) * Math.PI) / 180;
+          return (
+            <line key={`star${i}`}
+              x1={100 + 40 * Math.cos(rad)} y1={100 + 40 * Math.sin(rad)}
+              x2={100 + 40 * Math.cos(next)} y2={100 + 40 * Math.sin(next)}
+              stroke="#c41e3a" strokeWidth="0.5" />
+          );
+        })}
+      </g>
+      {/* Cross-hatch texture lines */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <line key={`ch${i}`}
+          x1={38 + i * 2} y1={38} x2={162 - i * 2} y2={162}
+          stroke="#c41e3a" strokeWidth="0.3" opacity={0.04 + breath * 0.03} />
+      ))}
+      {/* Corner runes */}
+      <text x="18" y="28" fill="#c41e3a" fontSize="6" opacity={0.2 + breath * 0.15}
+        fontFamily="monospace">☿</text>
+      <text x="172" y="28" fill="#c41e3a" fontSize="6" opacity={0.2 + breath * 0.15}
+        fontFamily="monospace">♀</text>
+      <text x="18" y="182" fill="#c41e3a" fontSize="6" opacity={0.2 + breath * 0.15}
+        fontFamily="monospace">♄</text>
+      <text x="172" y="182" fill="#c41e3a" fontSize="6" opacity={0.2 + breath * 0.15}
+        fontFamily="monospace">☉</text>
       {/* Blood tear — animates */}
       <path d="M100,126 Q99,142 97,150 Q95,158 100,162 Q105,158 103,150 Q101,142 100,126"
         fill="#c41e3a" opacity={0.5 + breath * 0.3}>
@@ -181,9 +209,25 @@ export const EyeChat = () => {
   const [whisper, setWhisper] = useState<{ text: string; id: number; x: number; y: number } | null>(null);
   const [shake, setShake] = useState(false);
   const [flash, setFlash] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const [bloodDrops, setBloodDrops] = useState<{ id: number; x: number; delay: number }[]>([]);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Drifting movement — the eye roams the screen
+  useEffect(() => {
+    let frame: number;
+    const animate = () => {
+      const t = Date.now() * 0.0003;
+      setPos({
+        x: Math.sin(t * 1.3 + 1) * 15 + Math.cos(t * 0.7) * 8,
+        y: Math.cos(t * 1.1 + 2) * 15 + Math.sin(t * 0.9) * 8,
+      });
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   // Screen shake on toggle
   const toggleEye = () => {
@@ -290,7 +334,8 @@ export const EyeChat = () => {
         </div>
       )}
 
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-1">
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-1"
+        style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, transition: "transform 3s linear" }}>
         <button onClick={toggleEye}
           className={cn("transition-all duration-500 group", open ? "scale-75 opacity-40" : "scale-100 opacity-100 hover:scale-110")}
           aria-label={open ? "Close" : "Open"}>
