@@ -29,21 +29,31 @@ const LivingEye = ({
   const [blinking, setBlinking] = useState(false);
   const [breath, setBreath] = useState(0);
 
-  // Pupil follows mouse
+  // Pupil follows cursor (mouse + touch)
   useEffect(() => {
-    const onMove = (e: MouseEvent) => {
+    const track = (clientX: number, clientY: number) => {
       if (!svgRef.current) return;
       const rect = svgRef.current.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
-      const dx = (e.clientX - cx) / (rect.width / 2);
-      const dy = (e.clientY - cy) / (rect.height / 2);
+      const dx = (clientX - cx) / (rect.width / 2);
+      const dy = (clientY - cy) / (rect.height / 2);
       const dist = Math.sqrt(dx * dx + dy * dy);
       const clamped = Math.min(dist, 1) / (dist || 1);
       setPupilOff({ x: dx * clamped * 5, y: dy * clamped * 5 });
     };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
+    const onMouse = (e: MouseEvent) => track(e.clientX, e.clientY);
+    const onTouch = (e: TouchEvent) => {
+      if (e.touches.length > 0) track(e.touches[0].clientX, e.touches[0].clientY);
+    };
+    window.addEventListener("mousemove", onMouse);
+    window.addEventListener("touchmove", onTouch, { passive: true });
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMouse);
+      window.removeEventListener("touchmove", onTouch);
+      window.removeEventListener("touchstart", onTouch);
+    };
   }, []);
 
   // Blink every 3-6 seconds
@@ -353,20 +363,22 @@ export const EyeChat = () => {
         </div>
       )}
 
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-1"
+      <div className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-50 flex flex-col items-center gap-0.5 sm:gap-1"
         style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, transition: "transform 3s linear" }}>
         {/* Pulsing ring */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[100px] h-[100px] rounded-full border border-[#c41e3a]/20 animate-ping"
+          <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] rounded-full border border-[#c41e3a]/20 animate-ping"
             style={{ animationDuration: "3s" }} />
+          <div className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] rounded-full border border-[#ff4400]/10 animate-ping"
+            style={{ animationDuration: "4.5s", animationDelay: "1.5s" }} />
         </div>
         <button onClick={toggleEye}
-          className={cn("transition-all duration-500 group relative", open ? "scale-75 opacity-40" : "scale-100 opacity-100 hover:scale-110")}
+          className={cn("transition-all duration-500 group relative", open ? "scale-75 opacity-40" : "scale-100 opacity-100 active:scale-110 hover:scale-110")}
           aria-label={open ? "Close" : "Open"}>
-          <LivingEye size={100} glowing />
+          <LivingEye size={open ? 70 : typeof window !== "undefined" && window.innerWidth < 640 ? 70 : 100} glowing />
         </button>
         {!open && (
-          <span className="text-[11px] font-black uppercase tracking-[0.25em] text-[#ff4400]/70 animate-pulse"
+          <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#ff4400]/70 animate-pulse"
             style={{ textShadow: "0 0 8px rgba(196,30,58,0.5)" }}>
             ⛧ THE ABYSS ⛧
           </span>
@@ -374,7 +386,7 @@ export const EyeChat = () => {
       </div>
 
       {open && (
-        <div className="fixed bottom-24 right-5 z-50 flex h-[520px] w-[380px] flex-col overflow-hidden border border-[#c41e3a]/20 bg-[#080808] page-enter"
+        <div className="fixed inset-x-0 bottom-0 sm:inset-auto sm:bottom-24 sm:right-5 z-50 flex h-[65vh] sm:h-[520px] w-full sm:w-[380px] flex-col overflow-hidden border-t sm:border border-[#c41e3a]/20 bg-[#080808] page-enter"
           style={{ boxShadow: "0 0 40px rgba(196,30,58,0.15), 0 0 80px rgba(196,30,58,0.05)" }}>
           <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
             <div className="flex items-center gap-2.5">
