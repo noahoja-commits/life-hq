@@ -58,40 +58,44 @@ const LivingEye = ({ size, className }: { size: number; className?: string }) =>
   return (
     <svg ref={svgRef} width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: `drop-shadow(0 0 ${6 + breath * 8}px rgba(180,0,0,0.5)) drop-shadow(0 0 2px rgba(180,0,0,0.6))` }}>
-      {/* Outer crimson ring */}
-      <ellipse cx="100" cy="100" rx="66" ry="62" fill="none" stroke="#8b0000" strokeWidth="0.5" opacity="0.25" />
-      {/* Eye shape — organic almond */}
-      <ellipse cx="100" cy="100" rx="62" ry="58" fill="#0a0a0a" stroke="#1a0808" strokeWidth="1" />
-      {/* Inner shadow ring */}
-      <ellipse cx="100" cy="100" rx="58" ry="54" fill="none" stroke="#100505" strokeWidth="3" opacity="0.6" />
+      style={{ filter: `drop-shadow(0 0 ${8 + breath * 12}px rgba(180,0,0,0.6)) drop-shadow(0 0 3px rgba(200,0,0,0.7))` }}>
+      {/* Outer crimson glow ring */}
+      <ellipse cx="100" cy="100" rx="66" ry="62" fill="none" stroke="#b30000" strokeWidth="1" opacity={0.3 + breath * 0.2} />
+      {/* Sclera — visible off-white against dark background */}
+      <ellipse cx="100" cy="100" rx="62" ry="58" fill="#1a1412" stroke="#2a1414" strokeWidth="1.5" />
+      {/* Inner rim shadow */}
+      <ellipse cx="100" cy="100" rx="58" ry="54" fill="none" stroke="#100a08" strokeWidth="4" opacity="0.7" />
       {/* Eyelid group */}
       <g transform={`scale(1, ${scaleY})`} style={{ transformOrigin: "100px 100px" }}>
-        {/* Upper eyelid — heavy, realistic */}
-        <path d="M34,100 Q34,34 100,28 Q166,34 166,100" stroke="#0a0a0a" strokeWidth="14" fill="none" opacity="0.98" />
-        <path d="M36,100 Q36,40 100,34 Q164,40 164,100" stroke="#1a0404" strokeWidth="2" fill="none" opacity="0.7" />
-        {/* Lower eyelid — thin */}
-        <path d="M38,100 Q38,160 100,164 Q162,160 162,100" stroke="#0d0303" strokeWidth="1.5" fill="none" opacity="0.6" />
-        {/* Iris — deep blood red, realistic radial */}
-        <circle cx="100" cy="98" r="26" fill="url(#irisGrad)" stroke="#1a0404" strokeWidth="1.5" />
-         {/* Pupil — goat-slit, unsettling */}
-         <ellipse cx={100 + pupilOff.x} cy={98 + pupilOff.y} rx="9" ry="3.5" fill="#010101" />
-         {/* Pupil glow */}
-         <ellipse cx={100 + pupilOff.x} cy={96 + pupilOff.y} rx="2.5" ry="1" fill="#8b0000" opacity="0.3" />
+        {/* Upper eyelid — heavy, visible */}
+        <path d="M34,100 Q34,34 100,28 Q166,34 166,100" stroke="#0a0a0a" strokeWidth="16" fill="none" opacity="0.97" />
+        <path d="M36,100 Q36,40 100,34 Q164,40 164,100" stroke="#3a1010" strokeWidth="2.5" fill="none" opacity="0.8" />
+        {/* Lower eyelid — visible */}
+        <path d="M38,100 Q38,160 100,164 Q162,160 162,100" stroke="#1a0808" strokeWidth="2.5" fill="none" opacity="0.7" />
+        {/* Iris — bright blood red, visible radial */}
+        <circle cx="100" cy="98" r="26" fill="url(#irisGrad)" stroke="#5a1010" strokeWidth="2" />
+        {/* Iris inner ring */}
+        <circle cx="100" cy="98" r="20" fill="none" stroke="#8b1a1a" strokeWidth="0.5" opacity="0.4" />
+        {/* Pupil — deep black slit */}
+        <ellipse cx={100 + pupilOff.x} cy={98 + pupilOff.y} rx="9" ry="3.5" fill="#000" />
+        {/* Pupil inner glow */}
+        <ellipse cx={100 + pupilOff.x} cy={96 + pupilOff.y} rx="2" ry="0.8" fill="#cc0000" opacity={0.4 + breath * 0.3} />
+        {/* Corneal light reflection */}
+        <ellipse cx={104 + pupilOff.x * 0.3} cy={92 + pupilOff.y * 0.3} rx="3" ry="2" fill="#fff" opacity="0.08" />
       </g>
-      {/* Iris gradient definition */}
+      {/* Iris gradient — visible blood red */}
       <defs>
         <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#1a0000" />
-          <stop offset="40%" stopColor="#3a0000" />
-          <stop offset="70%" stopColor="#1a0000" />
-          <stop offset="100%" stopColor="#0a0000" />
+          <stop offset="0%" stopColor="#4a0000" />
+          <stop offset="30%" stopColor="#8b0000" />
+          <stop offset="60%" stopColor="#4a0000" />
+          <stop offset="100%" stopColor="#1a0000" />
         </radialGradient>
       </defs>
-      {/* Subtle blood vessel lines in the sclera */}
-      {[[20, 0.3], [-15, 0.2], [35, 0.25], [-25, 0.15]].map(([angle, opacity], i) => (
-        <path key={`v${i}`} d={`M${100 + 45 * Math.cos((angle as number + 90) * Math.PI / 180)},${100 + 45 * Math.sin((angle as number + 90) * Math.PI / 180)} Q${100 + 30 * Math.cos((angle as number + 80) * Math.PI / 180)},${100 + 30 * Math.sin((angle as number + 80) * Math.PI / 180)} ${100 + 50 * Math.cos((angle as number + 100) * Math.PI / 180)},${100 + 50 * Math.sin((angle as number + 100) * Math.PI / 180)}`}
-          stroke="#1a0404" strokeWidth="0.4" fill="none" opacity={opacity as number * (0.5 + breath * 0.3)} />
+      {/* Blood vessels — more visible */}
+      {[[18, 0.4], [-12, 0.35], [30, 0.3], [-22, 0.25], [8, 0.2], [-30, 0.2]].map(([angle, opacity], i) => (
+        <path key={`v${i}`} d={`M${100 + 48 * Math.cos((angle as number + 90) * Math.PI / 180)},${100 + 48 * Math.sin((angle as number + 90) * Math.PI / 180)} Q${100 + 32 * Math.cos((angle as number + 80) * Math.PI / 180)},${100 + 32 * Math.sin((angle as number + 80) * Math.PI / 180)} ${100 + 52 * Math.cos((angle as number + 105) * Math.PI / 180)},${100 + 52 * Math.sin((angle as number + 105) * Math.PI / 180)}`}
+          stroke="#4a1010" strokeWidth="0.5" fill="none" opacity={opacity as number * (0.5 + breath * 0.3)} />
       ))}
     </svg>
   );
