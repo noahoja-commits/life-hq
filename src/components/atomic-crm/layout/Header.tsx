@@ -11,7 +11,6 @@ import { Link, matchPath, useLocation } from "react-router";
 import { RefreshButton } from "@/components/admin/refresh-button";
 import { ThemeModeToggle } from "@/components/admin/theme-mode-toggle";
 import { UserMenu } from "@/components/admin/user-menu";
-import { NotificationBell } from "./NotificationBell";
 import { SoulLedger } from "./SoulLedger";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
@@ -60,7 +59,6 @@ const Header = () => {
           {today}
         </span>
         <SoulLedger />
-        <NotificationBell />
         <ThemeModeToggle />
         <RefreshButton />
         <UserMenu>
