@@ -12,6 +12,7 @@ import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { ShortcutHelp } from "./ShortcutHelp";
 import { Sidebar } from "./Sidebar";
 import { EyeChat } from "./EyeChat";
+import { OverdueEffect } from "./OverdueEffect";
 import { usePossession, useSummoning } from "../misc/rituals";
 import { useNotify } from "ra-core";
 
@@ -35,6 +36,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   
   return (
     <div className="flex h-dvh overflow-hidden bg-sidebar">
+      <OverdueEffect />
       <CommandPalette />
       <KeyboardShortcuts />
       <ShortcutHelp />
