@@ -418,8 +418,82 @@ body::after {
   inset: 0;
   z-index: 9999;
   pointer-events: none;
-  opacity: 0.03;
+  opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Scanlines — CRT monitor effect */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: 0.04;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.3) 2px,
+    rgba(0,0,0,0.3) 3px
+  );
+}
+
+/*
+ * ── Glitch / distortion effects ─────────────────────────
+ */
+
+@keyframes glitch-skew {
+  0%   { transform: skew(0deg); }
+  20%  { transform: skew(2deg); }
+  40%  { transform: skew(-1deg); }
+  60%  { transform: skew(0.5deg); }
+  80%  { transform: skew(-0.5deg); }
+  100% { transform: skew(0deg); }
+}
+
+@keyframes glitch-shift {
+  0%, 100% { transform: translate(0); }
+  20%  { transform: translate(-3px, 1px); }
+  40%  { transform: translate(3px, -1px); }
+  60%  { transform: translate(-1px, 2px); }
+  80%  { transform: translate(2px, -2px); }
+}
+
+@keyframes chromatic-aberration {
+  0%, 100% { text-shadow: 2px 0 #c41e3a, -2px 0 #3b82f6; }
+  25%  { text-shadow: -2px 0 #c41e3a, 2px 0 #3b82f6; }
+  50%  { text-shadow: 1px 0 #c41e3a, -1px 0 #3b82f6; }
+  75%  { text-shadow: -1px 0 #c41e3a, 1px 0 #3b82f6; }
+}
+
+.glitch-text {
+  animation: chromatic-aberration 0.3s infinite;
+}
+
+.glitch-text:hover {
+  animation: glitch-skew 0.15s infinite, chromatic-aberration 0.2s infinite;
+}
+
+/* Distorted hover — slight chromatic shift on interactive elements */
+.distort-hover:hover {
+  text-shadow: 1px 0 #c41e3a, -1px 0 rgba(255,255,255,0.3);
+}
+
+/*
+ * ── Vignette overlay on dark panels ─────────────────────
+ */
+
+.vignette {
+  position: relative;
+}
+.vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.4) 100%);
+  border-radius: inherit;
 }
 
 /* Micro-label */
