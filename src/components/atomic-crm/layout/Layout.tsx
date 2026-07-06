@@ -11,6 +11,7 @@ import Header from "./Header";
 import { KeyboardShortcuts } from "./KeyboardShortcuts";
 import { ShortcutHelp } from "./ShortcutHelp";
 import { Sidebar } from "./Sidebar";
+import { EyeChat } from "./EyeChat";
 
 /**
  * Desktop shell: deep indigo canvas, raised working sheet with page
@@ -43,6 +44,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         </main>
       </div>
       <Notification />
+      <EyeChat />
     </div>
   );
 };
