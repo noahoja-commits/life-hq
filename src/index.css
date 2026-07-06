@@ -1261,3 +1261,29 @@ body.overdue-severe::after {
   );
   animation: overdue-pulse-intense 2s ease-in-out infinite;
 }
+
+/* SECTION IDENTITY — solid visible backgrounds per circle */
+[data-section="dashboard"]{background:#0c0808!important}
+[data-section="todos"]{background:#0d0808!important}
+[data-section="goals"]{background:#0d0a06!important}
+[data-section="ventures"]{background:#0d0606!important}
+[data-section="money"]{background:#0d0a06!important}
+[data-section="track"]{background:#08090c!important}
+[data-section="calendar"]{background:#0d080a!important}
+[data-section="contacts"]{background:#0a080c!important}
+[data-section="hub"]{background:#090a0c!important}
+[data-section="pages"]{background:#0d0a08!important}
+[data-section="applications"]{background:#080c0c!important}
+[data-section="routines"]{background:#080a0c!important}
+[data-section="focus"]{background:#0a080c!important}
+[data-section="review"]{background:#0d0808!important}
+[data-section="dates"]{background:#0d080a!important}
+[data-section="scripts"]{background:#0d0a06!important}
+[data-section="files"]{background:#090a0c!important}
+[data-section="network"]{background:#080a0c!important}
+[data-section="ai"]{background:#0d0606!important}
+[data-section="lists"]{background:#0a0a0a!important}
+[data-section="chatbot"]{background:#0d0606!important}
+[data-section="openclaw"]{background:#0d0a04!important}
+[data-section="agenthub"]{background:#0d0a04!important}
+}
