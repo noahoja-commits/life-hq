@@ -59,28 +59,24 @@ const LivingEye = ({ size, className }: { size: number; className?: string }) =>
     <svg ref={svgRef} width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"
       className={className}
       style={{ filter: `drop-shadow(0 0 ${8 + breath * 12}px rgba(180,0,0,0.6)) drop-shadow(0 0 3px rgba(200,0,0,0.7))` }}>
-      {/* Outer crimson glow ring */}
-      <ellipse cx="100" cy="100" rx="66" ry="62" fill="none" stroke="#b30000" strokeWidth="1" opacity={0.3 + breath * 0.2} />
       {/* Sclera — visible off-white against dark background */}
       <ellipse cx="100" cy="100" rx="62" ry="58" fill="#1a1412" stroke="#2a1414" strokeWidth="1.5" />
-      {/* Inner rim shadow */}
-      <ellipse cx="100" cy="100" rx="58" ry="54" fill="none" stroke="#100a08" strokeWidth="4" opacity="0.7" />
+      {/* Inner rim — subtle depth */}
+      <ellipse cx="100" cy="100" rx="56" ry="52" fill="none" stroke="#100a08" strokeWidth="2" opacity="0.5" />
       {/* Eyelid group */}
       <g transform={`scale(1, ${scaleY})`} style={{ transformOrigin: "100px 100px" }}>
-        {/* Upper eyelid — heavy, visible */}
-        <path d="M34,100 Q34,34 100,28 Q166,34 166,100" stroke="#0a0a0a" strokeWidth="16" fill="none" opacity="0.97" />
-        <path d="M36,100 Q36,40 100,34 Q164,40 164,100" stroke="#3a1010" strokeWidth="2.5" fill="none" opacity="0.8" />
-        {/* Lower eyelid — visible */}
-        <path d="M38,100 Q38,160 100,164 Q162,160 162,100" stroke="#1a0808" strokeWidth="2.5" fill="none" opacity="0.7" />
-        {/* Iris — bright blood red, visible radial */}
+        {/* Upper eyelid — integrated, not floating */}
+        <ellipse cx="100" cy="72" rx="64" ry="30" fill="#0a0a0a" opacity="0.96" />
+        <path d="M34,100 Q34,34 100,28 Q166,34 166,100" stroke="#2a0808" strokeWidth="1.5" fill="none" opacity="0.6" />
+        {/* Lower eyelid */}
+        <path d="M38,100 Q38,160 100,164 Q162,160 162,100" stroke="#1a0808" strokeWidth="1.5" fill="none" opacity="0.5" />
+        {/* Iris — bright blood red */}
         <circle cx="100" cy="98" r="26" fill="url(#irisGrad)" stroke="#5a1010" strokeWidth="2" />
-        {/* Iris inner ring */}
         <circle cx="100" cy="98" r="20" fill="none" stroke="#8b1a1a" strokeWidth="0.5" opacity="0.4" />
-        {/* Pupil — deep black slit */}
+        {/* Pupil — goat slit */}
         <ellipse cx={100 + pupilOff.x} cy={98 + pupilOff.y} rx="9" ry="3.5" fill="#000" />
-        {/* Pupil inner glow */}
         <ellipse cx={100 + pupilOff.x} cy={96 + pupilOff.y} rx="2" ry="0.8" fill="#cc0000" opacity={0.4 + breath * 0.3} />
-        {/* Corneal light reflection */}
+        {/* Corneal light */}
         <ellipse cx={104 + pupilOff.x * 0.3} cy={92 + pupilOff.y * 0.3} rx="3" ry="2" fill="#fff" opacity="0.08" />
       </g>
       {/* Iris gradient — visible blood red */}
