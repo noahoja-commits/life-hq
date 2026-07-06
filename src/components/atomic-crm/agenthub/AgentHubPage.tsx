@@ -6,7 +6,7 @@ import { Bot, Send, Loader2, Check, Brain, Search, Mail, MessageSquare, Image, C
 import { cn } from "@/lib/utils";
 
 const AUTH_TOKEN = "agent-hub-2026-secure";
-const HUB_URL = "https://agent-hub-production-5ccf.up.railway.app";
+const HUB_URL = "/api/agent-hub";
 
 const AGENTS = [
   { id: "research", name: "Nova", desc: "Web search & deep research", icon: Search, color: "#6366f1" },
