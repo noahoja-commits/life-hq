@@ -741,6 +741,20 @@ body::before {
 [data-section="lists"] hr, [data-section="lists"] [role="separator"] { border-color: rgba(87,83,78,0.1); }
 [data-section="lists"] .u-label { color: rgba(87,83,78,0.45); }
 
+/* ⛧ INFERNAL CHAT — Pits of dialogue. Voices from the void. Crimson conversation. */
+[data-section="chatbot"] { --ring: #dc2626; }
+[data-section="chatbot"] { background: rgba(220,38,38,0.02); }
+[data-section="chatbot"] ::selection { background: rgba(220,38,38,0.25); }
+[data-section="chatbot"] [data-slot="card"] { border-left: 3px solid rgba(220,38,38,0.25); }
+[data-section="chatbot"] .metric-value { color: #dc2626; }
+[data-section="chatbot"] h1 { text-shadow: 0 0 20px rgba(220,38,38,0.3); }
+[data-section="chatbot"] hr, [data-section="chatbot"] [role="separator"] { border-color: rgba(220,38,38,0.12); }
+[data-section="chatbot"] .u-label { color: rgba(220,38,38,0.45); }
+[data-section="chatbot"]::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
+  background: radial-gradient(ellipse 300px 200px at 50% 40%, rgba(220,38,38,0.2) 0%, transparent 70%);
+}
+
 /* All section cards get subtle left-border accent */
 [data-section] [data-slot="card"] {
   transition: border-left-color 0.2s ease, border-color 0.15s ease;

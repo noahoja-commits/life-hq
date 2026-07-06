@@ -9,6 +9,7 @@ import {
   Home,
   LayoutGrid,
   ListChecks,
+  MessageSquare,
   MapPin,
   Network,
   NotebookText,
@@ -67,5 +68,6 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "files", label: "Files", to: "/files", icon: FolderOpen, inHeader: true, group: "Notes", shortcut: "i" },
   { key: "hub", label: "Hub", to: "/hub", icon: LayoutGrid, inHeader: true, group: "Notes", shortcut: "h" },
   { key: "network", label: "Network", to: "/network", icon: Network, inHeader: true, primary: true, group: "Track", shortcut: "w" },
+  { key: "chatbot", label: "Chat", to: "/chatbot", icon: MessageSquare, inHeader: true, primary: true, group: "Notes", shortcut: "b" },
   { key: "settings", label: "Settings", to: "/settings", icon: Settings, inHeader: false, shortcut: "s" },
 ];

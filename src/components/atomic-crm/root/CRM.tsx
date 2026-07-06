@@ -53,6 +53,7 @@ const ScriptsPage = lazy(() => import("../scripts/ScriptsPage").then((m) => ({ d
 const ScriptPopOut = lazy(() => import("../scripts/ScriptPopOut").then((m) => ({ default: m.ScriptPopOut })));
 const AiPage = lazy(() => import("../ai/AiPage").then((m) => ({ default: m.AiPage })));
 const NetworkPage = lazy(() => import("../network/NetworkPage").then((m) => ({ default: m.NetworkPage })));
+const ChatbotPage = lazy(() => import("../chatbot/ChatbotPage").then((m) => ({ default: m.ChatbotPage })));
 
 /**
  * Route-level suspense + per-section theme: every custom section carries an
@@ -378,6 +379,7 @@ const DesktopAdmin = (
         <Route path="/scripts" element={<Page pageKey="scripts"><ScriptsPage /></Page>} />
         <Route path="/ai" element={<Page pageKey="ai"><AiPage /></Page>} />
         <Route path="/network" element={<Page pageKey="network"><NetworkPage /></Page>} />
+        <Route path="/chatbot" element={<Page pageKey="chatbot"><ChatbotPage /></Page>} />
       </CustomRoutes>
       <Resource name="links" />
       <Resource name="todos" />
@@ -491,6 +493,7 @@ const MobileAdmin = (
           <Route path="/scripts" element={<Page pageKey="scripts"><ScriptsPage /></Page>} />
           <Route path="/ai" element={<Page pageKey="ai"><AiPage /></Page>} />
           <Route path="/network" element={<Page pageKey="network"><NetworkPage /></Page>} />
+          <Route path="/chatbot" element={<Page pageKey="chatbot"><ChatbotPage /></Page>} />
         </CustomRoutes>
         <Resource name="links" />
         <Resource name="deals" {...deals} />
