@@ -549,3 +549,112 @@ body::before {
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 .btn-brutal:hover { border-color: #c41e3a; background: rgba(180,0,0,0.05); }
+
+/*
+ * ⛧ PER-SECTION THEMING ⛧
+ * Each section has a unique accent color and visual personality.
+ * Applied via [data-section="pageKey"] attribute on the section wrapper.
+ * Section cards get tinted backgrounds. Accents get colored borders.
+ */
+
+/* Dashboard — crimson command center */
+[data-section="dashboard"] .metric-value { color: #c41e3a; }
+[data-section="dashboard"] [data-slot="card"] { border-left: 2px solid rgba(180,0,0,0.2); }
+
+/* Todos — urgent amber/red */
+[data-section="todos"] { --ring: #d97706; }
+[data-section="todos"] ::selection { background: rgba(217,119,6,0.25); }
+[data-section="todos"] [data-slot="card"] { border-left: 2px solid rgba(217,119,6,0.2); }
+[data-section="todos"] .metric-value { color: #d97706; }
+
+/* Goals — burning gold */
+[data-section="goals"] { --ring: #ca8a04; }
+[data-section="goals"] ::selection { background: rgba(202,138,4,0.25); }
+[data-section="goals"] [data-slot="card"] { border-left: 2px solid rgba(202,138,4,0.2); }
+[data-section="goals"] .metric-value { color: #ca8a04; }
+
+/* Ventures — industrial orange */
+[data-section="ventures"] { --ring: #ea580c; }
+[data-section="ventures"] ::selection { background: rgba(234,88,12,0.25); }
+[data-section="ventures"] [data-slot="card"] { border-left: 2px solid rgba(234,88,12,0.2); }
+[data-section="ventures"] .metric-value { color: #ea580c; }
+
+/* Money — cold silver */
+[data-section="money"] { --ring: #9ca3af; }
+[data-section="money"] ::selection { background: rgba(156,163,175,0.2); }
+[data-section="money"] [data-slot="card"] { border-left: 2px solid rgba(156,163,175,0.15); }
+[data-section="money"] .metric-value { color: #9ca3af; }
+
+/* Track — clinical blue */
+[data-section="track"] { --ring: #6366f1; }
+[data-section="track"] ::selection { background: rgba(99,102,241,0.2); }
+[data-section="track"] [data-slot="card"] { border-left: 2px solid rgba(99,102,241,0.15); }
+[data-section="track"] .metric-value { color: #6366f1; }
+
+/* Calendar — temporal violet */
+[data-section="calendar"] { --ring: #7c3aed; }
+[data-section="calendar"] ::selection { background: rgba(124,58,237,0.2); }
+[data-section="calendar"] [data-slot="card"] { border-left: 2px solid rgba(124,58,237,0.15); }
+
+/* Contacts — connected indigo */
+[data-section="contacts"] { --ring: #4f46e5; }
+[data-section="contacts"] ::selection { background: rgba(79,70,229,0.2); }
+[data-section="contacts"] [data-slot="card"] { border-left: 2px solid rgba(79,70,229,0.15); }
+
+/* Hub — electric cyan */
+[data-section="hub"] { --ring: #06b6d4; }
+[data-section="hub"] ::selection { background: rgba(6,182,212,0.2); }
+[data-section="hub"] [data-slot="card"] { border-left: 2px solid rgba(6,182,212,0.15); }
+
+/* Pages — sepia parchment */
+[data-section="pages"] { --ring: #a16207; }
+[data-section="pages"] ::selection { background: rgba(161,98,7,0.2); }
+[data-section="pages"] [data-slot="card"] { border-left: 2px solid rgba(161,98,7,0.15); }
+
+/* Applications — corporate teal */
+[data-section="applications"] { --ring: #0d9488; }
+[data-section="applications"] ::selection { background: rgba(13,148,136,0.2); }
+[data-section="applications"] [data-slot="card"] { border-left: 2px solid rgba(13,148,136,0.15); }
+
+/* Routines — ritual emerald */
+[data-section="routines"] { --ring: #059669; }
+[data-section="routines"] ::selection { background: rgba(5,150,105,0.2); }
+[data-section="routines"] [data-slot="card"] { border-left: 2px solid rgba(5,150,105,0.15); }
+
+/* Focus — deep purple, minimal */
+[data-section="focus"] { --ring: #9333ea; }
+[data-section="focus"] ::selection { background: rgba(147,51,234,0.2); }
+[data-section="focus"] [data-slot="card"] { border-left: 2px solid rgba(147,51,234,0.15); }
+
+/* Review — reflective rose */
+[data-section="review"] { --ring: #e11d48; }
+[data-section="review"] ::selection { background: rgba(225,29,72,0.2); }
+
+/* Dates — memorial pink */
+[data-section="dates"] { --ring: #db2777; }
+[data-section="dates"] ::selection { background: rgba(219,39,119,0.2); }
+
+/* Scripts — stage amber */
+[data-section="scripts"] { --ring: #f59e0b; }
+[data-section="scripts"] ::selection { background: rgba(245,158,11,0.2); }
+
+/* Files — archive grey */
+[data-section="files"] { --ring: #78716c; }
+[data-section="files"] ::selection { background: rgba(120,113,108,0.2); }
+
+/* Network — already styled 3D, cosmic blue */
+[data-section="network"] { --ring: #0284c7; }
+[data-section="network"] ::selection { background: rgba(2,132,199,0.2); }
+
+/* AI — electric crimson */
+[data-section="ai"] { --ring: #ef4444; }
+[data-section="ai"] ::selection { background: rgba(239,68,68,0.25); }
+
+/* Lists — slate */
+[data-section="lists"] { --ring: #64748b; }
+[data-section="lists"] ::selection { background: rgba(100,116,139,0.2); }
+
+/* All section cards get subtle left-border accent */
+[data-section] [data-slot="card"] {
+  transition: border-left-color 0.2s ease, border-color 0.15s ease;
+}
