@@ -46,7 +46,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         <main
           className="u-scroll flex-1 overflow-y-auto page-enter"
           id="main-content"
-          key={location.pathname}
+
         >
           <div className="mx-auto max-w-screen-xl px-4 py-4 md:px-6">
             <ErrorBoundary FallbackComponent={Error}>
