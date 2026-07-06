@@ -3,10 +3,8 @@ import { X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, Plus } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCreate, useNotify, useGetIdentity } from "ra-core";
+import { getSupabaseClient } from "../providers/supabase/supabase";
 import { cn } from "@/lib/utils";
-
-const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
-const GEMINI_MODEL = "gemini-2.5-flash";
 
 interface Message { role: "user" | "assistant"; text: string; }
 
@@ -167,17 +165,14 @@ export const EyeChat = () => {
     const userMsg: Message = { role: "user", text };
     setMessages((prev) => [...prev, userMsg]);
     setInput(""); setLoading(true);
-    try {
-      if (!GEMINI_KEY) throw new Error("No API key");
-      const conversationText = [...messages, userMsg].map((m) => `${m.role === "user" ? "Human" : "Eye"}: ${m.text}`).join("\n");
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
-        { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-            contents: [{ role: "user", parts: [{ text: conversationText }] }],
-            generationConfig: { temperature: 0.9, maxOutputTokens: 150 } }) });
-      if (!res.ok) { throw new Error(`${res.status}: ${(await res.text()).slice(0, 100)}`); }
-      const json = await res.json();
-      const reply = (json.candidates?.[0]?.content?.parts?.[0]?.text ?? "…").trim();
+     try {
+       const supabase = getSupabaseClient();
+       const conversationText = [...messages, userMsg].map((m) => `${m.role === "user" ? "Human" : "Eye"}: ${m.text}`).join("\n");
+       const { data, error } = await supabase.functions.invoke("ai_chat", {
+         body: { messages: [{ role: "user", text: `${SYSTEM_PROMPT}\n\n${conversationText}` }] },
+       });
+       if (error) throw new Error(error.message || "Edge function error");
+       const reply = (data?.text ?? "…").trim();
       setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
       speak(reply);
     } catch (e: any) {
