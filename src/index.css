@@ -394,11 +394,7 @@ body {
   font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Global vignette — dark edges pulling inward */
-body::before {
-  content: ""; position: fixed; inset: 0; z-index: 9997; pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.5) 100%);
-}
+
 
 /* H1 decorative crimson bar */
 [data-section] h1::after {
@@ -422,22 +418,7 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Scanlines — CRT monitor effect */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  pointer-events: none;
-  opacity: 0.04;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.3) 2px,
-    rgba(0,0,0,0.3) 3px
-  );
-}
+
 
 /*
  * ── Glitch / distortion effects ─────────────────────────
