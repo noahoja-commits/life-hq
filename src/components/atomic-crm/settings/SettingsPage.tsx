@@ -248,7 +248,7 @@ const SettingsFormFields = () => {
   );
 
   return (
-    <div className="flex gap-8 mt-4 pb-20">
+    <div className="flex gap-8 mt-4 pb-20 overflow-y-auto flex-1">
       {/* Left navigation */}
       <nav className="hidden md:block w-48 shrink-0">
         <div className="sticky top-4 space-y-1">
