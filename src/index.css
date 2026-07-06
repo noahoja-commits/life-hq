@@ -1260,7 +1260,6 @@ body.overdue-severe::after {
     rgba(100, 0, 0, 0.05) 100%
   );
   animation: overdue-pulse-intense 2s ease-in-out infinite;
-}
 
 /* SECTION IDENTITY */
 [data-section="dashboard"]{background:#120606!important}
