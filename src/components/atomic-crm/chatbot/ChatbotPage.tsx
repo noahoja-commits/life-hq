@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { useCreate, useUpdate, useDelete, useNotify, useGetIdentity } from "ra-core";
 import { getSupabaseClient } from "../providers/supabase/supabase";
 import { EmptyState } from "../misc/EmptyState";
+import { buildMemoryContext, saveMemory } from "./memory";
 import { cn } from "@/lib/utils";
 
 interface Message { role: "user" | "assistant"; text: string; }
@@ -146,6 +147,8 @@ export const ChatbotPage = () => {
       const supabase = getSupabaseClient();
       const conversationText = [...messages, userMsg].map((m) => `${m.role === "user" ? "Human" : "Entity"}: ${m.text}`).join("\n");
       let systemPrompt = PERSONAS[persona];
+      // Inject memory from previous sessions
+      const memory = buildMemoryContext();
       if (agentMode) {
         systemPrompt += `\n\nAGENT MODE ACTIVE. You can execute actions in the user's Life HQ app by including action blocks in your response. Format: [[[ACTION_NAME:parameters]]]. Available actions:
 - [[[CREATE_TODO:task text|priority(0-3)]]] — create a new todo
@@ -327,6 +330,12 @@ You are Lucifer. Based on their completion rate, predict when each active goal w
           <Button variant="ghost" size="icon" onClick={darkMirror} disabled={loading} className="h-7 w-7" title="Dark Mirror — Lucifer reads your soul">
             <Eye className="size-3.5" />
           </Button>
+          <Button variant="ghost" size="icon" onClick={dealWithDevil} disabled={loading} className="h-7 w-7" title="Deal with the Devil — timed challenge">
+            <span className="text-[13px]">⏱</span>
+          </Button>
+          <Button variant="ghost" size="icon" onClick={prophecy} disabled={loading} className="h-7 w-7" title="Prophecy Engine — predict goal completion">
+            <span className="text-[13px]">🔮</span>
+          </Button>
           <Button variant="ghost" size="icon" onClick={clearChat} className="h-7 w-7" title="Clear"><Trash2 className="size-3.5" /></Button>
           {messages.length > 0 && (
             <Button variant="ghost" size="icon" onClick={saveChat} className="h-7 w-7" title="Save"><Save className="size-3.5" /></Button>
@@ -336,6 +345,15 @@ You are Lucifer. Based on their completion rate, predict when each active goal w
           </Button>
         </div>
       </div>
+
+      {/* Deal countdown badge */}
+      {dealTimer?.active && (
+        <div className="flex shrink-0 items-center justify-center gap-2 border-b border-[#ff0000]/20 bg-[#1a0404]/10 px-4 py-1.5">
+          <span className="text-[11px] font-mono text-[#ff0000] animate-pulse">
+            ⏱ {Math.max(0, Math.ceil((dealTimer.deadline - Date.now()) / 60000))}m remaining — {dealTimer.task}
+          </span>
+        </div>
+      )}
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 md:px-6">

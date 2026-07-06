@@ -54,6 +54,7 @@ const ScriptPopOut = lazy(() => import("../scripts/ScriptPopOut").then((m) => ({
 const AiPage = lazy(() => import("../ai/AiPage").then((m) => ({ default: m.AiPage })));
 const NetworkPage = lazy(() => import("../network/NetworkPage").then((m) => ({ default: m.NetworkPage })));
 const ChatbotPage = lazy(() => import("../chatbot/ChatbotPage").then((m) => ({ default: m.ChatbotPage })));
+const OpenClawPage = lazy(() => import("../openclaw/OpenClawPage").then((m) => ({ default: m.OpenClawPage })));
 
 /**
  * Route-level suspense + per-section theme: every custom section carries an
@@ -380,6 +381,7 @@ const DesktopAdmin = (
         <Route path="/ai" element={<Page pageKey="ai"><AiPage /></Page>} />
         <Route path="/network" element={<Page pageKey="network"><NetworkPage /></Page>} />
         <Route path="/chatbot" element={<Page pageKey="chatbot"><ChatbotPage /></Page>} />
+        <Route path="/openclaw" element={<Page pageKey="openclaw"><OpenClawPage /></Page>} />
       </CustomRoutes>
       <Resource name="links" />
       <Resource name="todos" />

@@ -13,6 +13,7 @@ import {
   MapPin,
   Network,
   NotebookText,
+  Radio,
   Wallet,
   Target,
   CalendarHeart,
@@ -69,5 +70,6 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "hub", label: "Hub", to: "/hub", icon: LayoutGrid, inHeader: true, group: "Notes", shortcut: "h" },
   { key: "network", label: "Network", to: "/network", icon: Network, inHeader: true, primary: true, group: "Track", shortcut: "w" },
   { key: "chatbot", label: " Lucifer", to: "/chatbot", icon: MessageSquare, inHeader: true, primary: true, group: "Notes", shortcut: "b" },
+  { key: "openclaw", label: "OpenClaw", to: "/openclaw", icon: Radio, inHeader: true, group: "Notes" },
   { key: "settings", label: "Settings", to: "/settings", icon: Settings, inHeader: false, shortcut: "s" },
 ];
