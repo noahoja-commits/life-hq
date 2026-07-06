@@ -17,6 +17,7 @@ import {
 import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { EmptyState } from "../misc/EmptyState";
 import { NextActions } from "../todos/NextActions";
+import { ConnectionPanel } from "../misc/ConnectionPanel";
 import { useUndoable } from "../misc/useUndoable";
 import { usePageHotkey } from "../misc/usePageHotkey";
 import { Card } from "@/components/ui/card";
@@ -269,6 +270,7 @@ const VentureCard = ({
       </button>
       {showActions && (
         <NextActions filterField="venture_id" refId={v.id} compact />
+          <ConnectionPanel entityType="ventures" entityId={v.id} className="mt-4" />
       )}
     </Card>
   );

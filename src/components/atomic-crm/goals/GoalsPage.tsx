@@ -26,6 +26,7 @@ import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { EmptyState } from "../misc/EmptyState";
 import { useUndoable } from "../misc/useUndoable";
 import { usePageHotkey } from "../misc/usePageHotkey";
+import { ConnectionPanel } from "../misc/ConnectionPanel";
 
 export interface Goal {
   id: number;
@@ -381,6 +382,7 @@ const GoalCard = ({
           )}
         </p>
       )}
+      <ConnectionPanel entityType="goals" entityId={goal.id} className="mt-2" />
     </Card>
   );
 };
