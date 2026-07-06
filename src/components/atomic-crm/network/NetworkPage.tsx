@@ -169,16 +169,7 @@ export const NetworkPage = () => {
   const { identity } = useGetIdentity();
   const redirect = useRedirect();
   const graphRef = useRef<ForceGraphMethods>();
-  const [webglError, setWebglError] = useState(false);
 
-  // Check WebGL support on mount
-  useEffect(() => {
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      if (!gl) setWebglError(true);
-    } catch { setWebglError(true); }
-  }, []);
 
   const { data: links, isPending: linksLoading } = useGetList<LinkRow>("links", {
     pagination: { page: 1, perPage: 1000 },
@@ -256,15 +247,7 @@ export const NetworkPage = () => {
         </div>
       </div>
 
-      {webglError ? (
-        <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-          <div className="text-center max-w-md">
-            <p className="mb-2 text-lg">WebGL Not Available</p>
-            <p className="mb-3">Your browser doesn't support 3D rendering. The network graph requires WebGL.</p>
-            <p className="text-xs">Try Chrome, Firefox, or Edge. Mobile Safari also works.</p>
-          </div>
-        </div>
-      ) : anyLoading ? (
+      {anyLoading ? (
         <CardsSkeleton count={1} className="m-4 md:m-6 flex-1" />
       ) : graphData.nodes.length === 0 ? (
         <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
