@@ -51,7 +51,7 @@
   --foreground: #d4d4d8;
   --card: #080808;
   --card-foreground: #d4d4d8;
-  --popover: #0a0a0a;
+  --popover: #0c0c0c;
   --popover-foreground: #d4d4d8;
   --primary: #c41e3a;
   --primary-foreground: #fff;
@@ -108,24 +108,24 @@ h1, h2, h3 { text-transform: uppercase; letter-spacing: -0.03em; }
 .u-scroll { scrollbar-width: thin; scrollbar-color: #1a1a1a #060606; }
 
 /* Section identity — solid colors */
-[data-section="dashboard"]{background:#0c0808}
-[data-section="todos"]{background:#0d0808}
-[data-section="goals"]{background:#0d0a06}
-[data-section="ventures"]{background:#0d0606}
-[data-section="money"]{background:#0d0a06}
-[data-section="track"]{background:#08090c}
-[data-section="calendar"]{background:#0d080a}
-[data-section="contacts"]{background:#0a080c}
-[data-section="hub"]{background:#090a0c}
-[data-section="pages"]{background:#0d0a08}
-[data-section="applications"]{background:#080c0c}
-[data-section="routines"]{background:#080a0c}
-[data-section="focus"]{background:#0a080c}
-[data-section="review"]{background:#0d0808}
-[data-section="dates"]{background:#0d080a}
-[data-section="scripts"]{background:#0d0a06}
-[data-section="files"]{background:#090a0c}
-[data-section="network"]{background:#080a0c}
-[data-section="ai"]{background:#0d0606}
-[data-section="lists"]{background:#0a0a0a}
-[data-section="chatbot"]{background:#0d0606}
+[data-section="dashboard"]{background:#1a0a0a}
+[data-section="todos"]{background:#1c0a0a}
+[data-section="goals"]{background:#1c1006}
+[data-section="ventures"]{background:#1a0606}
+[data-section="money"]{background:#1c1006}
+[data-section="track"]{background:#0a0e18}
+[data-section="calendar"]{background:#1a0a10}
+[data-section="contacts"]{background:#100a18}
+[data-section="hub"]{background:#0e1018}
+[data-section="pages"]{background:#1a1008}
+[data-section="applications"]{background:#0a1616}
+[data-section="routines"]{background:#0a1018}
+[data-section="focus"]{background:#100a18}
+[data-section="review"]{background:#1c0a0a}
+[data-section="dates"]{background:#1a0a10}
+[data-section="scripts"]{background:#1c1006}
+[data-section="files"]{background:#0e1018}
+[data-section="network"]{background:#0a1018}
+[data-section="ai"]{background:#1a0606}
+[data-section="lists"]{background:#0c0c0c}
+[data-section="chatbot"]{background:#1a0606}
