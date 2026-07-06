@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import { RotateCcw, Save } from "lucide-react";
+import { RotateCcw, Save, Loader2 } from "lucide-react";
+import { useState } from "react";
 import type { RaRecord } from "ra-core";
 import {
   EditBase,
@@ -196,6 +197,8 @@ const SettingsFormFields = () => {
     reset,
     formState: { isSubmitting },
   } = useFormContext();
+
+  const [resetting, setResetting] = useState(false);
 
   const dealStages = watch("dealStages");
   const dealPipelineStatuses: string[] = watch("dealPipelineStatuses") ?? [];
@@ -472,15 +475,20 @@ const SettingsFormFields = () => {
             <Button
               type="button"
               variant="ghost"
-              onClick={() =>
-                reset({
-                  ...defaultConfiguration,
-                  lightModeLogo: {
-                    src: defaultConfiguration.lightModeLogo,
-                  },
-                  darkModeLogo: { src: defaultConfiguration.darkModeLogo },
-                })
-              }
+              disabled={resetting}
+              onClick={() => {
+                setResetting(true);
+                try {
+                  reset({
+                    ...defaultConfiguration,
+                    lightModeLogo: { src: defaultConfiguration.lightModeLogo },
+                    darkModeLogo: { src: defaultConfiguration.darkModeLogo },
+                  });
+                } catch (e) {
+                  reset(defaultConfiguration);
+                }
+                setTimeout(() => setResetting(false), 500);
+              }}
             >
               <RotateCcw className="h-4 w-4 mr-1" />
               {translate("crm.settings.reset_defaults")}
