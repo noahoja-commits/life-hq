@@ -76,7 +76,7 @@ const LivingEye = ({
 
   const glowAlpha = glowing ? 0.5 + breath * 0.5 : 0.2 + breath * 0.15;
   const scaleY = blinking ? 0.03 : 1;
-  const pulse = Math.sin(Date.now() / 1500) * 0.5 + 0.5;
+  const rotation = (Date.now() * 0.005) % 360;
 
   return (
     <svg
@@ -98,21 +98,34 @@ const LivingEye = ({
         opacity={0.05 + breath * 0.08} />
       <circle cx="100" cy="100" r="78" fill="none" stroke="#c41e3a" strokeWidth="1"
         opacity={0.08 + breath * 0.1} strokeDasharray="4 8" />
-      {/* Octagonal frame — thicker, more present */}
-      <polygon
-        points="100,0 162,28 200,100 162,172 100,200 38,172 0,100 38,28"
-        stroke="#c41e3a"
-        strokeWidth="2"
-        fill="none"
-        opacity={0.5 + breath * 0.4}
-      />
-      <polygon
-        points="100,4 158,30 196,100 158,170 100,196 42,170 4,100 42,30"
-        stroke="#c41e3a"
-        strokeWidth="1"
-        fill="none"
-        opacity={0.3 + breath * 0.25}
-      />
+      {/* Slowly rotating ritual frame */}
+      <g transform={`rotate(${rotation}, 100, 100)`}>
+        <polygon
+          points="100,0 162,28 200,100 162,172 100,200 38,172 0,100 38,28"
+          stroke="#c41e3a"
+          strokeWidth="2"
+          fill="none"
+          opacity={0.5 + breath * 0.4}
+        />
+        <polygon
+          points="100,4 158,30 196,100 158,170 100,196 42,170 4,100 42,30"
+          stroke="#c41e3a"
+          strokeWidth="1"
+          fill="none"
+          opacity={0.3 + breath * 0.25}
+        />
+        {/* Radiating esoteric lines — 12 rays */}
+        {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
+          const rad = (angle * Math.PI) / 180;
+          return (
+            <line key={i}
+              x1={100 + 70 * Math.cos(rad)} y1={100 + 70 * Math.sin(rad)}
+              x2={100 + (82 + breath * 10) * Math.cos(rad)} y2={100 + (82 + breath * 10) * Math.sin(rad)}
+              stroke="#c41e3a" strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
+              opacity={0.2 + breath * 0.2} />
+          );
+        })}
+      </g>
       {/* Main eye circle */}
       <circle cx="100" cy="100" r="64" stroke="#c41e3a" strokeWidth="2.5" fill="none" opacity={glowAlpha} />
       <circle cx="100" cy="100" r="60" stroke="#c41e3a" strokeWidth="0.5" fill="none" opacity={glowAlpha * 0.5} />
@@ -130,17 +143,6 @@ const LivingEye = ({
         <ellipse cx={100 + pupilOff.x} cy={94 + pupilOff.y} rx="5" ry="12" fill="#030303" />
         <ellipse cx={100 + pupilOff.x} cy={92 + pupilOff.y} rx="2" ry="3" fill="#c41e3a" opacity={0.4 + breath * 0.3} />
       </g>
-      {/* Radiating esoteric lines — 12 rays */}
-      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
-        const rad = (angle * Math.PI) / 180;
-        return (
-          <line key={i}
-            x1={100 + 70 * Math.cos(rad)} y1={100 + 70 * Math.sin(rad)}
-            x2={100 + (82 + breath * 10) * Math.cos(rad)} y2={100 + (82 + breath * 10) * Math.sin(rad)}
-            stroke="#c41e3a" strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
-            opacity={0.2 + breath * 0.2} />
-        );
-      })}
       {/* Orbiting particles */}
       {[0, 72, 144, 216, 288].map((angle, i) => {
         const rad = ((angle + Date.now() * 0.02) * Math.PI) / 180;
@@ -163,13 +165,38 @@ const LivingEye = ({
   );
 };
 
+const WHISPERS = [
+  "I see you.", "The void watches.", "You are known.", "Darkness listens.",
+  "Every choice echoes.", "The eye remembers.", "Nothing is hidden.",
+  "Your data has a shadow.", "Secrets have weight.", "The abyss blinks back.",
+];
+
 export const EyeChat = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [whisper, setWhisper] = useState<{ text: string; id: number; x: number; y: number } | null>(null);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Random whispers floating around the eye
+  useEffect(() => {
+    const tick = () => {
+      if (Math.random() > 0.7) {
+        const w = WHISPERS[Math.floor(Math.random() * WHISPERS.length)];
+        setWhisper({
+          text: w, id: Date.now(),
+          x: 40 + Math.random() * 20,
+          y: 10 + Math.random() * 60,
+        });
+        setTimeout(() => setWhisper(null), 3000);
+      }
+    };
+    const interval = setInterval(tick, 4000);
+    tick();
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => { messagesEnd.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
   useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
@@ -202,6 +229,21 @@ export const EyeChat = () => {
 
   return (
     <>
+      {/* Screen vignette when chat is open */}
+      {open && (
+        <div className="fixed inset-0 z-40 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at 100% 100%, rgba(196,30,58,0.06) 0%, transparent 60%)" }} />
+      )}
+
+      {/* Whisper text floating near the eye */}
+      {whisper && (
+        <div key={whisper.id}
+          className="fixed z-50 pointer-events-none text-[11px] italic text-[#c41e3a]/60 animate-in fade-in slide-in-from-bottom-2 duration-1000"
+          style={{ right: `${whisper.x}px`, bottom: `${whisper.y}px` }}>
+          {whisper.text}
+        </div>
+      )}
+
       <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-1">
         <button onClick={() => setOpen(!open)}
           className={cn("transition-all duration-500 group", open ? "scale-75 opacity-40" : "scale-100 opacity-100 hover:scale-110")}
