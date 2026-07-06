@@ -909,3 +909,106 @@ body::before {
 
 /* Lists — bare stone. No decoration. */
 /* (intentionally left blank) */
+
+/*
+ * ⛧⛧⛧ SATANIC STYLIZATION ⛧⛧⛧
+ * Infernal flourishes, sigils, blood, and fire.
+ * Pure CSS. No external assets. All functional elements preserved.
+ */
+
+/* ── Blood drip on card hover ─────────────────────────── */
+@keyframes blood-drip {
+  0%   { height: 0; opacity: 0; }
+  30%  { height: 4px; opacity: 0.6; }
+  60%  { height: 8px; opacity: 0.3; }
+  100% { height: 12px; opacity: 0; }
+}
+[data-section] [data-slot="card"]:hover::after {
+  content: ""; position: absolute; bottom: -12px; right: 12px;
+  width: 2px; background: linear-gradient(to bottom, var(--ring), transparent);
+  animation: blood-drip 1.5s ease-out infinite;
+  pointer-events: none; z-index: 2;
+}
+
+/* ── Hellfire button glow ─────────────────────────────── */
+[data-slot="button"][data-variant="default"]:not(:disabled):hover {
+  box-shadow: 0 0 12px rgba(180,0,0,0.4), 0 0 24px rgba(180,0,0,0.15);
+  text-shadow: 0 0 4px rgba(255,255,255,0.3);
+}
+
+/* ── Sidebar nav items — crimson hover glow ───────────── */
+.nav-item:hover {
+  background: linear-gradient(90deg, rgba(180,0,0,0.08) 0%, transparent 100%);
+  color: #c41e3a;
+}
+
+/* ── Sigil watermark on empty sections ────────────────── */
+[data-section] .empty-state::before,
+[data-section] [data-empty]::before {
+  content: "⛧"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 120px; opacity: 0.03; pointer-events: none; z-index: 0;
+  color: var(--ring);
+}
+
+/* ── Latin inscription watermark ──────────────────────── */
+.main-content::after {
+  content: "LASCIATE OGNE SPERANZA VOI CH'INTRATE";
+  position: fixed; bottom: 8px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; font-family: serif; letter-spacing: 0.3em;
+  color: rgba(180,0,0,0.08); pointer-events: none; z-index: 0;
+  white-space: nowrap;
+}
+
+/* ── Infernal loading text replacement ────────────────── */
+[data-loading]::after {
+  content: "the void compiles…";
+  display: block; font-size: 10px; font-style: italic;
+  color: rgba(180,0,0,0.3); text-align: center; padding: 2rem;
+}
+
+/* ── Pentagram bullet points in lists ─────────────────── */
+[data-section] ul:not([role]) li::marker,
+[data-section] [role="listitem"]::before {
+  content: "⛧ "; color: var(--ring); opacity: 0.4; font-size: 0.7em;
+}
+
+/* ── Satanic link hover ───────────────────────────────── */
+[data-section] a:not([data-slot]):hover {
+  color: var(--ring); text-shadow: 0 0 8px color-mix(in srgb, var(--ring) 30%, transparent);
+}
+
+/* ── Input glow on focus ──────────────────────────────── */
+[data-section] input:focus,
+[data-section] textarea:focus,
+[data-section] [role="combobox"]:focus-within {
+  box-shadow: 0 0 0 1px var(--ring), 0 0 8px rgba(180,0,0,0.15);
+}
+
+/* ── Scrollbar infernal ───────────────────────────────── */
+::-webkit-scrollbar-thumb { background: rgba(180,0,0,0.2); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: rgba(180,0,0,0.35); }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+
+/* ── Satanic toast notification ───────────────────────── */
+[data-sonner-toast] {
+  border-left: 3px solid #c41e3a !important;
+  background: #0a0a0a !important;
+}
+[data-sonner-toast] [data-title] { color: #c41e3a; font-weight: 700; text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; }
+
+/* ── ⛧ Brand marks ───────────────────────────────────── */
+[data-section] h1::before { content: "⛧ "; color: var(--ring); opacity: 0.3; font-size: 0.6em; vertical-align: middle; }
+[data-section="dashboard"] h1::before { content: ""; } /* Dashboard already has the gates inscription */
+[data-section="network"] h1::before { content: ""; } /* Network doesn't need it */
+
+/* ── Demonic pulsing on danger/destructive ────────────── */
+[data-variant="destructive"]:hover {
+  animation: pulse-soft 0.8s ease-in-out infinite;
+  box-shadow: 0 0 16px rgba(220,38,38,0.3);
+}
+
+/* ── Code/monospace with crimson tint ─────────────────── */
+code, pre, kbd {
+  background: rgba(180,0,0,0.08) !important;
+  border: 1px solid rgba(180,0,0,0.1) !important;
+}
