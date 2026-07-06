@@ -9,7 +9,7 @@ export const CardsSkeleton = ({
 }) => (
   <div className={className}>
     {Array.from({ length: count }).map((_, i) => (
-      <Card key={i} className="h-24 animate-pulse bg-muted/40 border-muted" />
+      <Card key={i} className="h-24 skeleton-shimmer border-muted" />
     ))}
   </div>
 );

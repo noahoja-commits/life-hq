@@ -29,6 +29,7 @@ import {
   ContactListFilter,
 } from "./ContactListFilter";
 import { TopToolbar } from "../layout/TopToolbar";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { InfinitePagination } from "../misc/InfinitePagination";
 import MobileHeader from "../layout/MobileHeader";
 import { MobileContent } from "../layout/MobileContent";
@@ -56,12 +57,12 @@ const ContactListLayoutDesktop = () => {
 
   const hasFilters = filterValues && Object.keys(filterValues).length > 0;
 
-  if (isPending) return null;
+  if (isPending) return <CardsSkeleton />;
 
   if (!data?.length && !hasFilters) return <ContactEmpty />;
 
   return (
-    <div className="flex flex-row gap-8">
+    <div data-section="contacts" className="relative flex flex-row gap-8">
       <ContactListFilter />
       <div className="w-full flex flex-col gap-4">
         <Card className="py-0">

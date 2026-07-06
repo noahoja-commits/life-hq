@@ -99,47 +99,6 @@
   --chart-5: #a855f7;
 
   /* shadows — brutalist outline + depth */
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.5), 0 0 0 1px rgba(180,0,0,0.15);
-  --shadow-sm: 0 2px 6px rgba(0,0,0,0.6), 0 0 0 1px rgba(180,0,0,0.2);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(180,0,0,0.25);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(180,0,0,0.3);
-  --shadow-xl: 0 16px 48px rgba(0,0,0,0.8), 0 0 0 1px rgba(180,0,0,0.35);
-}
-
-.dark {
-  --sidebar: #080808;
-  --sidebar-foreground: #c4bfb0;
-  --sidebar-primary: #c41e3a;
-  --sidebar-primary-foreground: #f5f0e8;
-  --sidebar-accent: #1a1a1a;
-  --sidebar-accent-foreground: #e8e3d8;
-  --sidebar-border: rgba(255,255,255,0.05);
-  --sidebar-ring: #c41e3a;
-  --background: #0a0a0a;
-  --foreground: #d4d0c8;
-  --card: #111111;
-  --card-foreground: #d4d0c8;
-  --popover: #161616;
-  --popover-foreground: #d4d0c8;
-  --primary: #c41e3a;
-  --primary-foreground: #f5f0e8;
-  --secondary: #1a1a1a;
-  --secondary-foreground: #c4bfb0;
-  --muted: #141414;
-  --muted-foreground: #706c64;
-  --accent: #2a1a1a;
-  --accent-foreground: #c41e3a;
-  --destructive: #dc2626;
-  --success: #4d7c4d;
-  --warning: #c4943a;
-  --border: rgba(255,255,255,0.06);
-  --input: rgba(255,255,255,0.08);
-  --ring: #c41e3a;
-  --chart-1: #c41e3a;
-  --chart-2: #3b82f6;
-  --chart-3: #c4943a;
-  --chart-4: #dc2626;
-  --chart-5: #a855f7;
   --shadow-xs: 0 1px 2px rgba(0,0,0,0.6), 0 0 0 1px rgba(180,0,0,0.15);
   --shadow-sm: 0 2px 6px rgba(0,0,0,0.7), 0 0 0 1px rgba(180,0,0,0.2);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.7), 0 0 0 1px rgba(180,0,0,0.25);
@@ -348,6 +307,22 @@
   );
   background-size: 200% 100%;
   animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/*
+ * ── Toast notifications (sonner) ─────────────────────────
+ */
+
+.toaster {
+  font-family: var(--font-sans);
+}
+.toaster [data-sonner-toast] {
+  border: 1px solid var(--normal-border, #c41e3a) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.7), 0 0 0 1px rgba(196,30,58,0.25) !important;
+}
+.toaster [data-sonner-toast] [data-icon] {
+  color: var(--ring);
 }
 
 /*
@@ -626,6 +601,24 @@ body::before {
 [data-section="contacts"] h1 { text-shadow: 0 0 14px rgba(126,34,206,0.18); }
 [data-section="contacts"] hr, [data-section="contacts"] [role="separator"] { border-color: rgba(126,34,206,0.12); }
 [data-section="contacts"] .u-label { color: rgba(126,34,206,0.55); }
+
+/* ⛧ THE CONTRACT — Deals. Blood pacts sealed in crimson ink. Copper-tinged ambition. */
+[data-section="deals"] { --ring: #b91c1c; background: rgba(185,28,28,0.02); }
+[data-section="deals"] ::selection { background: rgba(185,28,28,0.22); }
+[data-section="deals"] [data-slot="card"] { border-left: 3px solid rgba(185,28,28,0.2); }
+[data-section="deals"] .metric-value { color: #dc2626; }
+[data-section="deals"] h1 { text-shadow: 0 0 14px rgba(185,28,28,0.2); }
+[data-section="deals"] hr, [data-section="deals"] [role="separator"] { border-color: rgba(185,28,28,0.12); }
+[data-section="deals"] .u-label { color: rgba(185,28,28,0.55); }
+
+/* ⛧ THE BUREAUCRACY — Companies. Cold steel and ink. Indigo-grey corporate machinery. */
+[data-section="companies"] { --ring: #4338ca; background: rgba(67,56,202,0.02); }
+[data-section="companies"] ::selection { background: rgba(67,56,202,0.18); }
+[data-section="companies"] [data-slot="card"] { border-left: 3px solid rgba(67,56,202,0.15); }
+[data-section="companies"] .metric-value { color: #6366f1; }
+[data-section="companies"] h1 { text-shadow: 0 0 12px rgba(67,56,202,0.15); }
+[data-section="companies"] hr, [data-section="companies"] [role="separator"] { border-color: rgba(67,56,202,0.1); }
+[data-section="companies"] .u-label { color: rgba(67,56,202,0.5); }
 
 /* ⛧ CIRCLE VIII — FRAUD. Malabranche demons. Cold metallic grey. Deceptive simplicity. */
 [data-section="hub"] { --ring: #475569; background: rgba(71,85,105,0.02); }

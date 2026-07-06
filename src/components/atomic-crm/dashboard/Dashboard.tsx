@@ -93,7 +93,7 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-7 py-2 page-enter stagger relative">
+    <div data-section="dashboard" className="mx-auto flex max-w-5xl flex-col gap-7 py-2 page-enter stagger relative">
       <DemonicEye size={320} className="absolute -top-20 -right-20 opacity-[0.025] pointer-events-none rotate-12" />
       {/* Operations header: greeting left, capture right */}
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
@@ -181,7 +181,7 @@ export const Dashboard = () => {
           action={() => redirect("/hub")}
           actionLabel="Command Center"
         >
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 glass-card p-3">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 p-3">
             {hub.slice(0, 8).map((t) => (
               <a
                 key={t.id}

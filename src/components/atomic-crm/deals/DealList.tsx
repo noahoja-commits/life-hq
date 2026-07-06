@@ -19,6 +19,7 @@ import { DealEdit } from "./DealEdit";
 import { DealEmpty } from "./DealEmpty";
 import { DealListContent } from "./DealListContent";
 import { DealShow } from "./DealShow";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { OnlyMineInput } from "./OnlyMineInput";
 
 const DealList = () => {
@@ -73,7 +74,7 @@ const DealLayout = () => {
   const { data, isPending, filterValues } = useListContext();
   const hasFilters = filterValues && Object.keys(filterValues).length > 0;
 
-  if (isPending) return null;
+  if (isPending) return <CardsSkeleton />;
   if (!data?.length && !hasFilters)
     return (
       <>
@@ -85,7 +86,7 @@ const DealLayout = () => {
     );
 
   return (
-    <div className="w-full">
+    <div data-section="deals" className="relative w-full">
       <DealListContent />
       <DealArchivedList />
       <DealCreate open={!!matchCreate} />

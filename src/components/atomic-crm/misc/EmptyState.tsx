@@ -31,8 +31,8 @@ export const EmptyState = ({
       className,
     )}
   >
-    <div className="flex size-14 items-center justify-center rounded-full bg-muted/50">
-      <Icon className="size-6 text-muted-foreground" strokeWidth={1.5} />
+    <div className="flex size-14 items-center justify-center rounded-full bg-accent/40">
+      <Icon className="size-6 text-accent-foreground" strokeWidth={1.5} />
     </div>
     <div className="max-w-xs space-y-1">
       <p className="text-sm font-medium">{title}</p>

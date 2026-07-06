@@ -81,6 +81,8 @@ const Page = ({
   };
   return (
     <div
+      data-section={pageKey}
+      className={pageKey ? "relative" : undefined}
       style={
         accent
           ? ({ "--primary": accent, "--ring": accent } as React.CSSProperties)
@@ -355,7 +357,7 @@ const DesktopAdmin = (
         <Route path="/lists" element={<Page pageKey="lists"><ListsPage /></Page>} />
         <Route path="/routines" element={<Page pageKey="routines"><RoutinesPage /></Page>} />
         <Route path="/ventures" element={<Page pageKey="ventures"><VenturesPage /></Page>} />
-        <Route path="/applications" element={<Page pageKey="jobs"><ApplicationsPage /></Page>} />
+        <Route path="/applications" element={<Page pageKey="applications"><ApplicationsPage /></Page>} />
         <Route path="/todos" element={<Page pageKey="todos"><TodosPage /></Page>} />
         <Route path="/focus" element={<Page pageKey="focus"><FocusPage /></Page>} />
         <Route path="/review" element={<Page pageKey="review"><ReviewPage /></Page>} />
@@ -468,7 +470,7 @@ const MobileAdmin = (
           <Route path="/lists" element={<Page pageKey="lists"><ListsPage /></Page>} />
           <Route path="/routines" element={<Page pageKey="routines"><RoutinesPage /></Page>} />
           <Route path="/ventures" element={<Page pageKey="ventures"><VenturesPage /></Page>} />
-          <Route path="/applications" element={<Page pageKey="jobs"><ApplicationsPage /></Page>} />
+          <Route path="/applications" element={<Page pageKey="applications"><ApplicationsPage /></Page>} />
           <Route path="/todos" element={<Page pageKey="todos"><TodosPage /></Page>} />
           <Route path="/focus" element={<Page pageKey="focus"><FocusPage /></Page>} />
           <Route path="/review" element={<Page pageKey="review"><ReviewPage /></Page>} />
