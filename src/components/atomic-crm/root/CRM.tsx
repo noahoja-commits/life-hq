@@ -83,14 +83,24 @@ const Page = ({
     if (!pageKey) return;
     sectionThemesStore.set(pageKey, a, salesId);
   };
+  const sectionBg: Record<string, string> = {
+    dashboard: "#120606", todos: "#140606", goals: "#120e06", ventures: "#120404",
+    money: "#120e06", track: "#060810", calendar: "#14060a", contacts: "#0a0612",
+    hub: "#070810", pages: "#120e08", applications: "#061010", routines: "#060a12",
+    focus: "#0a0612", review: "#140606", dates: "#14060a", scripts: "#120e06",
+    files: "#070810", network: "#060a12", ai: "#120404", lists: "#080808",
+    chatbot: "#120404", openclaw: "#120e04", agenthub: "#120e04",
+  };
+
   return (
     <div
       data-section={pageKey}
       className={pageKey ? "relative" : undefined}
       style={
-        accent
-          ? ({ "--primary": accent, "--ring": accent } as React.CSSProperties)
-          : undefined
+        {
+          ...(accent && { "--primary": accent, "--ring": accent }),
+          ...(pageKey && sectionBg[pageKey] && { backgroundColor: sectionBg[pageKey] }),
+        } as React.CSSProperties
       }
     >
       {pageKey && (
