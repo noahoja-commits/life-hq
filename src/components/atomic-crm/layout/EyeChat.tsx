@@ -56,56 +56,40 @@ const LivingEye = ({ size, className }: { size: number; className?: string }) =>
   return (
     <svg ref={svgRef} width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: `drop-shadow(0 0 ${10 + breath * 16}px rgba(180,0,0,0.7)) drop-shadow(0 0 4px rgba(220,0,0,0.8)) drop-shadow(0 0 1px rgba(255,0,0,0.3))` }}>
-      {/* Outer crimson halo */}
-      <ellipse cx="100" cy="100" rx="68" ry="64" fill="none" stroke="#b30000" strokeWidth="0.5" opacity={0.2 + breath * 0.15} />
-      {/* Sclera — warm off-white, visible against void */}
-      <ellipse cx="100" cy="100" rx="62" ry="58" fill="#2e2218" stroke="#3a1a1a" strokeWidth="1.5" />
-      {/* Upper sclera shadow — natural depth */}
-      <ellipse cx="100" cy="88" rx="58" ry="30" fill="rgba(0,0,0,0.15)" />
+      style={{ filter: `drop-shadow(0 0 ${12 + breath * 20}px rgba(180,0,0,0.8)) drop-shadow(0 0 6px rgba(255,0,0,0.5))` }}>
+      {/* Sclera — bloodshot, angry */}
+      <ellipse cx="100" cy="100" rx="62" ry="58" fill="#1a100c" stroke="#3a1410" strokeWidth="2" />
       {/* Eyelid group */}
       <g transform={`scale(1, ${scaleY})`} style={{ transformOrigin: "100px 100px" }}>
-        {/* Upper eyelid — heavy dark crescent */}
-        <ellipse cx="100" cy="70" rx="65" ry="32" fill="#030303" opacity="0.97" />
-        <path d="M34,100 Q34,32 100,26 Q166,32 166,100" stroke="#4a1010" strokeWidth="2" fill="none" opacity="0.7" />
-        {/* Upper lash line */}
-        <path d="M40,100 Q40,50 100,44 Q160,50 160,100" stroke="#1a0000" strokeWidth="1" fill="none" opacity="0.5" />
-        {/* Lower eyelid — thin dark line */}
-        <path d="M38,100 Q38,162 100,166 Q162,162 162,100" stroke="#1a0808" strokeWidth="2" fill="none" opacity="0.6" />
-        {/* Lower lash line */}
-        <path d="M44,100 Q44,148 100,152 Q156,148 156,100" stroke="#0a0000" strokeWidth="0.8" fill="none" opacity="0.4" />
-        {/* Limbal ring — dark ring around iris for depth */}
-        <circle cx="100" cy="98" r="27" fill="none" stroke="#0a0000" strokeWidth="2" opacity="0.8" />
-        {/* Iris — bright blood red */}
-        <circle cx="100" cy="98" r="26" fill="url(#irisGrad)" />
-        {/* Iris texture — subtle radial lines */}
-        <circle cx="100" cy="98" r="24" fill="none" stroke="#8b0000" strokeWidth="0.3" opacity="0.3" strokeDasharray="1 3" />
-        <circle cx="100" cy="98" r="18" fill="none" stroke="#a00000" strokeWidth="0.3" opacity="0.2" strokeDasharray="1 4" />
-        {/* Pupil — goat slit */}
-        <ellipse cx={100 + pupilOff.x} cy={98 + pupilOff.y} rx="9" ry="3.5" fill="#000" />
-        {/* Pupil inner crimson glow */}
-        <ellipse cx={100 + pupilOff.x} cy={96 + pupilOff.y} rx="1.5" ry="0.6" fill="#ff0000" opacity={0.3 + breath * 0.3} />
-        {/* Primary corneal reflection — bright catchlight */}
-        <ellipse cx={105 + pupilOff.x * 0.3} cy={91 + pupilOff.y * 0.3} rx="4" ry="2.5" fill="#fff" opacity="0.12" />
-        {/* Secondary reflection — smaller, lower */}
-        <ellipse cx={96 + pupilOff.x * 0.2} cy={102 + pupilOff.y * 0.2} rx="2" ry="1.2" fill="#fff" opacity="0.05" />
+        {/* Upper eyelid — heavy, demonic */}
+        <ellipse cx="100" cy="65" rx="66" ry="34" fill="#020202" opacity="0.98" />
+        <path d="M32,100 Q32,30 100,22 Q168,30 168,100" stroke="#6a1010" strokeWidth="3" fill="none" opacity="0.8" />
+        {/* Lower eyelid */}
+        <path d="M36,100 Q36,165 100,170 Q164,165 164,100" stroke="#2a0808" strokeWidth="2.5" fill="none" opacity="0.7" />
+        {/* Iris — burning red */}
+        <circle cx="100" cy="98" r="28" fill="url(#irisGrad)" stroke="#8b0000" strokeWidth="2" />
+        {/* Iris texture — infernal rings */}
+        <circle cx="100" cy="98" r="20" fill="none" stroke="#cc0000" strokeWidth="0.5" opacity="0.3" strokeDasharray="2 3" />
+        {/* Pupil — goat slit, wide */}
+        <ellipse cx={100 + pupilOff.x} cy={98 + pupilOff.y} rx="10" ry="4" fill="#000" />
+        {/* Pupil fire glow */}
+        <ellipse cx={100 + pupilOff.x} cy={96 + pupilOff.y} rx="2.5" ry="1" fill="#ff0000" opacity={0.4 + breath * 0.4} />
+        {/* Corneal reflections */}
+        <ellipse cx={106 + pupilOff.x * 0.3} cy={90 + pupilOff.y * 0.3} rx="5" ry="3" fill="#fff" opacity="0.10" />
+        <ellipse cx={95 + pupilOff.x * 0.2} cy={103 + pupilOff.y * 0.2} rx="2.5" ry="1.5" fill="#fff" opacity="0.04" />
       </g>
-      {/* Lower lid moisture line — realistic wet edge */}
-      <path d="M40,100 Q40,158 100,162 Q160,158 160,100" stroke="rgba(255,255,255,0.04)" strokeWidth="1" fill="none" />
-      {/* Iris gradient — brilliant blood red */}
       <defs>
         <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#6a0000" />
-          <stop offset="25%" stopColor="#a00000" />
-          <stop offset="55%" stopColor="#6a0000" />
-          <stop offset="85%" stopColor="#3a0000" />
+          <stop offset="0%" stopColor="#8b0000" />
+          <stop offset="30%" stopColor="#cc0000" />
+          <stop offset="60%" stopColor="#6a0000" />
           <stop offset="100%" stopColor="#0a0000" />
         </radialGradient>
       </defs>
-      {/* Blood vessels — visible on sclera */}
-      {[[20, 0.5], [-10, 0.4], [32, 0.35], [-18, 0.3], [8, 0.25], [-28, 0.25], [14, 0.2], [-22, 0.2]].map(([angle, opacity], i) => (
-        <path key={`v${i}`} d={`M${100 + 50 * Math.cos((angle as number + 90) * Math.PI / 180)},${100 + 50 * Math.sin((angle as number + 90) * Math.PI / 180)} Q${100 + 34 * Math.cos((angle as number + 82) * Math.PI / 180)},${100 + 34 * Math.sin((angle as number + 82) * Math.PI / 180)} ${100 + 54 * Math.cos((angle as number + 108) * Math.PI / 180)},${100 + 54 * Math.sin((angle as number + 108) * Math.PI / 180)}`}
-          stroke="#5a1414" strokeWidth="0.6" fill="none" opacity={opacity as number * (0.6 + breath * 0.3)} />
+      {/* Blood vessels — angry, visible */}
+      {[[15, 0.6], [-8, 0.5], [25, 0.45], [-14, 0.4], [5, 0.35], [-20, 0.35], [10, 0.3], [-25, 0.3], [0, 0.25], [-30, 0.25]].map(([angle, opacity], i) => (
+        <path key={`v${i}`} d={`M${100 + 52 * Math.cos((angle as number + 90) * Math.PI / 180)},${100 + 52 * Math.sin((angle as number + 90) * Math.PI / 180)} Q${100 + 36 * Math.cos((angle as number + 82) * Math.PI / 180)},${100 + 36 * Math.sin((angle as number + 82) * Math.PI / 180)} ${100 + 56 * Math.cos((angle as number + 108) * Math.PI / 180)},${100 + 56 * Math.sin((angle as number + 108) * Math.PI / 180)}`}
+          stroke="#8b1a1a" strokeWidth="0.8" fill="none" opacity={opacity as number * (0.7 + breath * 0.3)} />
       ))}
     </svg>
   );
@@ -203,7 +187,7 @@ export const EyeChat = () => {
         <button onClick={() => setOpen(!open)}
           className={cn("transition-all duration-700", open ? "scale-75 opacity-40" : "scale-100 opacity-90 hover:scale-105")}
           aria-label={open ? "Close" : "Open"}>
-          <LivingEye size={open ? 60 : typeof window !== "undefined" && window.innerWidth < 640 ? 60 : 80} />
+          <LivingEye size={open ? 60 : typeof window !== "undefined" && window.innerWidth < 640 ? 70 : 100} />
         </button>
       </div>
 
