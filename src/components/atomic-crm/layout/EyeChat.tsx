@@ -3,8 +3,10 @@ import { X, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DemonicEye } from "../misc/DemonicEye";
-import { getSupabaseClient } from "../providers/supabase/supabase";
 import { cn } from "@/lib/utils";
+
+const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
+const GEMINI_MODEL = "gemini-2.5-flash";
 
 interface Message {
   role: "user" | "assistant";
@@ -61,15 +63,28 @@ export const EyeChat = () => {
 
       const prompt = `${SYSTEM_PROMPT}\n\nConversation:\n${history}\n\nEye:`;
 
-      const supabase = getSupabaseClient();
-      const { data, error } = await supabase.functions.invoke("ai_chat", {
-        body: {
-          messages: [{ role: "user", text: prompt }],
-        },
-      });
+      if (!GEMINI_KEY) throw new Error("API key not configured");
 
-      if (error) throw error;
-      const reply = data?.text ?? "…";
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+            contents: [{ role: "user", parts: [{ text: prompt.split("\n\nConversation:\n")[0] }] }],
+            generationConfig: { temperature: 0.9, maxOutputTokens: 150 },
+          }),
+        },
+      );
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`API error ${res.status}: ${err.slice(0, 100)}`);
+      }
+
+      const json = await res.json();
+      const reply = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "…";
 
       setMessages((prev) => [...prev, { role: "assistant", text: reply.trim() }]);
     } catch {
