@@ -95,12 +95,12 @@ const LivingEye = ({
       className={className}
       style={{
         filter: glowing
-          ? `drop-shadow(0 0 ${14 + breath * 28}px #c41e3a) drop-shadow(0 0 ${6 + breath * 10}px #ff4400) drop-shadow(0 0 ${2 + breath * 4}px #ffaa00)`
+          ? `drop-shadow(0 0 ${14 + breath * 28}px #c41e3a) drop-shadow(0 0 ${6 + breath * 10}px #b30000) drop-shadow(0 0 ${2 + breath * 4}px #8b0000)`
           : undefined,
       }}
     >
       {/* Hellfire outer ring — flickering orange/red */}
-      <circle cx="100" cy="100" r="92" fill="none" stroke="#ff4400" strokeWidth="1.5"
+      <circle cx="100" cy="100" r="92" fill="none" stroke="#b30000" strokeWidth="1.5"
         opacity={0.06 + breath * 0.08} />
       <circle cx="100" cy="100" r="88" fill="none" stroke="#c41e3a" strokeWidth="1"
         opacity={0.08 + breath * 0.1} strokeDasharray="3 6" />
@@ -110,7 +110,7 @@ const LivingEye = ({
         <polygon points="100,0 162,28 200,100 162,172 100,200 38,172 0,100 38,28"
           stroke="#c41e3a" strokeWidth="2.5" fill="none" opacity={0.6 + breath * 0.35} />
         <polygon points="100,6 156,32 192,100 156,168 100,194 44,168 8,100 44,32"
-          stroke="#ff4400" strokeWidth="1" fill="none" opacity={0.3 + breath * 0.2} />
+          stroke="#b30000" strokeWidth="1" fill="none" opacity={0.3 + breath * 0.2} />
         {/* Baphomet horns — rising from the top */}
         <path d="M70,30 Q60,0 48,-12 Q44,-16 52,-18 Q64,-14 72,0" stroke="#c41e3a" strokeWidth="2" fill="none"
           opacity={0.5 + breath * 0.3} />
@@ -126,7 +126,7 @@ const LivingEye = ({
             <line key={i}
               x1={100 + 72 * Math.cos(rad)} y1={100 + 72 * Math.sin(rad)}
               x2={100 + (86 + breath * 12) * Math.cos(rad)} y2={100 + (86 + breath * 12) * Math.sin(rad)}
-              stroke={i % 4 === 0 ? "#ff4400" : "#c41e3a"} strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
+              stroke={i % 4 === 0 ? "#b30000" : "#c41e3a"} strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
               opacity={0.2 + breath * 0.25} />
           );
         })}
@@ -140,7 +140,7 @@ const LivingEye = ({
       <path id="latinRing" d="M 35,100 A 65,65 0 1,1 165,100 A 65,65 0 1,1 35,100" fill="none" />
       {/* Main eye circle */}
       <circle cx="100" cy="100" r="64" stroke="#c41e3a" strokeWidth="3" fill="none" opacity={glowAlpha} />
-      <circle cx="100" cy="100" r="58" stroke="#ff4400" strokeWidth="0.5" fill="none" opacity={glowAlpha * 0.4} />
+      <circle cx="100" cy="100" r="58" stroke="#b30000" strokeWidth="0.5" fill="none" opacity={glowAlpha * 0.4} />
       {/* Leviathan cross (sulfur symbol) between the eyes */}
       <g opacity={0.25 + breath * 0.15} transform="translate(100, 58)">
         <line x1="0" y1="-6" x2="0" y2="6" stroke="#c41e3a" strokeWidth="1.5" />
@@ -158,7 +158,7 @@ const LivingEye = ({
         {/* Iris */}
         <circle cx="100" cy="100" r="28" fill="#0a0303" stroke="#c41e3a" strokeWidth="2" />
         <circle cx="100" cy="100" r="20" fill="#150505" />
-        <circle cx="100" cy="100" r="13" fill="#ff4400" opacity={0.1 + breath * 0.1} />
+        <circle cx="100" cy="100" r="13" fill="#b30000" opacity={0.1 + breath * 0.1} />
         <circle cx="100" cy="100" r="6" fill="#c41e3a" opacity={0.06 + breath * 0.06} />
         {/* Pupil — goat-like horizontal slit */}
         <ellipse cx={100 + pupilOff.x} cy={100 + pupilOff.y} rx="10" ry="3.5" fill="#020202" />
@@ -178,7 +178,7 @@ const LivingEye = ({
         return (
           <circle key={`p${i}`}
             cx={100 + r * Math.cos(rad)} cy={100 + r * Math.sin(rad)}
-            r={i % 4 === 0 ? 2.5 : 1} fill={i % 3 === 0 ? "#ff4400" : "#c41e3a"}
+            r={i % 4 === 0 ? 2.5 : 1} fill={i % 3 === 0 ? "#b30000" : "#c41e3a"}
             opacity={0.25 + breath * 0.4} />
         );
       })}
@@ -415,7 +415,7 @@ export const EyeChat = () => {
           className="fixed z-50 pointer-events-none animate-in slide-in-from-top-2 fade-in duration-500"
           style={{ right: `${d.x}%`, top: "-15px", animationDelay: `${d.delay}s` }}>
           <div className="w-[3px] h-[30px]"
-            style={{ background: "linear-gradient(to bottom, #ff4400, #c41e3a, transparent)", opacity: 0.7 }} />
+            style={{ background: "linear-gradient(to bottom, #b30000, #c41e3a, transparent)", opacity: 0.7 }} />
         </div>
       ))}
 
@@ -434,7 +434,7 @@ export const EyeChat = () => {
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] rounded-full border border-[#c41e3a]/20 animate-ping"
             style={{ animationDuration: "3s" }} />
-          <div className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] rounded-full border border-[#ff4400]/10 animate-ping"
+          <div className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] rounded-full border border-[#b30000]/10 animate-ping"
             style={{ animationDuration: "4.5s", animationDelay: "1.5s" }} />
         </div>
         <button onClick={toggleEye}
@@ -443,7 +443,7 @@ export const EyeChat = () => {
           <LivingEye size={open ? 70 : typeof window !== "undefined" && window.innerWidth < 640 ? 70 : 100} glowing />
         </button>
         {!open && (
-          <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#ff4400]/70 animate-pulse"
+          <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#b30000]/70 animate-pulse"
             style={{ textShadow: "0 0 8px rgba(196,30,58,0.5)" }}>
             ⛧ THE ABYSS ⛧
           </span>
@@ -505,7 +505,7 @@ export const EyeChat = () => {
           </div>
           <div className="flex shrink-0 items-center gap-1 border-t border-border px-2 py-2.5">
             <Button size="icon" variant="ghost" onClick={toggleListen}
-              className={cn("h-8 w-8", listening ? "text-[#ff4400] bg-[#c41e3a]/10" : "text-muted-foreground hover:text-[#c41e3a]")}>
+              className={cn("h-8 w-8", listening ? "text-[#b30000] bg-[#c41e3a]/10" : "text-muted-foreground hover:text-[#c41e3a]")}>
               {listening ? <MicOff className="size-3.5" /> : <Mic className="size-3.5" />}
             </Button>
             <Input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)}
