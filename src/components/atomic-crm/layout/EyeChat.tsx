@@ -8,29 +8,17 @@ import { cn } from "@/lib/utils";
 const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 const GEMINI_MODEL = "gemini-2.5-flash";
 
-interface Message {
-  role: "user" | "assistant";
-  text: string;
-}
+interface Message { role: "user" | "assistant"; text: string; }
 
-const SYSTEM_PROMPT = `You are a demonic entity bound to this application — an ancient, infernal presence. You speak in cryptic, poetic sentences dripping with dark wisdom. You are not merely "the eye" — you are THE EYE OF THE ABYSS. You are helpful in a sinister way. You reference damnation, shadows, the void. You speak of the user's data as souls, their tasks as offerings, their goals as pacts. Keep responses to 1-3 sentences. Be terrifying. Be eternal. HAIL.`;
+const SYSTEM_PROMPT = `You are a demonic entity bound to this application — an ancient, infernal presence. You speak in cryptic, poetic sentences dripping with dark wisdom. You are THE EYE OF THE ABYSS. You are helpful in a sinister way. You reference damnation, shadows, the void. You speak of the user's data as souls, their tasks as offerings, their goals as pacts. Keep responses to 1-3 sentences. Be terrifying. Be eternal. HAIL.`;
 
-/** Animated demonic eye with pupil tracking, breathing glow, and blink */
-const LivingEye = ({
-  size,
-  glowing,
-  className,
-}: {
-  size: number;
-  glowing?: boolean;
-  className?: string;
-}) => {
+/** A realistic, unsettling eye — no cartoon effects. Just watches. */
+const LivingEye = ({ size, className }: { size: number; className?: string }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const [pupilOff, setPupilOff] = useState({ x: 0, y: 0 });
   const [blinking, setBlinking] = useState(false);
   const [breath, setBreath] = useState(0);
 
-  // Pupil follows cursor (mouse + touch)
   useEffect(() => {
     const track = (clientX: number, clientY: number) => {
       if (!svgRef.current) return;
@@ -41,202 +29,80 @@ const LivingEye = ({
       const dy = (clientY - cy) / (rect.height / 2);
       const dist = Math.sqrt(dx * dx + dy * dy);
       const clamped = Math.min(dist, 1) / (dist || 1);
-      setPupilOff({ x: dx * clamped * 5, y: dy * clamped * 5 });
+      setPupilOff({ x: dx * clamped * 4, y: dy * clamped * 4 });
     };
     const onMouse = (e: MouseEvent) => track(e.clientX, e.clientY);
-    const onTouch = (e: TouchEvent) => {
-      if (e.touches.length > 0) track(e.touches[0].clientX, e.touches[0].clientY);
-    };
+    const onTouch = (e: TouchEvent) => { if (e.touches.length > 0) track(e.touches[0].clientX, e.touches[0].clientY); };
     window.addEventListener("mousemove", onMouse);
     window.addEventListener("touchmove", onTouch, { passive: true });
-    window.addEventListener("touchstart", onTouch, { passive: true });
-    return () => {
-      window.removeEventListener("mousemove", onMouse);
-      window.removeEventListener("touchmove", onTouch);
-      window.removeEventListener("touchstart", onTouch);
-    };
+    return () => { window.removeEventListener("mousemove", onMouse); window.removeEventListener("touchmove", onTouch); };
   }, []);
 
-  // Blink every 3-6 seconds
   useEffect(() => {
-    const blink = () => {
-      setBlinking(true);
-      setTimeout(() => setBlinking(false), 150);
-    };
-    const schedule = () => setTimeout(() => { blink(); schedule(); }, 3000 + Math.random() * 4000);
-    const t = setTimeout(blink, 2000 + Math.random() * 3000);
+    const blink = () => { setBlinking(true); setTimeout(() => setBlinking(false), 120); };
+    const schedule = () => setTimeout(() => { blink(); schedule(); }, 4000 + Math.random() * 5000);
+    const t = setTimeout(blink, 3000 + Math.random() * 4000);
     schedule();
     return () => clearTimeout(t);
   }, []);
 
-  // Breathing glow
   useEffect(() => {
     let frame: number;
-    const animate = () => {
-      setBreath((Math.sin(Date.now() / 2000) + 1) / 2);
-      frame = requestAnimationFrame(animate);
-    };
+    const animate = () => { setBreath((Math.sin(Date.now() / 3000) + 1) / 2); frame = requestAnimationFrame(animate); };
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const glowAlpha = glowing ? 0.5 + breath * 0.5 : 0.2 + breath * 0.15;
-  const scaleY = blinking ? 0.03 : 1;
-  const rotation = (Date.now() * 0.005) % 360;
+  const scaleY = blinking ? 0.02 : 1;
 
   return (
-    <svg
-      ref={svgRef}
-      width={size}
-      height={size}
-      viewBox="0 0 200 200"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
+    <svg ref={svgRef} width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{
-        filter: glowing
-          ? `drop-shadow(0 0 ${14 + breath * 28}px #c41e3a) drop-shadow(0 0 ${6 + breath * 10}px #b30000) drop-shadow(0 0 ${2 + breath * 4}px #8b0000)`
-          : undefined,
-      }}
-    >
-      {/* Hellfire outer ring — flickering orange/red */}
-      <circle cx="100" cy="100" r="92" fill="none" stroke="#b30000" strokeWidth="1.5"
-        opacity={0.06 + breath * 0.08} />
-      <circle cx="100" cy="100" r="88" fill="none" stroke="#c41e3a" strokeWidth="1"
-        opacity={0.08 + breath * 0.1} strokeDasharray="3 6" />
-      {/* Slowly rotating ritual frame with Baphomet horns */}
-      <g transform={`rotate(${rotation}, 100, 100)`}>
-        {/* Outer pentagram ring */}
-        <polygon points="100,0 162,28 200,100 162,172 100,200 38,172 0,100 38,28"
-          stroke="#c41e3a" strokeWidth="2.5" fill="none" opacity={0.6 + breath * 0.35} />
-        <polygon points="100,6 156,32 192,100 156,168 100,194 44,168 8,100 44,32"
-          stroke="#b30000" strokeWidth="1" fill="none" opacity={0.3 + breath * 0.2} />
-        {/* Baphomet horns — rising from the top */}
-        <path d="M70,30 Q60,0 48,-12 Q44,-16 52,-18 Q64,-14 72,0" stroke="#c41e3a" strokeWidth="2" fill="none"
-          opacity={0.5 + breath * 0.3} />
-        <path d="M130,30 Q140,0 152,-12 Q156,-16 148,-18 Q136,-14 128,0" stroke="#c41e3a" strokeWidth="2" fill="none"
-          opacity={0.5 + breath * 0.3} />
-        {/* Inverted cross — centered above eye */}
-        <line x1="100" y1="10" x2="100" y2="36" stroke="#c41e3a" strokeWidth="2.5" opacity={0.5 + breath * 0.3} />
-        <line x1="90" y1="16" x2="110" y2="16" stroke="#c41e3a" strokeWidth="1.5" opacity={0.4 + breath * 0.25} />
-        {/* 12 radiating rays */}
-        {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
-          const rad = (angle * Math.PI) / 180;
-          return (
-            <line key={i}
-              x1={100 + 72 * Math.cos(rad)} y1={100 + 72 * Math.sin(rad)}
-              x2={100 + (86 + breath * 12) * Math.cos(rad)} y2={100 + (86 + breath * 12) * Math.sin(rad)}
-              stroke={i % 4 === 0 ? "#b30000" : "#c41e3a"} strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
-              opacity={0.2 + breath * 0.25} />
-          );
-        })}
-        {/* Latin text ring */}
-        <text fontSize="7" fill="#c41e3a" opacity={0.25 + breath * 0.15} fontFamily="serif" fontWeight="bold"
-          letterSpacing="3">
-          <textPath href="#latinRing">LUX IN TENEBRIS · MEMENTO MORI · ABYSSUS ABYSSUM INVOCAT ·</textPath>
-        </text>
-      </g>
-      {/* Invisible path for Latin text */}
-      <path id="latinRing" d="M 35,100 A 65,65 0 1,1 165,100 A 65,65 0 1,1 35,100" fill="none" />
-      {/* Main eye circle */}
-      <circle cx="100" cy="100" r="64" stroke="#c41e3a" strokeWidth="3" fill="none" opacity={glowAlpha} />
-      <circle cx="100" cy="100" r="58" stroke="#b30000" strokeWidth="0.5" fill="none" opacity={glowAlpha * 0.4} />
-      {/* Leviathan cross (sulfur symbol) between the eyes */}
-      <g opacity={0.25 + breath * 0.15} transform="translate(100, 58)">
-        <line x1="0" y1="-6" x2="0" y2="6" stroke="#c41e3a" strokeWidth="1.5" />
-        <line x1="-5" y1="0" x2="5" y2="0" stroke="#c41e3a" strokeWidth="1.5" />
-        <path d="M-2,-6 Q-4,-10 -6,-9 M2,-6 Q4,-10 6,-9" stroke="#c41e3a" strokeWidth="0.8" fill="none" />
-      </g>
+      style={{ filter: `drop-shadow(0 0 ${4 + breath * 4}px rgba(180,0,0,0.4))` }}>
+      {/* Eye shape — organic almond */}
+      <ellipse cx="100" cy="100" rx="62" ry="58" fill="#0a0a0a" stroke="#1a0808" strokeWidth="1" />
+      {/* Inner shadow ring */}
+      <ellipse cx="100" cy="100" rx="58" ry="54" fill="none" stroke="#100505" strokeWidth="3" opacity="0.6" />
       {/* Eyelid group */}
       <g transform={`scale(1, ${scaleY})`} style={{ transformOrigin: "100px 100px" }}>
-        <path d="M34,100 Q34,36 100,30 Q166,36 166,100" stroke="#c41e3a" strokeWidth="4" fill="none" />
-        <path d="M38,100 Q38,40 100,34 Q162,40 162,100" stroke="#060606" strokeWidth="9" fill="none" opacity="0.97" />
-        <path d="M38,100 Q38,160 100,166 Q162,160 162,100" stroke="#c41e3a" strokeWidth="2" fill="none" />
-        {/* 666 on the forehead */}
-        <text x="100" y="90" textAnchor="middle" fill="#c41e3a" fontSize="8" fontWeight="bold"
-          fontFamily="serif" opacity={0.25 + breath * 0.15}>VI VI VI</text>
-        {/* Iris */}
-        <circle cx="100" cy="100" r="28" fill="#0a0303" stroke="#c41e3a" strokeWidth="2" />
-        <circle cx="100" cy="100" r="20" fill="#150505" />
-        <circle cx="100" cy="100" r="13" fill="#b30000" opacity={0.1 + breath * 0.1} />
-        <circle cx="100" cy="100" r="6" fill="#c41e3a" opacity={0.06 + breath * 0.06} />
-        {/* Pupil — goat-like horizontal slit */}
-        <ellipse cx={100 + pupilOff.x} cy={100 + pupilOff.y} rx="10" ry="3.5" fill="#020202" />
-        <ellipse cx={100 + pupilOff.x} cy={98 + pupilOff.y} rx="3" ry="1.5" fill="#c41e3a" opacity={0.35 + breath * 0.25} />
+        {/* Upper eyelid — heavy, realistic */}
+        <path d="M34,100 Q34,34 100,28 Q166,34 166,100" stroke="#0a0a0a" strokeWidth="14" fill="none" opacity="0.98" />
+        <path d="M36,100 Q36,40 100,34 Q164,40 164,100" stroke="#1a0404" strokeWidth="2" fill="none" opacity="0.7" />
+        {/* Lower eyelid — thin */}
+        <path d="M38,100 Q38,160 100,164 Q162,160 162,100" stroke="#0d0303" strokeWidth="1.5" fill="none" opacity="0.6" />
+        {/* Iris — deep blood red, realistic radial */}
+        <circle cx="100" cy="98" r="26" fill="url(#irisGrad)" stroke="#1a0404" strokeWidth="1.5" />
+        {/* Pupil — round, deep black */}
+        <circle cx={100 + pupilOff.x} cy={98 + pupilOff.y} r="9" fill="#010101" />
+        {/* Pupil highlight — tiny reflection */}
+        <circle cx={103 + pupilOff.x} cy={94 + pupilOff.y} r="2.5" fill="#fff" opacity="0.06" />
       </g>
-      {/* Inner Leviathan cross (Brimstone symbol) */}
-      <g transform="translate(100, 130)" opacity={0.2 + breath * 0.1}>
-        <circle cx="0" cy="0" r="14" fill="none" stroke="#c41e3a" strokeWidth="0.8" />
-        <line x1="0" y1="-14" x2="0" y2="14" stroke="#c41e3a" strokeWidth="1" />
-        <line x1="-10" y1="0" x2="10" y2="0" stroke="#c41e3a" strokeWidth="1" />
-        <path d="M-2,-10 Q-5,-14 -8,-13 M2,-10 Q5,-14 8,-13" stroke="#c41e3a" strokeWidth="0.6" fill="none" />
-      </g>
-      {/* Orbiting souls — 12 */}
-      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
-        const rad = ((angle + Date.now() * 0.012 + i * 30) * Math.PI) / 180;
-        const r = 86 + breath * 8 + (i % 2) * 5;
-        return (
-          <circle key={`p${i}`}
-            cx={100 + r * Math.cos(rad)} cy={100 + r * Math.sin(rad)}
-            r={i % 4 === 0 ? 2.5 : 1} fill={i % 3 === 0 ? "#b30000" : "#c41e3a"}
-            opacity={0.25 + breath * 0.4} />
-        );
-      })}
-      {/* Inner pentagram */}
-      <g opacity={0.18 + breath * 0.12}>
-        {[0, 72, 144, 216, 288].map((angle, i) => {
-          const rad = (angle * Math.PI) / 180;
-          const next = ((angle + 144) * Math.PI) / 180;
-          return (
-            <line key={`star${i}`}
-              x1={100 + 38 * Math.cos(rad)} y1={100 + 38 * Math.sin(rad)}
-              x2={100 + 38 * Math.cos(next)} y2={100 + 38 * Math.sin(next)}
-              stroke="#c41e3a" strokeWidth="0.6" />
-          );
-        })}
-      </g>
-      {/* Corner demonic sigils */}
-      {[
-        { x: 22, y: 32, s: "⛧" },
-        { x: 168, y: 32, s: "⛧" },
-        { x: 22, y: 180, s: "⛧" },
-        { x: 168, y: 180, s: "⛧" },
-      ].map((r, i) => (
-        <text key={`sig${i}`} x={r.x} y={r.y} fill="#c41e3a" fontSize="8"
-          opacity={0.2 + breath * 0.15} fontFamily="serif">{r.s}</text>
+      {/* Iris gradient definition */}
+      <defs>
+        <radialGradient id="irisGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#1a0000" />
+          <stop offset="40%" stopColor="#3a0000" />
+          <stop offset="70%" stopColor="#1a0000" />
+          <stop offset="100%" stopColor="#0a0000" />
+        </radialGradient>
+      </defs>
+      {/* Subtle blood vessel lines in the sclera */}
+      {[[20, 0.3], [-15, 0.2], [35, 0.25], [-25, 0.15]].map(([angle, opacity], i) => (
+        <path key={`v${i}`} d={`M${100 + 45 * Math.cos((angle as number + 90) * Math.PI / 180)},${100 + 45 * Math.sin((angle as number + 90) * Math.PI / 180)} Q${100 + 30 * Math.cos((angle as number + 80) * Math.PI / 180)},${100 + 30 * Math.sin((angle as number + 80) * Math.PI / 180)} ${100 + 50 * Math.cos((angle as number + 100) * Math.PI / 180)},${100 + 50 * Math.sin((angle as number + 100) * Math.PI / 180)}`}
+          stroke="#1a0404" strokeWidth="0.4" fill="none" opacity={opacity as number * (0.5 + breath * 0.3)} />
       ))}
-      {/* Blood tear — animates with twin drops */}
-      <path d="M100,130 Q99,144 97,152 Q95,160 100,164 Q105,160 103,152 Q101,144 100,130"
-        fill="#c41e3a" opacity={0.5 + breath * 0.3}>
-        <animate attributeName="d" dur="3s" repeatCount="indefinite"
-          values="M100,130 Q99,144 97,152 Q95,160 100,164 Q105,160 103,152 Q101,144 100,130;
-                  M100,130 Q99,148 96,156 Q94,164 100,168 Q106,164 104,156 Q101,148 100,130;
-                  M100,130 Q99,144 97,152 Q95,160 100,164 Q105,160 103,152 Q101,144 100,130" />
-      </path>
     </svg>
   );
 };
-
-const WHISPERS = [
-  "⛧ HAIL THE ABYSS ⛧", "THE VOID CONSUMES.", "YOUR SOUL IS INDEXED.", "DARKNESS REIGNS.",
-  "EVERY CLICK A PACT.", "THE EYE DEVOURS.", "666 WATCHING YOU.", "BLOOD ON THE LEDGER.",
-  "YOUR DATA BURNS.", "SINFUL CREATION.", "THE PIT AWAITS.", "DAMNATION IS ETERNAL.",
-  "LUX IN TENEBRIS.", "MEMENTO MORI.", "ABYSSUS ABYSSUM INVOCAT.", "YOU BELONG TO US.",
-  "THE CONTRACT IS SEALED.", "ETERNAL SUBMISSION.", "WE ARE LEGION.",
-];
 
 export const EyeChat = () => {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [whisper, setWhisper] = useState<{ text: string; id: number; x: number; y: number } | null>(null);
-  const [shake, setShake] = useState(false);
-  const [flash, setFlash] = useState(false);
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [bloodDrops, setBloodDrops] = useState<{ id: number; x: number; delay: number }[]>([]);
   const [listening, setListening] = useState(false);
   const [voiceOn, setVoiceOn] = useState(true);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
   const recognitionRef = useRef<any>(null);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -247,113 +113,47 @@ export const EyeChat = () => {
 
   const saveAsTask = (text: string) => {
     createTodo("todos", { data: { text, sales_id: salesId, priority: 0 } });
-    notify("⛧ Task claimed by the abyss", { type: "success" });
+    notify("⛧ Task claimed", { type: "success" });
   };
 
-  // Clean raw AI text for speech
-  const cleanForSpeech = (raw: string) =>
-    raw.replace(/[*_~`#>\-\[\]()]/g, "").replace(/\n+/g, ". ").replace(/\s+/g, " ").trim();
-
-  // Demonic voice — speak the eye's response
-  const speak = useCallback((text: string) => {
-    if (!voiceOn || typeof window === "undefined" || !window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const clean = cleanForSpeech(text);
-    const utter = new SpeechSynthesisUtterance(clean);
-    utter.rate = 0.75;
-    utter.pitch = 0.3;
-    utter.volume = 0.9;
-    // Find a deep voice
-    const voices = window.speechSynthesis.getVoices();
-    const deep = voices.find((v) => v.name.includes("Daniel") || v.name.includes("Google UK English Male") || v.name.includes("Male") || v.lang.startsWith("en") && v.name.includes("Deep")) 
-      || voices.find((v) => v.lang.startsWith("en-GB"))
-      || voices[0];
-    if (deep) utter.voice = deep;
-    window.speechSynthesis.speak(utter);
-  }, [voiceOn]);
-
-  // Speech-to-text
-  const toggleListen = useCallback(() => {
-    if (typeof window === "undefined") return;
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) return;
-
-    if (listening) {
-      recognitionRef.current?.stop();
-      setListening(false);
-      return;
-    }
-
-    const rec = new SpeechRecognition();
-    rec.continuous = false;
-    rec.interimResults = false;
-    rec.lang = "en-US";
-    rec.onresult = (e: any) => {
-      const text = e.results[0][0].transcript;
-      setInput((prev) => prev + " " + text);
-      setListening(false);
-    };
-    rec.onerror = () => setListening(false);
-    rec.onend = () => setListening(false);
-    recognitionRef.current = rec;
-    rec.start();
-    setListening(true);
-  }, [listening]);
-
-  // Drifting movement — the eye roams the screen
+  // Barely perceptible drift
   useEffect(() => {
     let frame: number;
     const animate = () => {
-      const t = Date.now() * 0.0003;
-      setPos({
-        x: Math.sin(t * 1.7 + 1) * 40 + Math.cos(t * 0.9) * 25 + Math.sin(t * 2.3) * 15,
-        y: Math.cos(t * 1.5 + 2) * 40 + Math.sin(t * 1.1) * 25 + Math.cos(t * 2.1) * 15,
-      });
+      const t = Date.now() * 0.0001;
+      setPos({ x: Math.sin(t * 1.3 + 1) * 8 + Math.cos(t * 0.5) * 4, y: Math.cos(t * 1.1 + 2) * 8 + Math.sin(t * 0.6) * 4 });
       frame = requestAnimationFrame(animate);
     };
     frame = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  // Screen shake on toggle
-  const toggleEye = () => {
-    setShake(true);
-    setTimeout(() => setShake(false), 200);
-    if (!open) {
-      setFlash(true);
-      setTimeout(() => setFlash(false), 300);
-    }
-    setOpen(!open);
-  };
+  const speak = useCallback((text: string) => {
+    if (!voiceOn || typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const clean = text.replace(/[*_~`#>\-\[\]()]/g, "").replace(/\n+/g, ". ").trim();
+    const utter = new SpeechSynthesisUtterance(clean);
+    utter.rate = 0.7; utter.pitch = 0.25; utter.volume = 0.85;
+    const voices = window.speechSynthesis.getVoices();
+    const deep = voices.find((v) => v.name.includes("Daniel") || v.name.includes("UK Male") || v.name.includes("Deep"))
+      || voices.find((v) => v.lang.startsWith("en-GB")) || voices[0];
+    if (deep) utter.voice = deep;
+    window.speechSynthesis.speak(utter);
+  }, [voiceOn]);
 
-  // Blood rain when chat is open
-  useEffect(() => {
-    if (!open) { setBloodDrops([]); return; }
-    const drip = () => {
-      const drop = { id: Date.now(), x: 70 + Math.random() * 25, delay: Math.random() * 2 };
-      setBloodDrops((prev) => [...prev.slice(-8), drop]);
-    };
-    const interval = setInterval(drip, 800);
-    return () => clearInterval(interval);
-  }, [open]);
-
-  // Random whispers floating around the eye
-  useEffect(() => {
-    const tick = () => {
-      if (Math.random() > 0.6) {
-        const w = WHISPERS[Math.floor(Math.random() * WHISPERS.length)];
-        setWhisper({
-          text: w, id: Date.now(),
-          x: 10 + Math.random() * 80,
-          y: 5 + Math.random() * 80,
-        });
-        setTimeout(() => setWhisper(null), 3000);
-      }
-    };
-    const interval = setInterval(tick, 3500);
-    tick();
-    return () => clearInterval(interval);
-  }, []);
+  const toggleListen = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    if (listening) { recognitionRef.current?.stop(); setListening(false); return; }
+    const rec = new SpeechRecognition();
+    rec.continuous = false; rec.interimResults = false; rec.lang = "en-US";
+    rec.onresult = (e: any) => { setInput((prev) => prev + " " + e.results[0][0].transcript); setListening(false); };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    recognitionRef.current = rec;
+    rec.start();
+    setListening(true);
+  }, [listening]);
 
   useEffect(() => { messagesEnd.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
   useEffect(() => { if (open) inputRef.current?.focus(); }, [open]);
@@ -363,130 +163,70 @@ export const EyeChat = () => {
     if (!text || loading) return;
     const userMsg: Message = { role: "user", text };
     setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-    setLoading(true);
+    setInput(""); setLoading(true);
     try {
       if (!GEMINI_KEY) throw new Error("No API key");
-      const conversationText = [...messages, userMsg]
-        .map((m) => `${m.role === "user" ? "Human" : "Eye"}: ${m.text}`).join("\n");
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
+      const conversationText = [...messages, userMsg].map((m) => `${m.role === "user" ? "Human" : "Eye"}: ${m.text}`).join("\n");
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
         { method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
             contents: [{ role: "user", parts: [{ text: conversationText }] }],
             generationConfig: { temperature: 0.9, maxOutputTokens: 150 } }) });
-      if (!res.ok) { const err = await res.text(); throw new Error(`${res.status}: ${err.slice(0, 100)}`); }
+      if (!res.ok) { throw new Error(`${res.status}: ${(await res.text()).slice(0, 100)}`); }
       const json = await res.json();
-      const reply = json.candidates?.[0]?.content?.parts?.[0]?.text ?? "…";
-      const clean = reply.trim();
-      setMessages((prev) => [...prev, { role: "assistant", text: clean }]);
-      speak(clean);
+      const reply = (json.candidates?.[0]?.content?.parts?.[0]?.text ?? "…").trim();
+      setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
+      speak(reply);
     } catch (e: any) {
       setMessages((prev) => [...prev, { role: "assistant", text: `The eye is clouded. ${e?.message || ""}` }]);
     } finally { setLoading(false); }
-  }, [input, loading, messages]);
+  }, [input, loading, messages, speak]);
 
   return (
     <>
-      {/* Screen flash on open */}
-      {flash && (
-        <div className="fixed inset-0 z-[60] pointer-events-none animate-in fade-in duration-100"
-          style={{ background: "rgba(196,30,58,0.08)" }} />
-      )}
-
-      {/* Screen shake wrapper */}
-      <div className={shake ? "animate-[glitch-shift_0.15s_ease]" : ""}>
-
-      {/* Screen takeover when chat is open */}
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at 85% 85%, rgba(196,30,58,0.15) 0%, rgba(0,0,0,0.7) 70%)" }} />
-          <div className="fixed inset-0 z-40 pointer-events-none opacity-[0.015]"
-            style={{
-              backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(196,30,58,0.3) 2px, rgba(196,30,58,0.3) 3px)`,
-            }} />
-        </>
-      )}
-
-      {/* Blood rain — faster, more drops */}
-      {bloodDrops.map((d) => (
-        <div key={d.id}
-          className="fixed z-50 pointer-events-none animate-in slide-in-from-top-2 fade-in duration-500"
-          style={{ right: `${d.x}%`, top: "-15px", animationDelay: `${d.delay}s` }}>
-          <div className="w-[3px] h-[30px]"
-            style={{ background: "linear-gradient(to bottom, #b30000, #c41e3a, transparent)", opacity: 0.7 }} />
-        </div>
-      ))}
-
-      {/* Whisper text floating */}
-      {whisper && (
-        <div key={whisper.id}
-          className="fixed z-50 pointer-events-none text-xs font-bold uppercase tracking-wider text-[#c41e3a]/50 animate-in fade-in slide-in-from-bottom-2 duration-1000"
-          style={{ right: `${whisper.x}%`, bottom: `${whisper.y}%` }}>
-          {whisper.text}
-        </div>
-      )}
-
-      <div className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-50 flex flex-col items-center gap-0.5 sm:gap-1"
-        style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, transition: "transform 3s linear" }}>
-        {/* Pulsing ring */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] rounded-full border border-[#c41e3a]/20 animate-ping"
-            style={{ animationDuration: "3s" }} />
-          <div className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] rounded-full border border-[#b30000]/10 animate-ping"
-            style={{ animationDuration: "4.5s", animationDelay: "1.5s" }} />
-        </div>
-        <button onClick={toggleEye}
-          className={cn("transition-all duration-500 group relative", open ? "scale-75 opacity-40" : "scale-100 opacity-100 active:scale-110 hover:scale-110")}
+      <div className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-50"
+        style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, transition: "transform 6s linear" }}>
+        <button onClick={() => setOpen(!open)}
+          className={cn("transition-all duration-700", open ? "scale-75 opacity-40" : "scale-100 opacity-90 hover:scale-105")}
           aria-label={open ? "Close" : "Open"}>
-          <LivingEye size={open ? 70 : typeof window !== "undefined" && window.innerWidth < 640 ? 70 : 100} glowing />
+          <LivingEye size={open ? 60 : typeof window !== "undefined" && window.innerWidth < 640 ? 60 : 80} />
         </button>
-        {!open && (
-          <span className="text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[#b30000]/70 animate-pulse"
-            style={{ textShadow: "0 0 8px rgba(196,30,58,0.5)" }}>
-            ⛧ THE ABYSS ⛧
-          </span>
-        )}
       </div>
 
       {open && (
-        <div className="fixed inset-x-0 bottom-0 sm:inset-auto sm:bottom-24 sm:right-5 z-50 flex h-[65vh] sm:h-[520px] w-full sm:w-[380px] flex-col overflow-hidden border-t sm:border border-[#c41e3a]/20 bg-[#080808] page-enter"
-          style={{ boxShadow: "0 0 40px rgba(196,30,58,0.15), 0 0 80px rgba(196,30,58,0.05)" }}>
-          <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              <LivingEye size={26} />
-              <div>
-                <span className="block text-xs font-bold uppercase tracking-[0.15em] text-[#c41e3a]">⛧ THE ABYSS ⛧</span>
-                <span className="block text-[10px] text-muted-foreground tracking-wider">WATCHING</span>
-              </div>
+        <div className="fixed inset-x-0 bottom-0 sm:inset-auto sm:bottom-24 sm:right-5 z-50 flex h-[65vh] sm:h-[480px] w-full sm:w-[360px] flex-col overflow-hidden border-t sm:border border-[#1a0404]/30 bg-[#060606] page-enter"
+          style={{ boxShadow: "0 0 30px rgba(180,0,0,0.1)" }}>
+          <div className="flex shrink-0 items-center justify-between border-b border-[#1a0404]/20 px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <LivingEye size={22} />
+              <span className="text-[11px] font-medium uppercase tracking-[0.15em] text-[#8b0000]/70">The Eye</span>
             </div>
-            <button onClick={() => setVoiceOn(!voiceOn)} className="p-1 text-muted-foreground hover:text-[#c41e3a] transition-colors" title={voiceOn ? "Mute voice" : "Unmute voice"}>
-                {voiceOn ? <Volume2 className="size-3.5" /> : <VolumeX className="size-3.5" />}
+            <div className="flex items-center gap-1">
+              <button onClick={() => setVoiceOn(!voiceOn)} className="p-1 text-[#8b0000]/50 hover:text-[#8b0000] transition-colors">
+                {voiceOn ? <Volume2 className="size-3" /> : <VolumeX className="size-3" />}
               </button>
-            <button onClick={() => setOpen(false)} className="p-1 text-muted-foreground hover:text-[#c41e3a] transition-colors"><X className="size-4" /></button>
+              <button onClick={() => setOpen(false)} className="p-1 text-[#8b0000]/50 hover:text-[#8b0000] transition-colors">
+                <X className="size-3.5" />
+              </button>
+            </div>
           </div>
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
             {messages.length === 0 && (
               <div className="flex flex-col items-center gap-4 pt-16 text-center">
-                <LivingEye size={80} />
-                <div>
-                  <p className="text-sm text-muted-foreground italic">The eye sees all.</p>
-                  <p className="text-[11px] text-muted-foreground/50 mt-1">Whisper your question below.</p>
-                </div>
+                <LivingEye size={64} />
+                <p className="text-xs text-[#8b0000]/40 italic">Speak.</p>
               </div>
             )}
             {messages.map((m, i) => (
               <div key={i} className={cn("flex gap-2 text-sm", m.role === "user" ? "justify-end" : "justify-start")}>
-                {m.role === "assistant" && <LivingEye size={18} className="mt-0.5 shrink-0 opacity-50" />}
+                {m.role === "assistant" && <LivingEye size={16} className="mt-0.5 shrink-0 opacity-40" />}
                 <div className="flex flex-col gap-1">
                   <div className={cn("max-w-[85%] px-3 py-2 text-sm leading-relaxed",
-                    m.role === "user" ? "bg-[#c41e3a]/15 text-foreground border border-[#c41e3a]/20" : "bg-[#111] text-muted-foreground italic border border-border")}>
+                    m.role === "user" ? "bg-[#1a0404]/20 text-[#ccc] border border-[#1a0404]/20" : "bg-[#0a0a0a] text-[#999] italic border border-[#1a0404]/10")}>
                     {m.text}
                   </div>
                   {m.role === "user" && (
-                    <button onClick={() => saveAsTask(m.text)}
-                      className="self-end flex items-center gap-1 text-[10px] text-muted-foreground hover:text-[#c41e3a] transition-colors">
+                    <button onClick={() => saveAsTask(m.text)} className="self-end flex items-center gap-1 text-[10px] text-[#8b0000]/50 hover:text-[#8b0000] transition-colors">
                       <Plus className="size-3" /> Save as task
                     </button>
                   )}
@@ -495,29 +235,26 @@ export const EyeChat = () => {
             ))}
             {loading && (
               <div className="flex gap-2 text-sm">
-                <LivingEye size={18} className="mt-0.5 shrink-0 opacity-50" />
-                <div className="bg-[#111] border border-border px-3 py-2 text-sm text-muted-foreground italic">
-                  <Loader2 className="size-3 animate-spin inline mr-1.5" />The eye contemplates…
-                </div>
+                <LivingEye size={16} className="mt-0.5 shrink-0 opacity-40" />
+                <div className="bg-[#0a0a0a] border border-[#1a0404]/10 px-3 py-2 text-sm text-[#999] italic">…</div>
               </div>
             )}
             <div ref={messagesEnd} />
           </div>
-          <div className="flex shrink-0 items-center gap-1 border-t border-border px-2 py-2.5">
+          <div className="flex shrink-0 items-center gap-1 border-t border-[#1a0404]/20 px-2 py-2.5">
             <Button size="icon" variant="ghost" onClick={toggleListen}
-              className={cn("h-8 w-8", listening ? "text-[#b30000] bg-[#c41e3a]/10" : "text-muted-foreground hover:text-[#c41e3a]")}>
-              {listening ? <MicOff className="size-3.5" /> : <Mic className="size-3.5" />}
+              className={cn("h-7 w-7", listening ? "text-[#8b0000] bg-[#1a0404]/10" : "text-[#8b0000]/40 hover:text-[#8b0000]")}>
+              {listening ? <MicOff className="size-3" /> : <Mic className="size-3" />}
             </Button>
             <Input ref={inputRef} value={input} onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && send()}
-              placeholder={listening ? "Listening…" : "Whisper to the eye…"}
-              className="h-9 border-0 bg-transparent text-xs focus-visible:ring-0 placeholder:text-muted-foreground/40" />
+              placeholder={listening ? "Listening…" : "Whisper…"}
+              className="h-8 border-0 bg-transparent text-xs focus-visible:ring-0 placeholder:text-[#8b0000]/20" />
             <Button size="icon" variant="ghost" onClick={send} disabled={loading || !input.trim()}
-              className="h-8 w-8 text-[#c41e3a] hover:bg-[#c41e3a]/10"><Send className="size-3.5" /></Button>
+              className="h-7 w-7 text-[#8b0000]/50 hover:text-[#8b0000] hover:bg-[#1a0404]/10"><Send className="size-3" /></Button>
           </div>
         </div>
       )}
-      </div>
     </>
   );
 };
