@@ -3,7 +3,7 @@ import { Send, Loader2, Mic, MicOff, Volume2, VolumeX, Save, Trash2, Plus, Messa
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { useCreate, useNotify, useGetIdentity } from "ra-core";
+import { useCreate, useUpdate, useDelete, useNotify, useGetIdentity } from "ra-core";
 import { getSupabaseClient } from "../providers/supabase/supabase";
 import { EmptyState } from "../misc/EmptyState";
 import { cn } from "@/lib/utils";
@@ -31,10 +31,43 @@ export const ChatbotPage = () => {
   const recognitionRef = useRef<any>(null);
   const messagesEnd = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [agentMode, setAgentMode] = useState(false);
   const [createPage] = useCreate();
+  const [createTodo] = useCreate();
+  const [updateTodo] = useUpdate();
+  const [deleteTodo] = useDelete();
   const notify = useNotify();
   const { identity } = useGetIdentity();
   const salesId = identity?.id ? Number(identity.id) : null;
+
+  /** Parse and execute action blocks from Lucifer's response: [[[CREATE_TODO:text|priority]]] */
+  const executeActions = (text: string) => {
+    const regex = /\[\[\[(\w+):(.*?)\]\]\]/g;
+    let match;
+    let executed = 0;
+    while ((match = regex.exec(text)) !== null) {
+      const [, action, params] = match;
+      try {
+        if (action === "CREATE_TODO") {
+          const [txt, prio] = params.split("|");
+          createTodo("todos", { data: { text: txt?.trim() || params, priority: parseInt(prio) || 0, sales_id: salesId } });
+          executed++;
+        } else if (action === "COMPLETE_TODO") {
+          updateTodo("todos", { id: parseInt(params), data: { done: true, done_at: new Date().toISOString() }, previousData: {} });
+          executed++;
+        } else if (action === "DELETE_TODO") {
+          deleteTodo("todos", { id: parseInt(params), previousData: {} });
+          executed++;
+        } else if (action === "CREATE_PAGE") {
+          const [title, content] = params.split("|");
+          createPage("pages", { data: { title: title?.trim() || "Note", content: content?.trim() || "", sales_id: salesId } });
+          executed++;
+        }
+      } catch { /* skip failed actions */ }
+    }
+    if (executed > 0) notify(`⛧ Lucifer executed ${executed} action${executed > 1 ? "s" : ""}`, { type: "success" });
+    return executed;
+  };
 
   useEffect(() => { messagesEnd.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
@@ -74,12 +107,22 @@ export const ChatbotPage = () => {
     try {
       const supabase = getSupabaseClient();
       const conversationText = [...messages, userMsg].map((m) => `${m.role === "user" ? "Human" : "Entity"}: ${m.text}`).join("\n");
-      const systemPrompt = PERSONAS[persona];
+      let systemPrompt = PERSONAS[persona];
+      if (agentMode) {
+        systemPrompt += `\n\nAGENT MODE ACTIVE. You can execute actions in the user's Life HQ app by including action blocks in your response. Format: [[[ACTION_NAME:parameters]]]. Available actions:
+- [[[CREATE_TODO:task text|priority(0-3)]]] — create a new todo
+- [[[COMPLETE_TODO:id]]] — mark a todo as done
+- [[[DELETE_TODO:id]]] — delete a todo
+- [[[CREATE_PAGE:title|content]]] — save a page
+
+When the user asks you to DO something (create, complete, delete, save), use these action blocks. Place them at the END of your response. Multiple actions are fine. Then give a brief natural reply.`;
+      }
       const { data, error } = await supabase.functions.invoke("ai_chat", {
         body: { messages: [{ role: "user", text: `${systemPrompt}\n\n${conversationText}` }] },
       });
       if (error) throw new Error(error.message || "Error");
       const reply = (data?.text ?? "…").trim();
+      if (agentMode) executeActions(reply);
       setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
       speak(reply);
       if (!chatTitle && messages.length >= 1) {
@@ -108,6 +151,11 @@ export const ChatbotPage = () => {
             className="h-7 rounded-none border border-border bg-card px-2 text-[11px] uppercase tracking-wider text-muted-foreground focus:border-ring">
             {Object.keys(PERSONAS).map((p) => (<option key={p} value={p}>{p}</option>))}
           </select>
+          <Button variant="ghost" size="icon" onClick={() => setAgentMode(!agentMode)}
+            className={cn("h-7 w-7 text-[11px] font-bold uppercase tracking-wider", agentMode ? "text-[#ff0000] bg-[#1a0404]/20" : "text-muted-foreground")}
+            title="Agent mode — Lucifer can create/edit/delete">
+            ⛧
+          </Button>
           <Button variant="ghost" size="icon" onClick={clearChat} className="h-7 w-7" title="Clear"><Trash2 className="size-3.5" /></Button>
           {messages.length > 0 && (
             <Button variant="ghost" size="icon" onClick={saveChat} className="h-7 w-7" title="Save"><Save className="size-3.5" /></Button>
