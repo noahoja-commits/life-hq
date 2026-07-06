@@ -269,8 +269,10 @@ const VentureCard = ({
         Next actions
       </button>
       {showActions && (
-        <NextActions filterField="venture_id" refId={v.id} compact />
+        <>
+          <NextActions filterField="venture_id" refId={v.id} compact />
           <ConnectionPanel entityType="ventures" entityId={v.id} className="mt-4" />
+        </>
       )}
     </Card>
   );

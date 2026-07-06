@@ -64,15 +64,12 @@ export const EyeChat = () => {
       const supabase = getSupabaseClient();
       const { data, error } = await supabase.functions.invoke("ai_chat", {
         body: {
-          messages: [{ role: "user", content: prompt }],
-          model: "gemini-2.5-flash",
-          temperature: 0.9,
-          max_tokens: 150,
+          messages: [{ role: "user", text: prompt }],
         },
       });
 
       if (error) throw error;
-      const reply = data?.reply ?? data?.content ?? "…";
+      const reply = data?.text ?? "…";
 
       setMessages((prev) => [...prev, { role: "assistant", text: reply.trim() }]);
     } catch {
