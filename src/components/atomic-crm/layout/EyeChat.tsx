@@ -74,8 +74,9 @@ const LivingEye = ({
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const glowAlpha = glowing ? 0.3 + breath * 0.4 : 0.15 + breath * 0.1;
-  const scaleY = blinking ? 0.05 : 1;
+  const glowAlpha = glowing ? 0.5 + breath * 0.5 : 0.2 + breath * 0.15;
+  const scaleY = blinking ? 0.03 : 1;
+  const pulse = Math.sin(Date.now() / 1500) * 0.5 + 0.5;
 
   return (
     <svg
@@ -86,45 +87,78 @@ const LivingEye = ({
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: glowing ? `drop-shadow(0 0 ${8 + breath * 16}px #c41e3a)` : undefined }}
+      style={{
+        filter: glowing
+          ? `drop-shadow(0 0 ${12 + breath * 24}px #c41e3a) drop-shadow(0 0 ${4 + breath * 8}px #ff4444)`
+          : undefined,
+      }}
     >
-      {/* Outer octagonal frame */}
+      {/* Outer glow aura */}
+      <circle cx="100" cy="100" r="85" fill="none" stroke="#c41e3a" strokeWidth="0.5"
+        opacity={0.05 + breath * 0.08} />
+      <circle cx="100" cy="100" r="78" fill="none" stroke="#c41e3a" strokeWidth="1"
+        opacity={0.08 + breath * 0.1} strokeDasharray="4 8" />
+      {/* Octagonal frame — thicker, more present */}
       <polygon
-        points="100,2 160,30 198,100 160,170 100,198 40,170 2,100 40,30"
+        points="100,0 162,28 200,100 162,172 100,200 38,172 0,100 38,28"
         stroke="#c41e3a"
-        strokeWidth="1.5"
+        strokeWidth="2"
         fill="none"
-        opacity={0.4 + breath * 0.3}
+        opacity={0.5 + breath * 0.4}
       />
-      {/* Circles */}
-      <circle cx="100" cy="100" r="62" stroke="#c41e3a" strokeWidth="2" fill="none" opacity={glowAlpha} />
-      {/* Upper eyelid */}
+      <polygon
+        points="100,4 158,30 196,100 158,170 100,196 42,170 4,100 42,30"
+        stroke="#c41e3a"
+        strokeWidth="1"
+        fill="none"
+        opacity={0.3 + breath * 0.25}
+      />
+      {/* Main eye circle */}
+      <circle cx="100" cy="100" r="64" stroke="#c41e3a" strokeWidth="2.5" fill="none" opacity={glowAlpha} />
+      <circle cx="100" cy="100" r="60" stroke="#c41e3a" strokeWidth="0.5" fill="none" opacity={glowAlpha * 0.5} />
+      {/* Eyelid group */}
       <g transform={`scale(1, ${scaleY})`} style={{ transformOrigin: "100px 100px" }}>
-        <path d="M38,100 Q38,40 100,35 Q162,40 162,100" stroke="#c41e3a" strokeWidth="3" fill="none" />
-        <path d="M42,100 Q42,44 100,39 Q158,44 158,100" stroke="#0a0a0a" strokeWidth="6" fill="none" opacity="0.9" />
-        {/* Lower eyelid */}
-        <path d="M42,100 Q42,156 100,160 Q158,156 158,100" stroke="#c41e3a" strokeWidth="1.5" fill="none" />
-        {/* Iris */}
-        <circle cx="100" cy="95" r="24" fill="#1a0a0a" stroke="#c41e3a" strokeWidth="1.5" />
-        <circle cx="100" cy="95" r="18" fill="#2a0a0a" />
-        <circle cx="100" cy="95" r="12" fill="#c41e3a" opacity={0.1 + breath * 0.1} />
-        {/* Pupil — moves with cursor */}
-        <ellipse cx={100 + pupilOff.x} cy={95 + pupilOff.y} rx="4" ry="10" fill="#080808" />
-        <ellipse cx={100 + pupilOff.x} cy={93 + pupilOff.y} rx="1.5" ry="2" fill="#c41e3a" opacity={0.3 + breath * 0.2} />
+        <path d="M36,100 Q36,38 100,32 Q164,38 164,100" stroke="#c41e3a" strokeWidth="4" fill="none" />
+        <path d="M40,100 Q40,42 100,36 Q160,42 160,100" stroke="#080808" strokeWidth="8" fill="none" opacity="0.95" />
+        <path d="M40,100 Q40,158 100,164 Q160,158 160,100" stroke="#c41e3a" strokeWidth="2" fill="none" />
+        {/* Iris — larger, more intense */}
+        <circle cx="100" cy="94" r="28" fill="#0d0505" stroke="#c41e3a" strokeWidth="2" />
+        <circle cx="100" cy="94" r="20" fill="#1a0808" />
+        <circle cx="100" cy="94" r="13" fill="#c41e3a" opacity={0.15 + breath * 0.15} />
+        <circle cx="100" cy="94" r="6" fill="#c41e3a" opacity={0.08 + breath * 0.08} />
+        {/* Pupil */}
+        <ellipse cx={100 + pupilOff.x} cy={94 + pupilOff.y} rx="5" ry="12" fill="#030303" />
+        <ellipse cx={100 + pupilOff.x} cy={92 + pupilOff.y} rx="2" ry="3" fill="#c41e3a" opacity={0.4 + breath * 0.3} />
       </g>
-      {/* Esoteric radiating lines */}
-      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => {
+      {/* Radiating esoteric lines — 12 rays */}
+      {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
         const rad = (angle * Math.PI) / 180;
         return (
-          <line key={i} x1={100 + 68 * Math.cos(rad)} y1={100 + 68 * Math.sin(rad)}
-            x2={100 + (78 + breath * 8) * Math.cos(rad)} y2={100 + (78 + breath * 8) * Math.sin(rad)}
-            stroke="#c41e3a" strokeWidth={i % 2 === 0 ? "1" : "0.5"}
-            opacity={0.15 + breath * 0.15} />
+          <line key={i}
+            x1={100 + 70 * Math.cos(rad)} y1={100 + 70 * Math.sin(rad)}
+            x2={100 + (82 + breath * 10) * Math.cos(rad)} y2={100 + (82 + breath * 10) * Math.sin(rad)}
+            stroke="#c41e3a" strokeWidth={i % 3 === 0 ? "1.5" : "0.75"}
+            opacity={0.2 + breath * 0.2} />
         );
       })}
-      {/* Blood tear */}
-      <path d="M100,122 Q100,140 98,148 Q96,155 100,158 Q104,155 102,148 Q100,140 100,122"
-        fill="#c41e3a" opacity={0.4 + breath * 0.2} />
+      {/* Orbiting particles */}
+      {[0, 72, 144, 216, 288].map((angle, i) => {
+        const rad = ((angle + Date.now() * 0.02) * Math.PI) / 180;
+        const r = 90 + breath * 6;
+        return (
+          <circle key={`p${i}`}
+            cx={100 + r * Math.cos(rad)} cy={100 + r * Math.sin(rad)}
+            r={1.5} fill="#c41e3a" opacity={0.3 + breath * 0.4} />
+        );
+      })}
+      {/* Blood tear — animates */}
+      <path d="M100,126 Q99,142 97,150 Q95,158 100,162 Q105,158 103,150 Q101,142 100,126"
+        fill="#c41e3a" opacity={0.5 + breath * 0.3}>
+        <animate attributeName="d" dur="3s" repeatCount="indefinite"
+          values="M100,126 Q99,142 97,150 Q95,158 100,162 Q105,158 103,150 Q101,142 100,126;
+                  M100,126 Q99,144 96,153 Q94,162 100,166 Q106,162 104,153 Q101,144 100,126;
+                  M100,126 Q99,142 97,150 Q95,158 100,162 Q105,158 103,150 Q101,142 100,126" />
+      </path>
     </svg>
   );
 };
@@ -168,11 +202,18 @@ export const EyeChat = () => {
 
   return (
     <>
-      <button onClick={() => setOpen(!open)}
-        className={cn("fixed bottom-5 right-5 z-50 transition-all duration-500", open ? "scale-75 opacity-50" : "scale-100 opacity-100 hover:scale-115")}
-        aria-label={open ? "Close" : "Open"}>
-        <LivingEye size={64} glowing />
-      </button>
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col items-center gap-1">
+        <button onClick={() => setOpen(!open)}
+          className={cn("transition-all duration-500 group", open ? "scale-75 opacity-40" : "scale-100 opacity-100 hover:scale-110")}
+          aria-label={open ? "Close" : "Open"}>
+          <LivingEye size={80} glowing />
+        </button>
+        {!open && (
+          <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#c41e3a]/50 animate-pulse">
+            THE EYE
+          </span>
+        )}
+      </div>
 
       {open && (
         <div className="fixed bottom-24 right-5 z-50 flex h-[520px] w-[380px] flex-col overflow-hidden border border-[#c41e3a]/20 bg-[#080808] page-enter"
