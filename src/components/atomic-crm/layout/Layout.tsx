@@ -41,7 +41,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       <KeyboardShortcuts />
       <ShortcutHelp />
       <Sidebar />
-      <div className="my-2 mr-2 flex min-w-0 flex-1 flex-col rounded-lg border border-border bg-background shadow-sm transition-shadow duration-200">
+      <div className="my-2 mr-2 flex min-w-0 flex-1 flex-col rounded-lg border border-border shadow-sm transition-shadow duration-200">
         <Header />
         <main
           className="u-scroll flex-1 overflow-y-auto page-enter"
