@@ -62,7 +62,7 @@ export const NAV_ITEMS: NavItem[] = [
   { key: "pages", label: "Pages", to: "/pages", icon: NotebookText, inHeader: true, primary: true, group: "Notes", shortcut: "n" },
   { key: "ai", label: "AI", to: "/ai", icon: Sparkles, inHeader: true, primary: true, group: "Notes", shortcut: "a" },
   { key: "scripts", label: "Scripts", to: "/scripts", icon: ScrollText, inHeader: true, group: "Work", shortcut: "x" },
-  { key: "review", label: "Review", to: "/review", icon: CalendarCheck, inHeader: true, group: "Track", shortcut: "w" },
+  { key: "review", label: "Review", to: "/review", icon: CalendarCheck, inHeader: true, group: "Track", shortcut: "u" },
   { key: "templates", label: "Templates", to: "/templates", icon: Shapes, inHeader: false, group: "Notes" },
   { key: "files", label: "Files", to: "/files", icon: FolderOpen, inHeader: true, group: "Notes", shortcut: "i" },
   { key: "hub", label: "Hub", to: "/hub", icon: LayoutGrid, inHeader: true, group: "Notes", shortcut: "h" },

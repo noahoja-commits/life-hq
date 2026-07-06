@@ -6,6 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
+import { EmptyState } from "../misc/EmptyState";
 
 interface FocusSession {
   id: number;
@@ -28,7 +30,7 @@ export const FocusPage = () => {
   const [create] = useCreate();
   const salesId = identity?.id ? Number(identity.id) : null;
 
-  const { data: sessions, refetch } = useGetList<FocusSession>(
+  const { data: sessions, isPending, refetch } = useGetList<FocusSession>(
     "focus_sessions",
     {
       pagination: { page: 1, perPage: 100 },
@@ -214,13 +216,22 @@ export const FocusPage = () => {
         </p>
       </Card>
 
-      {sessions && sessions.length > 0 && (
+      {isPending && (sessions ?? []).length === 0 ? (
+        <CardsSkeleton count={3} />
+      ) : (sessions ?? []).length === 0 ? (
+        <EmptyState
+          icon={Brain}
+          title="No focus sessions yet"
+          description="Start a focus session to track your deep work."
+          action={{ label: "Start 25min session", onClick: start }}
+        />
+      ) : (
         <section className="mt-6">
           <h2 className="u-label mb-2 text-muted-foreground">
             Recent sessions
           </h2>
           <Card className="divide-y divide-border overflow-hidden p-0">
-            {sessions.slice(0, 10).map((s) => (
+            {sessions!.slice(0, 10).map((s) => (
               <div
                 key={s.id}
                 className="flex items-center gap-3 px-4 py-2 text-[13px]"

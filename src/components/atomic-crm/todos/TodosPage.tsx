@@ -7,6 +7,7 @@ import {
   useNotify,
 } from "ra-core";
 import { EmptyState } from "../misc/EmptyState";
+import { CardsSkeleton } from "../misc/CardsSkeleton";
 import { useUndoable } from "../misc/useUndoable";
 import { usePageHotkey } from "../misc/usePageHotkey";
 import {
@@ -162,7 +163,7 @@ export const TodosPage = () => {
   const [batchLoading, setBatchLoading] = useState(false);
   const [search, setSearch] = useState("");
 
-  const { data } = useGetList<Todo>("todos", {
+  const { data, isPending } = useGetList<Todo>("todos", {
     pagination: { page: 1, perPage: 500 },
     sort: { field: "created_at", order: "DESC" },
   });
@@ -457,7 +458,9 @@ export const TodosPage = () => {
         </div>
       </Card>
 
-      {open.length === 0 ? (
+      {isPending ? (
+        <CardsSkeleton count={5} className="space-y-3" />
+      ) : open.length === 0 ? (
         search.trim() ? (
           <p className="text-sm text-muted-foreground text-center py-8">
             No to-dos match your search.

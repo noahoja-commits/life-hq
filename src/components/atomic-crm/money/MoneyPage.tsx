@@ -238,6 +238,9 @@ export const MoneyPage = () => {
       </div>
 
       {/* Month summary */}
+      {isPending ? (
+        <CardsSkeleton count={1} className="overflow-hidden rounded-lg border" />
+      ) : (
       <div className="grid grid-cols-2 overflow-hidden rounded-lg border bg-card sm:grid-cols-4">
         <StatCard
           label="In"
@@ -268,6 +271,7 @@ export const MoneyPage = () => {
           className="border-l max-sm:border-t"
         />
       </div>
+      )}
 
       {/* Quick add */}
       <Card className="flex flex-col items-stretch gap-2 p-3 sm:flex-row sm:items-center">
