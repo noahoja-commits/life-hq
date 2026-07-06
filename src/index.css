@@ -1040,3 +1040,70 @@ a, button, [role="button"], input, textarea, select, [data-slot="card"], .card-i
   left: 20%; animation-delay: 0s;
 }
 /* Ember 2 via another pseudo is not possible, so just one subtle ember */
+
+/*
+ * ⛧⛧⛧ SYMBOL STYLIZATION ⛧⛧⛧
+ * Every icon, indicator, toggle, and decorative element gets infernal treatment.
+ */
+
+/* All lucide/react SVG icons — crimson tint + subtle glow */
+svg.lucide, [class*="lucide"], svg[data-lucide] {
+  stroke: currentColor;
+  filter: drop-shadow(0 0 1px color-mix(in srgb, currentColor 10%, transparent));
+}
+[data-section] svg.lucide { color: var(--ring); opacity: 0.8; }
+[data-section] svg.lucide:hover { opacity: 1; filter: drop-shadow(0 0 3px var(--ring)); }
+
+/* Checkbox — crimson checkmark */
+[data-state="checked"] svg { color: #c41e3a !important; }
+
+/* Radio — crimson dot */
+[data-state="checked"][role="radio"]::after { background: #c41e3a; box-shadow: 0 0 4px rgba(180,0,0,0.5); }
+
+/* Switch — crimson track when on */
+[data-state="checked"][role="switch"] { background: #c41e3a !important; }
+[role="switch"][data-state="checked"] span { background: #0a0a0a !important; }
+
+/* Badge — crimson border */
+[data-slot="badge"] { border-color: color-mix(in srgb, var(--ring) 25%, transparent) !important; color: var(--ring) !important; }
+
+/* Dropdown/select arrows */
+[data-slot="select-icon"] svg, [data-side="bottom"] svg { color: color-mix(in srgb, var(--ring) 40%, transparent); }
+
+/* Tab active indicator */
+[data-state="active"][role="tab"] { border-color: var(--ring) !important; color: var(--ring) !important; }
+[data-state="active"][role="tab"]::after { background: var(--ring) !important; }
+
+/* Bullet lists — crimson dots */
+li::marker { color: color-mix(in srgb, var(--ring) 50%, transparent); }
+
+/* Blockquote — crimson left bar */
+blockquote { border-left: 2px solid color-mix(in srgb, var(--ring) 30%, transparent); padding-left: 1rem; }
+
+/* Horizontal rule — crimson line */
+hr { border-color: color-mix(in srgb, var(--ring) 10%, transparent) !important; }
+
+/* Progress bars — crimson fill */
+[role="progressbar"] > div { background: var(--ring) !important; }
+
+/* Skeleton shimmer — crimson tint */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, 
+    rgba(180,0,0,0.04) 25%, 
+    rgba(180,0,0,0.1) 50%, 
+    rgba(180,0,0,0.04) 75%
+  ) !important;
+  background-size: 200% 100% !important;
+}
+
+/* Hover tooltips — crimson accent */
+[role="tooltip"] { border: 1px solid color-mix(in srgb, var(--ring) 15%, transparent); }
+
+/* Notification dot */
+.notification-dot, [data-unread] { background: #c41e3a !important; box-shadow: 0 0 6px rgba(180,0,0,0.5); }
+
+/* Table row hover */
+tr:hover td { background: rgba(180,0,0,0.03) !important; }
+
+/* Active route / breadcrumb */
+[aria-current="page"] { color: var(--ring) !important; font-weight: 600; }
