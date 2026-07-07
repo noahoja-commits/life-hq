@@ -41,7 +41,7 @@ export const AgentHubPage = () => {
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch(`${HUB_URL}/api/tasks`, {
+      const res = await fetch(`${HUB_URL}/tasks`, {
         method: "POST",
         headers: { Authorization: `Bearer ${AUTH_TOKEN}`, "Content-Type": "application/json" },
         body: JSON.stringify({ agent: selected, action: "execute", params: { query } }),
@@ -54,7 +54,7 @@ export const AgentHubPage = () => {
       let attempts = 0;
       const poll = setInterval(async () => {
         attempts++;
-        const r = await fetch(`${HUB_URL}/api/tasks/${data.id || data.task_id}`, {
+        const r = await fetch(`${HUB_URL}/tasks/${data.id || data.task_id}`, {
           headers: { Authorization: `Bearer ${AUTH_TOKEN}` },
         });
         const d = await r.json();
