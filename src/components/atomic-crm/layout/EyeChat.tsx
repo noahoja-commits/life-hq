@@ -56,16 +56,16 @@ const LivingEye = ({ size, className }: { size: number; className?: string }) =>
   return (
     <svg ref={svgRef} width={size} height={size} viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"
       className={className}
-      style={{ filter: `drop-shadow(0 0 ${12 + breath * 20}px rgba(180,0,0,0.8)) drop-shadow(0 0 6px rgba(255,0,0,0.5))` }}>
-      {/* Sclera — bloodshot, angry */}
-      <ellipse cx="100" cy="100" rx="62" ry="58" fill="#1a100c" stroke="#3a1410" strokeWidth="2" />
+      style={{ filter: `drop-shadow(0 0 ${16 + breath * 24}px rgba(200,0,0,0.9)) drop-shadow(0 0 8px rgba(255,0,0,0.6)) drop-shadow(0 0 2px rgba(255,100,0,0.8))` }}>
+      {/* Sclera — bloodshot, visible */}
+      <ellipse cx="100" cy="100" rx="62" ry="58" fill="#2e1812" stroke="#4a1410" strokeWidth="2" />
       {/* Eyelid group */}
       <g transform={`scale(1, ${scaleY})`} style={{ transformOrigin: "100px 100px" }}>
-        {/* Upper eyelid — heavy, demonic */}
-        <ellipse cx="100" cy="65" rx="66" ry="34" fill="#020202" opacity="0.98" />
-        <path d="M32,100 Q32,30 100,22 Q168,30 168,100" stroke="#6a1010" strokeWidth="3" fill="none" opacity="0.8" />
+        {/* Upper eyelid — raised for visibility */}
+        <ellipse cx="100" cy="72" rx="66" ry="24" fill="#020202" opacity="0.85" />
+        <path d="M30,100 Q30,28 100,20 Q170,28 170,100" stroke="#8a1410" strokeWidth="3" fill="none" opacity="0.9" />
         {/* Lower eyelid */}
-        <path d="M36,100 Q36,165 100,170 Q164,165 164,100" stroke="#2a0808" strokeWidth="2.5" fill="none" opacity="0.7" />
+        <path d="M34,100 Q34,168 100,172 Q166,168 166,100" stroke="#4a1010" strokeWidth="2.5" fill="none" opacity="0.8" />
         {/* Iris — burning red */}
         <circle cx="100" cy="98" r="28" fill="url(#irisGrad)" stroke="#8b0000" strokeWidth="2" />
         {/* Iris texture — infernal rings */}
