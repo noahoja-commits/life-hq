@@ -46,7 +46,7 @@
 
 :root {
   --radius: 0px;
-  --background: #060606;
+  --background: #0c0c0c;
   --foreground: #d4d4d8;
   --card: #080808;
   --card-foreground: #d4d4d8;
@@ -85,10 +85,10 @@
   --shadow-xl: 0 16px 48px rgba(0,0,0,0.8), 0 0 0 1px rgba(180,0,0,0.35);
 }
 
-body { background: #060606; color: #d4d4d8; overflow: hidden; }
+body { background: #0c0c0c; color: #d4d4d8; overflow: hidden; }
 ::selection { background: rgba(180,0,0,0.3); color: #fff; }
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #060606; }
+::-webkit-scrollbar-track { background: #0c0c0c; }
 ::-webkit-scrollbar-thumb { background: #1a1a1a; }
 ::-webkit-scrollbar-thumb:hover { background: #c41e3a; }
 
@@ -104,7 +104,7 @@ h1, h2, h3 { text-transform: uppercase; letter-spacing: -0.03em; }
 
 /* Utility */
 .u-label { font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
-.u-scroll { scrollbar-width: thin; scrollbar-color: #1a1a1a #060606; }
+.u-scroll { scrollbar-width: thin; scrollbar-color: #1a1a1a #0c0c0c; }
 
 /* Section identity — solid colors */
 [data-section="dashboard"]{background:#1a0a0a}
