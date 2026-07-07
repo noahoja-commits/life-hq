@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
+import { RichEditor } from "./RichEditor";
 import {
   useGetOne,
   useUpdate,
@@ -168,10 +169,12 @@ export const PageDetail = () => {
         </div>
 
         {page.kind === "doc" && (
-          <textarea
-            value={String(content.text ?? "")}
-            onChange={(e) =>
-              queueContentSave({ ...content, text: e.target.value })
+          <RichEditor
+            content={String(content.text ?? "")}
+            onChange={(html: string) => queueContentSave({ ...content, text: html })}
+            placeholder="Start writing…"
+            className="min-h-[400px]"
+          />
             }
             placeholder="Write anything…"
             className="min-h-[65vh] w-full resize-y rounded-lg border bg-card p-5 text-[15px] leading-7 outline-none focus:ring-2 focus:ring-ring/40"
