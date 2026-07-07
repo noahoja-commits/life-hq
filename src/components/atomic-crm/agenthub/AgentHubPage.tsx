@@ -40,7 +40,7 @@ export const AgentHubPage = () => {
     setLoading(true);
     setResult("Dispatching...");
     try {
-      const r = await fetch(`/api/agent-hub/tasks`, {
+      const r = await fetch(`https://agent-hub-production-5ccf.up.railway.app/api/tasks`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${TOKEN}`, "Content-Type": "application/json" },
         body: JSON.stringify({ agent: selected, action: "execute", params: { query } }),
@@ -52,7 +52,7 @@ export const AgentHubPage = () => {
       let tries = 0;
       const poll = setInterval(async () => {
         tries++;
-        const pr = await fetch(`/api/agent-hub/tasks/${taskId}`, { headers: { "Authorization": `Bearer ${TOKEN}` } });
+        const pr = await fetch(`https://agent-hub-production-5ccf.up.railway.app/api/tasks/${taskId}`, { headers: { "Authorization": `Bearer ${TOKEN}` } });
         const pd = await pr.json();
         if (pd.status === "completed") {
           setResult(typeof pd.result === "string" ? pd.result : JSON.stringify(pd.result || pd, null, 2));
