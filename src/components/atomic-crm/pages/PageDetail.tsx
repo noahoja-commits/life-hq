@@ -175,10 +175,6 @@ export const PageDetail = () => {
             placeholder="Start writing…"
             className="min-h-[400px]"
           />
-            }
-            placeholder="Write anything…"
-            className="min-h-[65vh] w-full resize-y rounded-lg border bg-card p-5 text-[15px] leading-7 outline-none focus:ring-2 focus:ring-ring/40"
-          />
         )}
 
         {page.kind === "sheet" && (
