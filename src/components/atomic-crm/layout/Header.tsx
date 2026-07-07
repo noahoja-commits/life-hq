@@ -59,6 +59,9 @@ const Header = () => {
         <span className="mr-2 hidden text-xs text-muted-foreground lg:block">
           {today}
         </span>
+        <kbd className="mr-2 hidden rounded border bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground lg:inline-block" title="Keyboard shortcuts">
+          ?
+        </kbd>
         <SoulLedger />
         <NotificationBell />
         <ThemeModeToggle />
