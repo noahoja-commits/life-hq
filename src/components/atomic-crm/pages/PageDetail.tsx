@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
-import { RichEditor } from "./RichEditor";
+import { SimpleEditor as RichEditor } from "./SimpleEditor";
 import {
   useGetOne,
   useUpdate,
