@@ -182,7 +182,7 @@ export const EyeChat = () => {
 
   return (
     <>
-      <div className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-50"
+      <div className="fixed bottom-[72px] right-3 sm:bottom-4 sm:right-4 z-50"
         style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, transition: "transform 6s linear" }}>
         <button onClick={() => setOpen(!open)}
           className={cn("transition-all duration-700", open ? "scale-75 opacity-40" : "scale-100 opacity-90 hover:scale-105")}
