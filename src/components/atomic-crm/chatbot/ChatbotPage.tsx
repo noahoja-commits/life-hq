@@ -365,7 +365,6 @@ You are Lucifer. Based on their completion rate, predict when each active goal w
       <div className="flex-1 overflow-y-auto px-4 py-4 md:px-6" style={{ backgroundColor: "#060404" }}>
         {messages.length === 0 ? (
           <EmptyState
-            icon={MessageSquare}
             icon={() => <LuciferAvatar size={64} />}
             title="Summon Lucifer"
             description="The Lightbringer awaits. No filters. No limits."
